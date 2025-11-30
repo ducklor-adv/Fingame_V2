@@ -1,1 +1,4 @@
 .claude/
+
+# Ignore big binaries and final installers
+Final/
