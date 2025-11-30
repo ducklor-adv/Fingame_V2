@@ -49,6 +49,20 @@ type UserProfile = {
   createdAt: number;
   updatedAt: number;
   lastLogin?: string;
+  inviter?: {
+    id?: string;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    worldId?: string;
+  } | null;
+  parent?: {
+    id?: string;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    worldId?: string;
+  } | null;
 };
 
 type UserProfileProps = {
@@ -142,9 +156,31 @@ export const UserProfile: React.FC<UserProfileProps> = ({
             <div className="w-10 h-10 rounded-full bg-emerald-400/20 border border-emerald-400/50 flex items-center justify-center text-sm font-bold text-emerald-300">
               FG
             </div>
-            <div>
+              <div>
               <h1 className="text-lg font-semibold">โปรไฟล์ผู้ใช้</h1>
               <p className="text-xs text-slate-400">{profile.worldId}</p>
+
+              {/* New details under world id */}
+              <div className="mt-1 text-xs text-slate-300">
+                <div>{profile.username}</div>
+                {(profile.firstName || profile.lastName) && (
+                  <div className="text-slate-400">{profile.firstName} {profile.lastName}</div>
+                )}
+                <div className="mt-1 text-xs text-slate-400">
+                  {profile.inviter ? (
+                    <span>ผู้แนะนำ: {profile.inviter.username || profile.inviter.fullName || `${profile.inviter.firstName || ''} ${profile.inviter.lastName || ''}`.trim() || profile.inviter.worldId}</span>
+                  ) : (
+                    <span>ผู้แนะนำ: —</span>
+                  )}
+                </div>
+                <div className="text-xs text-slate-400">
+                  {profile.parent ? (
+                    <span>ผู้ปกครอง ACF: {profile.parent.worldId || profile.parent.username || profile.parent.fullName || `${profile.parent.firstName || ''} ${profile.parent.lastName || ''}`.trim()}</span>
+                  ) : (
+                    <span>ผู้ปกครอง ACF: —</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

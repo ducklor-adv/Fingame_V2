@@ -15,7 +15,8 @@
       "Bash(node run_test_data.js:*)",
       "Bash(node add_new_user.js:*)",
       "Bash(python:*)",
-      "Bash(start:*)"
+      "Bash(start:*)",
+      "Bash(node add_three_users.js:*)"
     ],
     "deny": [],
     "ask": []

@@ -32,14 +32,48 @@ const pool = new Pool({
  * Convert database row to UserProfile object
  */
 function mapUserProfile(row) {
+  // Support different DB naming: some schemas use "invitor_id" and "full_name".
+  // Build inviter object from whichever alias is present (inviter_* or invitor_*).
+  const inviterId = row.inviter_id || row.invitor_id || null;
+  const inviterUsername = row.inviter_username || row.invitor_username || null;
+  // for name fields support first_name/last_name and full_name
+  const inviterFullName = row.inviter_full_name || row.invitor_full_name || null;
+  const inviterFirstName = row.inviter_first_name || row.invitor_first_name || null;
+  const inviterLastName = row.inviter_last_name || row.invitor_last_name || null;
+
+  const inviter = inviterId ? {
+    id: inviterId,
+    username: inviterUsername,
+    firstName: inviterFirstName,
+    lastName: inviterLastName,
+    fullName: inviterFullName || (inviterFirstName || inviterLastName ? `${inviterFirstName || ''} ${inviterLastName || ''}`.trim() : null),
+    worldId: row.inviter_world_id || row.invitor_world_id || null,
+  } : null;
+
+  const parentId = row.parent_id || null;
+  const parentUsername = row.parent_username || null;
+  const parentFullName = row.parent_full_name || null;
+  const parentFirstName = row.parent_first_name || null;
+  const parentLastName = row.parent_last_name || null;
+
+  const parent = parentId ? {
+    id: parentId,
+    username: parentUsername,
+    firstName: parentFirstName,
+    lastName: parentLastName,
+    fullName: parentFullName || (parentFirstName || parentLastName ? `${parentFirstName || ''} ${parentLastName || ''}`.trim() : null),
+    worldId: row.parent_world_id || null,
+  } : null;
+
   return {
     id: row.id,
     worldId: row.world_id,
     username: row.username,
     email: row.email,
     phone: row.phone,
-    firstName: row.first_name,
-    lastName: row.last_name,
+    // Prefer separate name fields, fall back to `full_name` if present (some DBs use full_name)
+    firstName: row.first_name || (row.full_name ? row.full_name.split(' ')[0] : null),
+    lastName: row.last_name || (row.full_name ? row.full_name.split(' ').slice(1).join(' ') : null),
     avatarUrl: row.avatar_url,
     profileImageFilename: row.profile_image_filename,
     bio: row.bio,
@@ -56,11 +90,18 @@ function mapUserProfile(row) {
 
     // ACF Info
     runNumber: row.run_number,
-    parentId: row.parent_id,
+    parentId: row.parent_id || null,
+    parent,
     childCount: row.child_count,
     maxChildren: row.max_children,
     acfAccepting: row.acf_accepting,
-    inviterId: row.inviter_id,
+    // Keep backwards-compatible fields
+    inviterId: row.inviter_id || row.invitor_id || null,
+    invitorId: row.invitor_id || null,
+    // backwards-compatible top-level convenience fields
+    inviterUsername: inviterUsername || null,
+    parentUsername: parentUsername || null,
+    inviter,
     inviteCode: row.invite_code,
     level: row.level,
     userType: row.user_type,
@@ -89,6 +130,18 @@ function mapUserProfile(row) {
   };
 }
 
+// Base SELECT that joins inviter and parent users so endpoints can return human-friendly inviter/parent fields
+const baseUserSelect = `
+  SELECT u.*,
+    -- support both spellings
+    i.id AS invitor_id, i.username AS invitor_username,
+    i.id AS inviter_id, i.username AS inviter_username,
+    p.id AS parent_id, p.username AS parent_username
+  FROM users u
+  LEFT JOIN users i ON i.id = u.inviter_id
+  LEFT JOIN users p ON p.id = u.parent_id
+`;
+
 // ---------- API Endpoints ----------
 
 /**
@@ -100,7 +153,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     const result = await pool.query(
-      'SELECT * FROM users WHERE id = $1',
+      `${baseUserSelect} WHERE u.id = $1`,
       [id]
     );
 
@@ -125,7 +178,7 @@ router.get('/world/:worldId', async (req, res) => {
     const { worldId } = req.params;
 
     const result = await pool.query(
-      'SELECT * FROM users WHERE world_id = $1',
+      `${baseUserSelect} WHERE u.world_id = $1`,
       [worldId]
     );
 
@@ -150,7 +203,7 @@ router.get('/username/:username', async (req, res) => {
     const { username } = req.params;
 
     const result = await pool.query(
-      'SELECT * FROM users WHERE username = $1',
+      `${baseUserSelect} WHERE u.username = $1`,
       [username]
     );
 

@@ -980,17 +980,29 @@
               const data = await response.json();
               // Transform API data to match component format
               if (data.nodes && data.nodes.length > 0) {
-                setUserNetwork(data.nodes.map(node => ({
+                // Sort by level (ascending), then by createdAt (ascending)
+                const sortedNodes = data.nodes.sort((a, b) => {
+                  if (a.level !== b.level) {
+                    return a.level - b.level; // Level น้อยอยู่บน
+                  }
+                  return new Date(a.createdAt) - new Date(b.createdAt); // สมัครก่อนอยู่บน
+                });
+
+                setUserNetwork(sortedNodes.map(node => ({
                   id: node.id,
                   userId: node.userId,
                   username: node.username,
+                  inviterUsername: node.inviterUsername,
                   parentId: node.parentId,
+                  parentUsername: node.parentUsername,
                   level: node.level,
                   networkSize: node.networkSize || 0,
                   maxChildren: node.maxChildren || 5,
                   childCount: node.childCount || 0,
                   acfAccepting: node.acfAccepting || false,
-                  children: node.children || []
+                  childrenLevel1: node.childrenLevel1 || [],
+                  children: node.children || [],
+                  createdAt: node.createdAt
                 })));
               } else {
                 // Set current user as root if no network data
@@ -1073,6 +1085,7 @@
                   <tr className="border-b border-slate-700">
                     <th className="px-3 py-3 text-left font-medium text-slate-300">#</th>
                     <th className="px-3 py-3 text-left font-medium text-slate-300">User</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">Invitor</th>
                     <th className="px-3 py-3 text-left font-medium text-slate-300">Parent</th>
                     <th className="px-3 py-3 text-left font-medium text-slate-300">Level</th>
                     <th className="px-3 py-3 text-left font-medium text-slate-300">Network</th>
@@ -1091,6 +1104,7 @@
                           {node.username}
                         </button>
                       </td>
+                      <td className="px-3 py-3 text-slate-400">{node.inviterUsername || '—'}</td>
                       <td className="px-3 py-3 text-slate-400">{node.parentUsername || '—'}</td>
                       <td className="px-3 py-3">{node.level}</td>
                       <td className="px-3 py-3 font-mono">{node.networkSize}/19531</td>
