@@ -1,0 +1,108 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run SQL File",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "fingrow-postgres",
+        "psql",
+        "-U",
+        "fingrow_user",
+        "-d",
+        "fingrow",
+        "-f",
+        "/dev/stdin"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "View Users Table",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "exec",
+        "fingrow-postgres",
+        "psql",
+        "-U",
+        "fingrow_user",
+        "-d",
+        "fingrow",
+        "-c",
+        "SELECT id, world_id, username, run_number, level, child_count, acf_accepting, own_finpoint FROM users ORDER BY run_number;"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "View All Tables",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "exec",
+        "fingrow-postgres",
+        "psql",
+        "-U",
+        "fingrow_user",
+        "-d",
+        "fingrow",
+        "-c",
+        "\\dt"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Quick Queries",
+      "type": "shell",
+      "command": "Get-Content quick_queries.sql | docker exec -i fingrow-postgres psql -U fingrow_user -d fingrow",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "shell": {
+          "executable": "powershell.exe"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Interactive PostgreSQL Shell",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "exec",
+        "fingrow-postgres",
+        "psql",
+        "-U",
+        "fingrow_user",
+        "-d",
+        "fingrow"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "isBackground": false,
+      "problemMatcher": []
+    }
+  ]
+}

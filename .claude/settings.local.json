@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker exec:*)",
+      "Bash(cat:*)",
+      "Bash(unset:*)",
+      "Bash(npm start)",
+      "Bash(start http://localhost:3000/fingrow-app-mobile.html)",
+      "Bash(node server.js:*)",
+      "Bash(psql:*)",
+      "Bash(curl:*)",
+      "Bash(set PGPASSWORD=fingrow_pass_2025:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -h localhost -p 5433 -U fingrow_user -d fingame -f \"d:\\Fingame\\insert_test_user.sql\")",
+      "Bash(where:*)",
+      "Bash(node run_test_data.js:*)",
+      "Bash(node add_new_user.js:*)",
+      "Bash(python:*)",
+      "Bash(start:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

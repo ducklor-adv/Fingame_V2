@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fingrow User Profile - Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Mock API for testing (replace with real API later)
+    const mockUser = {
+      id: "00000000-0000-0000-0000-000000000000",
+      worldId: "25AAA0000",
+      username: "system_root",
+      email: "root@fingrow.com",
+      phone: "0812345678",
+      firstName: "System",
+      lastName: "Root",
+      avatarUrl: null,
+      bio: "System root user for Fingrow ACF network",
+      location: { city: "Bangkok", country: "Thailand" },
+      preferredCurrency: "THB",
+      language: "th",
+      isVerified: true,
+      verificationLevel: 4,
+      trustScore: 100.0,
+      totalSales: 0,
+      totalPurchases: 0,
+      runNumber: 0,
+      level: 0,
+      childCount: 5,
+      maxChildren: 5,
+      acfAccepting: true,
+      ownFinpoint: 0,
+      totalFinpoint: 0,
+      maxNetwork: 19531,
+      addressNumber: "123",
+      addressStreet: "Sukhumvit Rd",
+      addressDistrict: "Khlong Toei",
+      addressProvince: "Bangkok",
+      addressPostalCode: "10110",
+      createdAt: 1763875968021,
+      updatedAt: 1763875968021
+    };
+
+    // UserProfile Component (simplified version)
+    function UserProfile() {
+      const [profile, setProfile] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [editing, setEditing] = useState(false);
+      const [editForm, setEditForm] = useState({});
+
+      useEffect(() => {
+        // Simulate API call
+        setTimeout(() => {
+          setProfile(mockUser);
+          setEditForm(mockUser);
+          setLoading(false);
+        }, 500);
+      }, []);
+
+      const handleEdit = () => setEditing(true);
+      const handleCancel = () => {
+        setEditing(false);
+        setEditForm(profile);
+      };
+      const handleSave = () => {
+        setProfile(editForm);
+        setEditing(false);
+        alert('บันทึกข้อมูลสำเร็จ!');
+      };
+
+      const handleChange = (field, value) => {
+        setEditForm(prev => ({ ...prev, [field]: value }));
+      };
+
+      if (loading) {
+        return (
+          <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+            <div className="text-slate-400">กำลังโหลด...</div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100">
+          {/* HEADER */}
+          <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur sticky top-0 z-10">
+            <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-400/20 border border-emerald-400/50 flex items-center justify-center text-sm font-bold text-emerald-300">
+                  FG
+                </div>
+                <div>
+                  <h1 className="text-lg font-semibold">โปรไฟล์ผู้ใช้</h1>
+                  <p className="text-xs text-slate-400">{profile.worldId}</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                {!editing ? (
+                  <button
+                    onClick={handleEdit}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    แก้ไข
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleCancel}
+                      className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      ยกเลิก
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      บันทึก
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </header>
+
+          {/* MAIN CONTENT */}
+          <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+            {/* Profile Header Card */}
+            <section className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+              <div className="h-32 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600"></div>
+              <div className="px-6 pb-6">
+                <div className="flex items-end gap-6 -mt-16">
+                  <div className="relative">
+                    <div className="w-32 h-32 rounded-full border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-4xl overflow-hidden">
+                      👤
+                    </div>
+                    {profile.isVerified && (
+                      <div className="absolute bottom-0 right-0 w-10 h-10 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center">
+                        ✓
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1 pb-2">
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-2xl font-bold">{profile.username}</h2>
+                      <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-medium">
+                        Level {profile.level}
+                      </span>
+                    </div>
+                    <p className="text-slate-400 mt-1">
+                      {profile.firstName} {profile.lastName}
+                    </p>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
+                      <span>Run #{profile.runNumber}</span>
+                      <span>•</span>
+                      <span>Trust Score: {profile.trustScore.toFixed(1)}</span>
+                      <span>•</span>
+                      <span>เข้าร่วมเมื่อ {new Date(profile.createdAt).toLocaleDateString('th-TH')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column */}
+              <div className="lg:col-span-1 space-y-6">
+                {/* Stats Card */}
+                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+                  <h3 className="text-sm uppercase tracking-wide text-slate-400 font-semibold">สถิติการใช้งาน</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400 text-sm">ยอดขาย</span>
+                      <span className="text-emerald-300 font-semibold">{profile.totalSales}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400 text-sm">ยอดซื้อ</span>
+                      <span className="text-cyan-300 font-semibold">{profile.totalPurchases}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Finpoint Card */}
+                <div className="bg-gradient-to-br from-emerald-900/40 to-teal-900/40 border border-emerald-700/50 rounded-2xl p-6">
+                  <h3 className="text-sm uppercase tracking-wide text-emerald-300 font-semibold mb-4">Finpoint</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="text-slate-400 text-xs mb-1">Own Finpoint</div>
+                      <div className="text-2xl font-bold text-emerald-300">
+                        {profile.ownFinpoint.toLocaleString()} FP
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-slate-400 text-xs mb-1">Total Finpoint</div>
+                      <div className="text-xl font-semibold text-teal-300">
+                        {profile.totalFinpoint.toLocaleString()} FP
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Personal Information */}
+                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold mb-6">ข้อมูลส่วนตัว</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField
+                      label="ชื่อจริง"
+                      value={editing ? editForm.firstName : profile.firstName}
+                      onChange={(v) => handleChange("firstName", v)}
+                      editing={editing}
+                    />
+                    <InputField
+                      label="นามสกุล"
+                      value={editing ? editForm.lastName : profile.lastName}
+                      onChange={(v) => handleChange("lastName", v)}
+                      editing={editing}
+                    />
+                    <InputField
+                      label="อีเมล"
+                      value={editing ? editForm.email : profile.email}
+                      onChange={(v) => handleChange("email", v)}
+                      editing={editing}
+                    />
+                    <InputField
+                      label="โทรศัพท์"
+                      value={editing ? editForm.phone : profile.phone}
+                      onChange={(v) => handleChange("phone", v)}
+                      editing={editing}
+                    />
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold mb-6">ที่อยู่</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField
+                      label="บ้านเลขที่"
+                      value={editing ? editForm.addressNumber : profile.addressNumber}
+                      onChange={(v) => handleChange("addressNumber", v)}
+                      editing={editing}
+                    />
+                    <InputField
+                      label="ถนน"
+                      value={editing ? editForm.addressStreet : profile.addressStreet}
+                      onChange={(v) => handleChange("addressStreet", v)}
+                      editing={editing}
+                    />
+                    <InputField
+                      label="แขวง/ตำบล"
+                      value={editing ? editForm.addressDistrict : profile.addressDistrict}
+                      onChange={(v) => handleChange("addressDistrict", v)}
+                      editing={editing}
+                    />
+                    <InputField
+                      label="จังหวัด"
+                      value={editing ? editForm.addressProvince : profile.addressProvince}
+                      onChange={(v) => handleChange("addressProvince", v)}
+                      editing={editing}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    function InputField({ label, value, onChange, editing }) {
+      return (
+        <div>
+          <label className="block text-sm text-slate-400 mb-2">{label}</label>
+          {editing ? (
+            <input
+              type="text"
+              value={value || ""}
+              onChange={(e) => onChange(e.target.value)}
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors"
+            />
+          ) : (
+            <div className="px-3 py-2 text-slate-200">
+              {value || <span className="text-slate-600">-</span>}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Render
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<UserProfile />);
+  </script>
+</body>
+</html>

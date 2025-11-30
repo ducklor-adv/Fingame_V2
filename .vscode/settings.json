@@ -1,0 +1,14 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "Fingrow Database",
+      "database": "fingrow",
+      "username": "fingrow_user",
+      "password": "fingrow_pass_2025"
+    }
+  ]
+}

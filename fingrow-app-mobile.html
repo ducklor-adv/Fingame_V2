@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fingrow - Finpoint Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    input, select, textarea { font-size: 16px !important; }
+    html { scroll-behavior: smooth; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Bottom nav safe area for iOS */
+    .bottom-nav-safe {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  </style>
+</head>
+<body class="bg-slate-950">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // API Configuration
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001' : '';
+
+    // Mock User (fallback for demo)
+    const mockUser = {
+      id: "4d003630-3ed6-4d80-89fd-5c1d2f017be1",
+      worldId: "25AAA0001",
+      username: "somchai_jaidee",
+      firstName: "สมชาย",
+      lastName: "ใจดี",
+      firstName: "สมชาย",
+      lastName: "ใจดี",
+      email: "somchai@fingrow.com",
+      phone: "0812345678",
+      avatarUrl: null,
+      bio: "ผู้ใช้งานทดสอบระบบ Fingrow",
+      isVerified: true,
+      verificationLevel: 3,
+      trustScore: 95.5,
+      totalSales: 152,
+      totalPurchases: 89,
+      runNumber: 1,
+      level: 1,
+      childCount: 3,
+      maxChildren: 5,
+      acfAccepting: true,
+      inviterUsername: "system_root",
+      inviteCode: "DEMO2025",
+      ownFinpoint: 3250,
+      totalFinpoint: 12500,
+      maxNetwork: 19531,
+      addressNumber: "123/45",
+      addressStreet: "ถนนสุขุมวิท",
+      addressSubDistrict: "คลองเตย",
+      addressDistrict: "คลองเตย",
+      addressProvince: "กรุงเทพมหานคร",
+      addressPostalCode: "10110",
+    };
+
+    const mockDashboardData = {
+      currentFpBalance: 3250,
+      lastUpdated: "23/11/2025 14:32",
+      todayEarned: 120,
+      todayFromSecondhand: 80,
+      todayFromUpline: 40,
+      expProgressList: [
+        { code: "LEVEL_1", label: "Level 1 – พรบ.", target: 600, current: 420 },
+        { code: "LEVEL_2", label: "Level 2 – ประกันภัยรถ", target: 5000, current: 1350 },
+        { code: "LEVEL_3", label: "Level 3 – ประกันสุขภาพ", target: 20000, current: 2500 },
+        { code: "LEVEL_4", label: "Level 4 – ประกันชีวิต", target: 50000, current: 0 },
+      ],
+      recentLedger: [
+        { id: 1, datetime: "23/11 14:10", category: "ขายของมือสอง", detail: "#S-1021", drCr: "DR", amount: 70, balanceAfter: 3250 },
+        { id: 2, datetime: "23/11 09:00", category: "พรบ. คืนเงิน", detail: "Self 45%", drCr: "DR", amount: 30, balanceAfter: 3180 },
+        { id: 3, datetime: "22/11 18:30", category: "Network Bonus", detail: "จาก downline", drCr: "DR", amount: 15, balanceAfter: 3150 },
+        { id: 4, datetime: "22/11 10:15", category: "ขายของมือสอง", detail: "#S-1015", drCr: "DR", amount: 55, balanceAfter: 3135 },
+        { id: 5, datetime: "21/11 16:20", category: "ซื้อประกันสุขภาพ", detail: "#E-450", drCr: "CR", amount: 200, balanceAfter: 3080 },
+      ],
+      networkSnapshot: {
+        networkSize: 1235,
+        fpFromYou: 120,
+        uplinePath: [
+          { id: "25AAA0001", name: "สมชาย ใจดี", worldId: "25AAA0001" },
+          { id: "25AAA0015", name: "สมหญิง รักดี", worldId: "25AAA0015" },
+          { id: "25AAA0032", name: "สมศักดิ์ มั่งคั่ง", worldId: "25AAA0032" },
+          { id: "25AAA0087", name: "สมพร สุขใจ", worldId: "25AAA0087" },
+          { id: "25AAA0120", name: "วิชัย เจริญ", worldId: "25AAA0120" },
+          { id: "25AAA0230", name: "ประยุทธ ดีงาม", worldId: "25AAA0230" },
+          { id: "25AAA0000", name: "SYSTEM ROOT", worldId: "25AAA0000" },
+        ],
+      },
+    };
+
+    // Main App Component
+    function App() {
+      const [currentPage, setCurrentPage] = useState('home');
+      const [userData, setUserData] = useState(null);
+      const [dashboardData, setDashboardData] = useState(null);
+      const [isLoading, setIsLoading] = useState(true);
+      const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+      // Fetch data from API
+      const fetchUserData = async () => {
+        try {
+          setIsLoading(true);
+          // Get user ID from localStorage or use mock
+          const userId = localStorage.getItem('userId') || mockUser.id;
+
+          // Fetch user data
+          const userResponse = await fetch(`${API_BASE}/api/users/${userId}`);
+          if (userResponse.ok) {
+            const user = await userResponse.json();
+            setUserData(user);
+          } else {
+            // Fallback to mock data
+            setUserData(mockUser);
+          }
+
+          // Fetch ALL dashboard data including insurance levels
+          const finpointResponse = await fetch(`${API_BASE}/api/finpoint/${userId}/balance`);
+          const transactionsResponse = await fetch(`${API_BASE}/api/finpoint/${userId}/transactions?limit=20`);
+          const todayResponse = await fetch(`${API_BASE}/api/finpoint/${userId}/today`);
+          const networkResponse = await fetch(`${API_BASE}/api/network/${userId}/summary`);
+          const insuranceResponse = await fetch(`${API_BASE}/api/insurance/${userId}/levels`);
+
+          if (finpointResponse.ok && transactionsResponse.ok && todayResponse.ok && networkResponse.ok && insuranceResponse.ok) {
+            const [finpoint, transactions, today, network, insurance] = await Promise.all([
+              finpointResponse.json(),
+              transactionsResponse.json(),
+              todayResponse.json(),
+              networkResponse.json(),
+              insuranceResponse.json()
+            ]);
+
+            setDashboardData({
+              currentFpBalance: finpoint.balance || 0,
+              lastUpdated: new Date().toLocaleString('th-TH'),
+              todayEarned: today.totalEarned || 0,
+              todayFromSecondhand: today.fromSecondhand || 0,
+              todayFromUpline: today.fromUpline || 0,
+              expProgressList: insurance.levels || [],
+              recentLedger: transactions.transactions || [],
+              networkSnapshot: network.snapshot || {
+                networkSize: 0,
+                fpFromYou: 0,
+                uplinePath: []
+              }
+            });
+          } else {
+            console.error('API Error - Some endpoints failed');
+            setUserData(mockUser);
+            setDashboardData(mockDashboardData);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          // Fallback to mock data
+          setUserData(mockUser);
+          setDashboardData(mockDashboardData);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      // Fetch data on mount
+      useEffect(() => {
+        // Check if user is logged in
+        const storedUserId = localStorage.getItem('userId');
+        const storedWorldId = localStorage.getItem('worldId');
+
+        if (storedUserId || storedWorldId) {
+          setIsLoggedIn(true);
+          fetchUserData();
+        } else {
+          setIsLoading(false);
+          setIsLoggedIn(false);
+        }
+      }, []);
+
+      // Show login page if not logged in
+      if (!isLoggedIn && !isLoading) {
+        return <LoginPage onLogin={(userId, worldId) => {
+          localStorage.setItem('userId', userId);
+          localStorage.setItem('worldId', worldId);
+          setIsLoggedIn(true);
+          fetchUserData();
+        }} />;
+      }
+
+      if (isLoading) {
+        return (
+          <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-4xl mb-4">💎</div>
+              <div className="text-lg font-semibold">กำลังโหลดข้อมูล...</div>
+              <div className="text-sm text-slate-400 mt-2">Fingrow Dashboard</div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
+          {/* Content */}
+          {currentPage === 'home' && <HomePage data={dashboardData} user={userData} />}
+          {currentPage === 'transactions' && <TransactionsPage data={dashboardData} />}
+          {currentPage === 'tree' && <TreePage user={userData} />}
+          {currentPage === 'acf' && <ACFPage user={userData} />}
+          {currentPage === 'database' && <DatabaseViewer />}
+          {currentPage === 'profile' && <ProfilePage user={userData} setUser={setUserData} onLogout={() => {
+            localStorage.removeItem('userId');
+            localStorage.removeItem('worldId');
+            setIsLoggedIn(false);
+            setUserData(null);
+            setDashboardData(null);
+          }} />}
+
+          {/* Bottom Navigation */}
+          <BottomNav currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        </div>
+      );
+    }
+
+    // Login Page
+    function LoginPage({ onLogin }) {
+      const [loginMode, setLoginMode] = useState('quick'); // 'quick' or 'credential'
+      const [worldId, setWorldId] = useState('');
+      const [username, setUsername] = useState('');
+      const [password, setPassword] = useState('');
+      const [isLoading, setIsLoading] = useState(false);
+      const [error, setError] = useState('');
+
+      const handleQuickLogin = async (testWorldId) => {
+        setIsLoading(true);
+        setError('');
+        try {
+          const response = await fetch(`${API_BASE}/api/users/world/${testWorldId}`);
+          if (response.ok) {
+            const user = await response.json();
+            onLogin(user.id, user.worldId);
+          } else {
+            setError('ไม่พบผู้ใช้');
+          }
+        } catch (err) {
+          setError('เกิดข้อผิดพลาด: ' + err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      const handleCredentialLogin = async (e) => {
+        e.preventDefault();
+        if (!username.trim() || !password.trim()) {
+          setError('กรุณาใส่ Username และ Password');
+          return;
+        }
+
+        setIsLoading(true);
+        setError('');
+        try {
+          // Simple credential check (in production, this should be server-side)
+          if (username === 'system_root' && password === 'system_root') {
+            // Login as system root
+            const response = await fetch(`${API_BASE}/api/users/world/25AAA0000`);
+            if (response.ok) {
+              const user = await response.json();
+              onLogin(user.id, user.worldId);
+            } else {
+              setError('ไม่พบผู้ใช้ System Root');
+            }
+          } else {
+            // Try to find user by username
+            const response = await fetch(`${API_BASE}/api/users/username/${username}`);
+            if (response.ok) {
+              const user = await response.json();
+              // In production, verify password on server
+              onLogin(user.id, user.worldId);
+            } else {
+              setError('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+            }
+          }
+        } catch (err) {
+          setError('เกิดข้อผิดพลาด: ' + err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      const handleWorldIdLogin = async (e) => {
+        e.preventDefault();
+        if (!worldId.trim()) {
+          setError('กรุณาใส่ World ID');
+          return;
+        }
+        handleQuickLogin(worldId.trim());
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            {/* Logo */}
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-4xl">
+                💎
+              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                Fingrow
+              </h1>
+              <p className="text-slate-400 text-sm mt-2">Financial Network Platform</p>
+            </div>
+
+            {/* Login Card */}
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 backdrop-blur-lg">
+              <h2 className="text-xl font-semibold mb-6 text-center">เข้าสู่ระบบ</h2>
+
+              {/* Login Mode Tabs */}
+              <div className="flex gap-2 mb-6">
+                <button
+                  onClick={() => setLoginMode('quick')}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                    loginMode === 'quick'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  Quick Login
+                </button>
+                <button
+                  onClick={() => setLoginMode('credential')}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                    loginMode === 'credential'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  Username/Password
+                </button>
+              </div>
+
+              {/* Quick Login Mode */}
+              {loginMode === 'quick' && (
+                <>
+                  {/* Admin/Root Login */}
+                  <div className="mb-4">
+                    <p className="text-sm text-slate-400 mb-3">🔑 ผู้ดูแลระบบ:</p>
+                    <button
+                      onClick={() => handleQuickLogin('25AAA0000')}
+                      disabled={isLoading}
+                      className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      <span>👑</span>
+                      <span>System Root (25AAA0000)</span>
+                    </button>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-slate-700"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-slate-900 px-2 text-slate-400">Test Users</span>
+                    </div>
+                  </div>
+
+                  {/* Test Users Quick Login */}
+                  <div className="space-y-3 mb-6">
+                    <button
+                      onClick={() => handleQuickLogin('25AAA0001')}
+                      disabled={isLoading}
+                      className="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    >
+                      🧑 Somchai Jaidee (25AAA0001)
+                    </button>
+                    <button
+                      onClick={() => handleQuickLogin('25AAA0002')}
+                      disabled={isLoading}
+                      className="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    >
+                      👩 Somsri Rakdee (25AAA0002)
+                    </button>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-slate-700"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-slate-900 px-2 text-slate-400">หรือ World ID</span>
+                    </div>
+                  </div>
+
+                  {/* World ID Login Form */}
+                  <form onSubmit={handleWorldIdLogin} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        World ID
+                      </label>
+                      <input
+                        type="text"
+                        value={worldId}
+                        onChange={(e) => setWorldId(e.target.value)}
+                        placeholder="เช่น 25AAA0001"
+                        className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+
+                    {error && (
+                      <div className="px-4 py-3 bg-rose-900/20 border border-rose-500/50 rounded-lg text-rose-300 text-sm">
+                        {error}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    >
+                      {isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+                    </button>
+                  </form>
+                </>
+              )}
+
+              {/* Credential Login Mode */}
+              {loginMode === 'credential' && (
+                <form onSubmit={handleCredentialLogin} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="system_root, somchai_jaidee, ..."
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="px-4 py-3 bg-rose-900/20 border border-rose-500/50 rounded-lg text-rose-300 text-sm">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                  >
+                    {isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+                  </button>
+
+                  {/* Hint */}
+                  <div className="text-xs text-slate-500 text-center">
+                    💡 Admin: username = <code className="text-blue-400">system_root</code>, password = <code className="text-blue-400">system_root</code>
+                  </div>
+                </form>
+              )}
+
+              {/* Info */}
+              <div className="mt-6 pt-6 border-t border-slate-800">
+                <div className="text-xs text-slate-400 space-y-1">
+                  <p>💡 <strong>ทดสอบระบบ:</strong> ใช้ World ID ด้านบนเพื่อทดสอบ</p>
+                  <p>🗄️ <strong>ข้อมูลจริง:</strong> เชื่อมกับ PostgreSQL Database</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center mt-6 text-xs text-slate-500">
+              Fingrow v2.0 - Real Database Connection
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Home Page (Dashboard)
+    function HomePage({ data, user }) {
+      return (
+        <div className="pb-4">
+          {/* Header */}
+          <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
+            <div className="px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-emerald-400/20 border border-emerald-400/50 flex items-center justify-center text-xs font-bold text-emerald-300">
+                  FG
+                </div>
+                <div>
+                  <h1 className="text-sm font-semibold">Fingrow</h1>
+                  <p className="text-xs text-slate-400">Dashboard</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="hidden sm:inline text-slate-400">สวัสดี,</span>
+                <span className="font-medium">{user.firstName}</span>
+                <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                  👤
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* FP Balance Card */}
+          <section className="p-4">
+            <div className="bg-gradient-to-br from-emerald-900/60 to-teal-900/60 border border-emerald-700/50 rounded-2xl p-5 shadow-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="text-xs uppercase tracking-wide text-emerald-300/80">ยอด Finpoint</h2>
+                  <p className="mt-1 text-3xl sm:text-4xl font-bold text-emerald-300">
+                    {data.currentFpBalance.toLocaleString()} <span className="text-lg">FP</span>
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-emerald-400/20 rounded-full flex items-center justify-center text-2xl">
+                  💎
+                </div>
+              </div>
+              <div className="text-xs text-emerald-300/60">
+                อัปเดตล่าสุด: {data.lastUpdated}
+              </div>
+            </div>
+          </section>
+
+          {/* Today Stats - Horizontal Scroll */}
+          <section className="px-4 pb-4">
+            <div className="overflow-x-auto hide-scrollbar">
+              <div className="flex gap-3 pb-2">
+                <StatCard label="FP เพิ่มวันนี้" value={`+${data.todayEarned}`} color="emerald" />
+                <StatCard label="จากขายของ" value={`+${data.todayFromSecondhand}`} color="teal" />
+                <StatCard label="จากเครือข่าย" value={`+${data.todayFromUpline}`} color="cyan" />
+              </div>
+            </div>
+          </section>
+
+          {/* Network Snapshot */}
+          <section className="px-4 pb-4">
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <span>🌐</span> เครือข่าย ACF
+              </h3>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">สมาชิก</div>
+                  <div className="text-lg font-bold text-emerald-300">{data.networkSnapshot.networkSize.toLocaleString()}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">ได้รับ FP แล้ว</div>
+                  <div className="text-lg font-bold text-cyan-300">{data.networkSnapshot.fpFromYou.toLocaleString()}</div>
+                </div>
+              </div>
+              <div className="mt-3 pt-3 border-t border-slate-700">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs text-slate-400">เส้นทางสู่ ROOT ({data.networkSnapshot.uplinePath.length} ชั้น)</div>
+                  <div className="text-xs text-slate-500">← เลื่อนดู →</div>
+                </div>
+                <div className="overflow-x-auto pb-2" style={{scrollbarWidth: 'thin', scrollbarColor: '#475569 #1e293b'}}>
+                  <div className="flex items-center gap-1 min-w-max">
+                    {data.networkSnapshot.uplinePath.map((node, idx) => (
+                      <React.Fragment key={idx}>
+                        <div className={`flex flex-col px-3 py-2 rounded-lg text-xs whitespace-nowrap ${
+                          idx === 0 ? 'bg-emerald-600 text-white font-semibold' :
+                          node.id === 'ROOT' || node.id === '25AAA0000' ? 'bg-blue-600 text-white font-semibold' :
+                          'bg-slate-700 text-slate-300'
+                        }`}>
+                          <div className="font-medium">{node.name}</div>
+                          <div className="text-[10px] opacity-70 mt-0.5">{node.worldId}</div>
+                        </div>
+                        {idx < data.networkSnapshot.uplinePath.length - 1 && (
+                          <div className="text-slate-400 flex-shrink-0 text-sm">→</div>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Level Progress */}
+          <section className="px-4 pb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold">เป้าหมาย Level</h3>
+              <span className="text-xs text-slate-400">ใช้ FP ซื้อประกัน</span>
+            </div>
+            <div className="space-y-3">
+              {data.expProgressList.map((exp) => (
+                <ExpCard key={exp.code} exp={exp} />
+              ))}
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // Transactions Page (รายการ)
+    function TransactionsPage({ data }) {
+      const [filter, setFilter] = useState('all'); // all, dr, cr
+
+      const filteredLedger = data.recentLedger.filter(row => {
+        if (filter === 'all') return true;
+        return row.drCr.toLowerCase() === filter;
+      });
+
+      return (
+        <div className="pb-4">
+          {/* Header */}
+          <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
+            <div className="px-4 py-3">
+              <h1 className="text-base font-semibold">รายการธุรกรรม</h1>
+              <p className="text-xs text-slate-400 mt-1">ประวัติการใช้งาน Finpoint</p>
+            </div>
+          </header>
+
+          {/* Summary Card */}
+          <section className="p-4">
+            <div className="bg-gradient-to-br from-slate-900/60 to-slate-800/60 border border-slate-700/50 rounded-2xl p-4">
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">ยอดคงเหลือ</div>
+                  <div className="text-lg font-bold text-emerald-300">{data.currentFpBalance.toLocaleString()}</div>
+                  <div className="text-xs text-slate-500">FP</div>
+                </div>
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">รับเข้า</div>
+                  <div className="text-lg font-bold text-emerald-300">
+                    {data.recentLedger.filter(r => r.drCr === 'DR').reduce((sum, r) => sum + r.amount, 0).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-slate-500">FP</div>
+                </div>
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">จ่ายออก</div>
+                  <div className="text-lg font-bold text-rose-300">
+                    {data.recentLedger.filter(r => r.drCr === 'CR').reduce((sum, r) => sum + r.amount, 0).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-slate-500">FP</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Filter Tabs */}
+          <section className="px-4 pb-3">
+            <div className="flex gap-2">
+              <button onClick={() => setFilter('all')}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
+                  filter === 'all' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}>
+                ทั้งหมด ({data.recentLedger.length})
+              </button>
+              <button onClick={() => setFilter('dr')}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
+                  filter === 'dr' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}>
+                รับเข้า ({data.recentLedger.filter(r => r.drCr === 'DR').length})
+              </button>
+              <button onClick={() => setFilter('cr')}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
+                  filter === 'cr' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}>
+                จ่ายออก ({data.recentLedger.filter(r => r.drCr === 'CR').length})
+              </button>
+            </div>
+          </section>
+
+          {/* Transaction List */}
+          <section className="px-4 pb-4">
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+              {filteredLedger.length === 0 ? (
+                <div className="px-4 py-8 text-center text-slate-400">
+                  <div className="text-3xl mb-2">📋</div>
+                  <div className="text-sm">ไม่มีรายการ</div>
+                </div>
+              ) : (
+                filteredLedger.map((row, idx) => (
+                  <div key={row.id} className={`px-4 py-3 ${idx > 0 ? 'border-t border-slate-800' : ''}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                            row.drCr === 'DR' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
+                          }`}>
+                            {row.drCr === 'DR' ? '↓' : '↑'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-slate-200 truncate">{row.category}</div>
+                            <div className="text-xs text-slate-400">{row.detail}</div>
+                          </div>
+                        </div>
+                        <div className="text-xs text-slate-500 ml-10">{row.datetime}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-base font-semibold ${row.drCr === 'DR' ? 'text-emerald-300' : 'text-rose-300'}`}>
+                          {row.drCr === 'DR' ? '+' : '-'}{row.amount.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          คงเหลือ: <span className="font-mono">{row.balanceAfter.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+
+          {/* Info Footer */}
+          <section className="px-4 pb-4">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3">
+              <div className="flex items-start gap-2">
+                <div className="text-slate-400 mt-0.5">ℹ️</div>
+                <div className="flex-1">
+                  <div className="text-xs text-slate-400 leading-relaxed">
+                    <div className="mb-1"><span className="text-emerald-300">• รับเข้า (DR)</span> = ได้รับ Finpoint จากการขาย, โบนัส, คืนเงิน</div>
+                    <div><span className="text-rose-300">• จ่ายออก (CR)</span> = ใช้ Finpoint ซื้อสินค้า, บริการ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // Tree Page
+    function TreePage({ user }) {
+      const [selectedRoot, setSelectedRoot] = useState(user.worldId);
+      const [networkData, setNetworkData] = useState([]);
+      const [isLoading, setIsLoading] = useState(true);
+
+      // Fetch network tree from API
+      useEffect(() => {
+        const fetchNetworkTree = async () => {
+          try {
+            setIsLoading(true);
+            const response = await fetch(`${API_BASE}/api/network/${user.id}/tree`);
+            if (response.ok) {
+              const data = await response.json();
+              // Transform API data to match component format
+              if (data.children && data.children.length > 0) {
+                setNetworkData([{
+                  userId: user.worldId,
+                  username: user.username,
+                  parentId: null,
+                  childCount: user.childCount || 0,
+                  avatarUrl: user.avatarUrl || null,
+                  children: data.children.map(child => ({
+                    userId: child.userId,
+                    username: child.username,
+                    childCount: child.childCount || 0,
+                    avatarUrl: child.avatarUrl || null,
+                    children: child.children || []
+                  }))
+                }]);
+              } else {
+                // No children, show empty
+                setNetworkData([{
+                  userId: user.worldId,
+                  username: user.username,
+                  parentId: null,
+                  childCount: 0,
+                  avatarUrl: user.avatarUrl || null,
+                  children: []
+                }]);
+              }
+            } else {
+              console.error('Failed to fetch network tree');
+              setNetworkData([]);
+            }
+          } catch (error) {
+            console.error('Error fetching network tree:', error);
+            setNetworkData([]);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+
+        if (user && user.id) {
+          fetchNetworkTree();
+        }
+      }, [user]);
+
+      return (
+        <div className="pb-4">
+          {/* Header */}
+          <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
+            <div className="px-4 py-3">
+              <h1 className="text-base font-semibold">Network Tree</h1>
+              <p className="text-xs text-slate-400 mt-1">โครงสร้างเครือข่าย (ข้อมูลจริงจาก DB)</p>
+            </div>
+          </header>
+
+          {/* Tree Header */}
+          <section className="p-4 border-b border-slate-800 bg-slate-900/40">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center ring-2 ring-emerald-500">
+                  👤
+                </div>
+                <div>
+                  <div className="text-sm font-semibold">{user.worldId} · {user.username}</div>
+                  <div className="text-xs text-slate-400">Horizontal View (Real Data)</div>
+                </div>
+              </div>
+            </div>
+            <div className="mb-3">
+              <label className="block text-xs text-slate-300 mb-2">View from:</label>
+              <select
+                value={selectedRoot}
+                onChange={(e) => setSelectedRoot(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm"
+              >
+                <option value={user.worldId}>{user.worldId} - {user.username}</option>
+              </select>
+            </div>
+            <p className="text-xs text-slate-400">
+              Showing network structure from database • Click to explore subtree
+            </p>
+          </section>
+
+          {/* Tree Content */}
+          <section className="p-4">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <div className="text-2xl mb-2">⏳</div>
+                <div className="text-sm text-slate-400">กำลังโหลดข้อมูลเครือข่าย...</div>
+              </div>
+            ) : networkData.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-2xl mb-2">📭</div>
+                <div className="text-sm text-slate-400">ไม่พบข้อมูลเครือข่าย</div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {networkData.map((parent) => (
+                <div key={parent.userId} className="network-row">
+                  {/* Parent Card (Left) + Children Wrap (Right) */}
+                  <div className="flex flex-col sm:grid sm:grid-cols-[200px_1fr] gap-4">
+                    {/* Parent Card */}
+                    <article className="parent-card bg-slate-800/50 border border-slate-700 rounded-lg p-3 hover:bg-slate-800 hover:border-emerald-500 transition-all cursor-pointer h-full flex flex-col">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="relative">
+                          <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center ring-2 ring-emerald-400">
+                            👤
+                          </div>
+                          {parent.childCount > 0 && (
+                            <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-slate-900">
+                              {parent.childCount}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold truncate">{parent.username}</div>
+                          <div className="text-[10px] text-slate-400">{parent.userId}</div>
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-emerald-400 mt-auto">
+                        ◈ {parent.childCount} children
+                      </div>
+                    </article>
+
+                    {/* Children Wrap */}
+                    <div className="children-wrap border-l-2 border-slate-700 pl-4 h-full">
+                      <div className="text-xs font-semibold text-slate-400 mb-3">
+                        → Children of <span className="text-white">{parent.username}</span>
+                        <span className="text-slate-500 ml-2">({parent.children.length}/5)</span>
+                      </div>
+
+                      {/* Children Grid - 5 columns on desktop, 2 on mobile */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                        {parent.children.map((child) => (
+                          <div
+                            key={child.userId}
+                            className="child-card bg-slate-800/30 border border-slate-700 rounded-lg p-2 hover:bg-slate-800 hover:border-cyan-400 transition-all cursor-pointer min-h-[120px] flex flex-col items-center"
+                          >
+                            <div className="relative mb-2">
+                              <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center ring-2 ring-cyan-400">
+                                👤
+                              </div>
+                              {child.childCount > 0 && (
+                                <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-slate-900">
+                                  {child.childCount}
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-[10px] text-center truncate w-full text-slate-300 mt-2">
+                              {child.username}
+                            </div>
+                            <div className="text-[9px] text-cyan-400 mt-1">
+                              ◈ {child.childCount}
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* Empty Slots */}
+                        {Array.from({ length: Math.max(0, 5 - parent.children.length) }).map((_, i) => (
+                          <div
+                            key={`empty-${i}`}
+                            className="child-card empty border-2 border-dashed border-slate-700 rounded-lg p-2 bg-transparent min-h-[120px] flex flex-col items-center cursor-default"
+                          >
+                            <div className="w-10 h-10 rounded-full border-2 border-dashed border-slate-600"></div>
+                            <div className="text-[9px] text-slate-600 mt-2">Slot {parent.children.length + i + 1}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              </div>
+            )}
+          </section>
+
+          {/* Info Footer */}
+          <section className="px-4 pb-4">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3">
+              <div className="flex items-start gap-2">
+                <div className="text-slate-400 mt-0.5">ℹ️</div>
+                <div className="flex-1">
+                  <div className="text-xs text-slate-400 leading-relaxed">
+                    <div className="mb-1">• แสดงโครงสร้างเครือข่ายแบบ hierarchical (parent → children)</div>
+                    <div>• สูงสุด 5 ลูกต่อ 1 parent • คลิกที่โปรไฟล์เพื่อดูเครือข่ายย่อย</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // Shop Page
+    function ShopPage() {
+      return (
+        <div className="min-h-screen flex items-center justify-center px-4">
+          <div className="text-center">
+            <div className="text-5xl mb-4">🛒</div>
+            <h2 className="text-xl font-bold mb-2">ซื้อขายของมือสอง</h2>
+            <p className="text-slate-400 text-sm">กำลังพัฒนา...</p>
+          </div>
+        </div>
+      );
+    }
+
+    // ACF Page
+    function ACFPage({ user }) {
+      const [selectedRoot, setSelectedRoot] = useState(user.worldId);
+      const [userNetwork, setUserNetwork] = useState([]);
+      const [isLoading, setIsLoading] = useState(true);
+
+      // Fetch ACF network from API
+      useEffect(() => {
+        const fetchACFNetwork = async () => {
+          try {
+            setIsLoading(true);
+            const response = await fetch(`${API_BASE}/api/network/${user.id}/acf`);
+            if (response.ok) {
+              const data = await response.json();
+              // Transform API data to match component format
+              if (data.nodes && data.nodes.length > 0) {
+                setUserNetwork(data.nodes.map(node => ({
+                  id: node.id,
+                  userId: node.userId,
+                  username: node.username,
+                  parentId: node.parentId,
+                  level: node.level,
+                  networkSize: node.networkSize || 0,
+                  maxChildren: node.maxChildren || 5,
+                  childCount: node.childCount || 0,
+                  acfAccepting: node.acfAccepting || false,
+                  children: node.children || []
+                })));
+              } else {
+                // Set current user as root if no network data
+                setUserNetwork([{
+                  id: user.id,
+                  userId: user.worldId,
+                  username: user.username,
+                  parentId: null,
+                  level: user.level || 0,
+                  networkSize: 1,
+                  maxChildren: user.maxChildren || 5,
+                  childCount: user.childCount || 0,
+                  acfAccepting: user.acfAccepting || false,
+                  children: []
+                }]);
+              }
+            } else {
+              console.error('Failed to fetch ACF network');
+              setUserNetwork([]);
+            }
+          } catch (error) {
+            console.error('Error fetching ACF network:', error);
+            setUserNetwork([]);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+
+        if (user && user.id) {
+          fetchACFNetwork();
+        }
+      }, [user]);
+
+      return (
+        <div className="pb-4">
+          {/* Header */}
+          <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
+            <div className="px-4 py-3">
+              <h1 className="text-base font-semibold">ACF Network</h1>
+              <p className="text-xs text-slate-400 mt-1">ระบบเครือข่าย Auto Connection Fill (ข้อมูลจริง)</p>
+            </div>
+          </header>
+
+          {/* Root Selector */}
+          <section className="p-4 border-b border-slate-800 bg-slate-900/40">
+            <label className="block text-sm font-medium mb-2">Root ที่ต้องการดู</label>
+            <select
+              value={selectedRoot}
+              onChange={(e) => setSelectedRoot(e.target.value)}
+              className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              disabled={isLoading || userNetwork.length === 0}
+            >
+              {userNetwork.map((node) => (
+                <option key={node.id} value={node.userId}>
+                  {node.userId} - {node.username}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-slate-400 mt-2">
+              * ข้อมูลจากฐานข้อมูลจริง - แสดงเฉพาะเครือข่ายภายใต้สายงานของคุณ
+            </p>
+          </section>
+
+          {/* Network Table */}
+          <section className="p-4">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <div className="text-2xl mb-2">⏳</div>
+                <div className="text-sm text-slate-400">กำลังโหลดข้อมูล ACF...</div>
+              </div>
+            ) : userNetwork.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-2xl mb-2">📭</div>
+                <div className="text-sm text-slate-400">ไม่พบข้อมูลเครือข่าย</div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                <thead className="sticky top-0 bg-slate-800">
+                  <tr className="border-b border-slate-700">
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">#</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">User</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">Parent</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">Level</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">Network</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">Max</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">Count</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300">ACF</th>
+                    <th className="px-3 py-3 text-left font-medium text-slate-300" colSpan="5">Childs Level 1</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {userNetwork.map((node, index) => (
+                    <tr key={node.id} className="border-b border-slate-800 hover:bg-slate-800/40">
+                      <td className="px-3 py-3 font-mono text-slate-400">{index + 1}</td>
+                      <td className="px-3 py-3">
+                        <button className="underline underline-offset-2 hover:text-emerald-400">
+                          {node.username}
+                        </button>
+                      </td>
+                      <td className="px-3 py-3 text-slate-400">{node.parentUsername || '—'}</td>
+                      <td className="px-3 py-3">{node.level}</td>
+                      <td className="px-3 py-3 font-mono">{node.networkSize}/19531</td>
+                      <td className="px-3 py-3 text-slate-400">5</td>
+                      <td className="px-3 py-3">
+                        <span className="px-2 py-1 bg-slate-700 text-slate-300 rounded-full text-xs">
+                          {node.childCount}/5
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <button className={`px-3 py-1 rounded-lg border text-xs font-medium ${
+                          node.acfAccepting
+                            ? 'border-emerald-500 text-emerald-400'
+                            : 'border-rose-500 text-rose-400'
+                        }`}>
+                          {node.acfAccepting ? 'ON' : 'OFF'}
+                        </button>
+                      </td>
+                      {node.childrenLevel1 && node.childrenLevel1.length > 0 ? (
+                        node.childrenLevel1.map((child, i) => (
+                          <td key={i} className="px-3 py-3 text-sm">
+                            <button className="text-teal-400 hover:text-teal-300 underline underline-offset-2">
+                              {child.username}
+                            </button>
+                          </td>
+                        ))
+                      ) : null}
+                      {Array(5 - (node.childrenLevel1?.length || 0)).fill(null).map((_, i) => (
+                        <td key={`empty-${i}`} className="px-3 py-3 text-slate-500">—</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              </div>
+            )}
+          </section>
+
+          {/* Info Footer */}
+          <section className="px-4 pb-4">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3">
+              <div className="flex items-start gap-2">
+                <div className="text-slate-400 mt-0.5">ℹ️</div>
+                <div className="flex-1">
+                  <div className="text-xs text-slate-400 leading-relaxed">
+                    <div className="mb-1">• คุณสามารถดูเครือข่ายภายใต้สายงานของคุณเท่านั้น</div>
+                    <div>• ตารางแสดงโครงสร้างเครือข่าย ACF และสถานะการเปิดรับสมาชิกใหม่</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // Profile Page (Simplified)
+    function ProfilePage({ user, setUser, onLogout }) {
+      const [editing, setEditing] = useState(false);
+      const [form, setForm] = useState(user);
+
+      const handleSave = () => {
+        setUser(form);
+        setEditing(false);
+        alert('✅ บันทึกข้อมูลสำเร็จ!');
+      };
+
+      const handleLogout = () => {
+        if (confirm('ต้องการออกจากระบบหรือไม่?')) {
+          onLogout();
+        }
+      };
+
+      return (
+        <div className="pb-4">
+          <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+            <h1 className="text-base font-semibold">โปรไฟล์</h1>
+            {!editing ? (
+              <button onClick={() => setEditing(true)} className="px-3 py-1.5 bg-emerald-600 rounded-lg text-xs">
+                แก้ไข
+              </button>
+            ) : (
+              <div className="flex gap-2">
+                <button onClick={() => { setEditing(false); setForm(user); }} className="px-3 py-1.5 bg-slate-700 rounded-lg text-xs">
+                  ยกเลิก
+                </button>
+                <button onClick={handleSave} className="px-3 py-1.5 bg-emerald-600 rounded-lg text-xs">
+                  บันทึก
+                </button>
+              </div>
+            )}
+          </header>
+
+          {/* Profile Header */}
+          <section className="bg-slate-900/60 border-b border-slate-800">
+            <div className="h-24 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600"></div>
+            <div className="px-4 pb-4 -mt-12">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-3xl">
+                    👤
+                  </div>
+                  {user.isVerified && (
+                    <div className="absolute bottom-0 right-0 w-8 h-8 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center text-sm">
+                      ✓
+                    </div>
+                  )}
+                </div>
+                <h2 className="text-xl font-bold mt-3">{user.username}</h2>
+                <p className="text-sm text-slate-400">{user.worldId}</p>
+                <div className="flex flex-col gap-2 mt-2 items-center">
+                  <div className="flex gap-2">
+                    <span className="px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs">
+                      Level {user.level}
+                    </span>
+                    <span className="px-2 py-1 bg-slate-700 text-slate-300 rounded-full text-xs">
+                      Run #{user.runNumber}
+                    </span>
+                  </div>
+                  {user.inviterUsername && (
+                    <span className="text-xs text-slate-400">
+                      ผู้แนะนำ: <span className="text-emerald-400">@{user.inviterUsername}</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Invite Code & Link Section */}
+              <div className="px-4 pb-4 space-y-3">
+                {/* Invite Code */}
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-3">
+                  <div className="text-xs text-slate-400 mb-2">รหัสเชิญเพื่อน 🎁</div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2">
+                      <div className="font-mono text-sm text-emerald-300 font-bold">
+                        {user.inviteCode || user.worldId}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(user.inviteCode || user.worldId);
+                        alert('📋 คัดลอกรหัสเชิญแล้ว!');
+                      }}
+                      className="px-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-medium transition-colors whitespace-nowrap"
+                    >
+                      คัดลอก
+                    </button>
+                  </div>
+                </div>
+
+                {/* Invite Link */}
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-3">
+                  <div className="text-xs text-slate-400 mb-2">ลิงก์เชิญเพื่อน 🔗</div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2">
+                      <div className="text-xs text-cyan-300 truncate">
+                        {window.location.origin}/register?ref={user.inviteCode || user.worldId}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const inviteLink = `${window.location.origin}/register?ref=${user.inviteCode || user.worldId}`;
+                        navigator.clipboard.writeText(inviteLink);
+                        alert('📋 คัดลอกลิงก์เชิญแล้ว!');
+                      }}
+                      className="px-2 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-[10px] font-medium transition-colors whitespace-nowrap"
+                    >
+                      คัดลอก
+                    </button>
+                  </div>
+                </div>
+
+                {/* Share Button */}
+                <button
+                  onClick={() => {
+                    const inviteLink = `${window.location.origin}/register?ref=${user.inviteCode || user.worldId}`;
+                    const shareText = `🎉 มาร่วมเป็นส่วนหนึ่งของ Fingrow กับผม!\n\n✨ ซื้อขายของมือสองได้ง่ายๆ\n💰 รับ Finpoint จากทุกการซื้อขาย\n🎁 สร้างรายได้จากเครือข่าย\n\n👉 ลงทะเบียนที่: ${inviteLink}`;
+
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'เชิญเพื่อนเข้า Fingrow',
+                        text: shareText,
+                        url: inviteLink
+                      }).catch(() => {});
+                    } else {
+                      navigator.clipboard.writeText(shareText);
+                      alert('📋 คัดลอกข้อความเชิญแล้ว!');
+                    }
+                  }}
+                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-3 rounded-xl transition-all flex items-center justify-center gap-2"
+                >
+                  <span>📤</span>
+                  <span>แชร์เชิญเพื่อน</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Stats */}
+          <section className="px-4 py-4 border-b border-slate-800">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center">
+                <div className="text-sm text-slate-400">ยอดขาย</div>
+                <div className="text-lg font-bold text-emerald-300">{user.totalSales}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-slate-400">ยอดซื้อ</div>
+                <div className="text-lg font-bold text-cyan-300">{user.totalPurchases}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-slate-400">Trust</div>
+                <div className="text-lg font-bold text-slate-300">{user.trustScore}</div>
+              </div>
+            </div>
+          </section>
+
+          {/* Finpoint */}
+          <section className="px-4 py-4">
+            <div className="bg-gradient-to-br from-emerald-900/60 to-teal-900/60 border border-emerald-700/50 rounded-2xl p-4">
+              <h3 className="text-xs uppercase text-emerald-300 mb-3">Finpoint</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">Own FP</div>
+                  <div className="text-xl font-bold text-emerald-300">{user.ownFinpoint.toLocaleString()}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">Total FP</div>
+                  <div className="text-xl font-semibold text-teal-300">{user.totalFinpoint.toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Info Form */}
+          <section className="px-4 pb-4 space-y-3">
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="w-full px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <span>🚪</span>
+              <span>ออกจากระบบ</span>
+            </button>
+
+            {/* ข้อมูลส่วนตัว */}
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+              <h3 className="text-sm font-semibold">ข้อมูลส่วนตัว</h3>
+              <InputField label="ชื่อจริง" value={form.firstName || ''}
+                onChange={(v) => setForm({...form, firstName: v})} editing={editing} />
+              <InputField label="นามสกุล" value={form.lastName || ''}
+                onChange={(v) => setForm({...form, lastName: v})} editing={editing} />
+              <InputField label="อีเมล" value={form.email || ''}
+                onChange={(v) => setForm({...form, email: v})} editing={editing} type="email" />
+              <InputField label="โทรศัพท์" value={form.phone || ''}
+                onChange={(v) => setForm({...form, phone: v})} editing={editing} type="tel" />
+            </div>
+
+            {/* ที่อยู่ */}
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+              <h3 className="text-sm font-semibold">ที่อยู่</h3>
+
+              {/* บ้านเลขที่ และถนน */}
+              <div className="grid grid-cols-2 gap-3">
+                <InputField label="บ้านเลขที่" value={form.addressNumber || ''}
+                  onChange={(v) => setForm({...form, addressNumber: v})} editing={editing}
+                  placeholder="123/45" />
+                <InputField label="ถนน" value={form.addressStreet || ''}
+                  onChange={(v) => setForm({...form, addressStreet: v})} editing={editing}
+                  placeholder="สุขุมวิท" />
+              </div>
+
+              {/* แขวง/ตำบล และเขต/อำเภอ */}
+              <div className="grid grid-cols-2 gap-3">
+                <InputField label="แขวง/ตำบล" value={form.addressSubDistrict || ''}
+                  onChange={(v) => setForm({...form, addressSubDistrict: v})} editing={editing}
+                  placeholder="คลองเตย" />
+                <InputField label="เขต/อำเภอ" value={form.addressDistrict || ''}
+                  onChange={(v) => setForm({...form, addressDistrict: v})} editing={editing}
+                  placeholder="คลองเตย" />
+              </div>
+
+              {/* จังหวัด และรหัสไปรษณีย์ */}
+              <div className="grid grid-cols-2 gap-3">
+                <InputField label="จังหวัด" value={form.addressProvince || ''}
+                  onChange={(v) => setForm({...form, addressProvince: v})} editing={editing}
+                  placeholder="กรุงเทพมหานคร" />
+                <InputField label="รหัสไปรษณีย์" value={form.addressPostalCode || ''}
+                  onChange={(v) => setForm({...form, addressPostalCode: v})} editing={editing}
+                  type="tel" maxLength={5} placeholder="10110" />
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // Helper Components
+    function StatCard({ label, value, color = 'emerald' }) {
+      const colors = {
+        emerald: 'from-emerald-900/40 to-emerald-800/40 border-emerald-700/50 text-emerald-300',
+        teal: 'from-teal-900/40 to-teal-800/40 border-teal-700/50 text-teal-300',
+        cyan: 'from-cyan-900/40 to-cyan-800/40 border-cyan-700/50 text-cyan-300',
+      };
+      return (
+        <div className={`flex-shrink-0 w-36 bg-gradient-to-br ${colors[color]} border rounded-xl px-4 py-3`}>
+          <div className="text-xs text-slate-400 mb-1">{label}</div>
+          <div className="text-lg font-bold">{value} FP</div>
+        </div>
+      );
+    }
+
+    function ExpCard({ exp }) {
+      const percent = exp.target > 0 ? Math.min(100, Math.round((exp.current / exp.target) * 100)) : 0;
+      const canUse = exp.current >= exp.target;
+
+      return (
+        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-medium">{exp.label}</h4>
+            <span className="text-xs text-slate-400">{percent}%</span>
+          </div>
+          <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-2">
+            <div className="h-full bg-emerald-400 transition-all" style={{ width: `${percent}%` }}></div>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-slate-400">
+              <span className="text-emerald-300 font-medium">{exp.current.toLocaleString()}</span> / {exp.target.toLocaleString()} FP
+            </span>
+            <button
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                canUse
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  : 'bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30'
+              }`}
+            >
+              {canUse ? 'ใช้สิทธิ์' : 'ซื้อประกัน'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function InputField({ label, value, onChange, editing, type = "text", placeholder = "", maxLength }) {
+      return (
+        <div>
+          <label className="block text-xs text-slate-400 mb-2">{label}</label>
+          {editing ? (
+            <input
+              type={type}
+              value={value || ""}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={placeholder}
+              maxLength={maxLength}
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-emerald-500 placeholder:text-slate-500"
+            />
+          ) : (
+            <div className="px-3 py-2 text-sm text-slate-200">{value || '-'}</div>
+          )}
+        </div>
+      );
+    }
+
+    // Database Viewer Component
+    function DatabaseViewer() {
+      const [tables, setTables] = React.useState([]);
+      const [selectedTable, setSelectedTable] = React.useState('');
+      const [tableData, setTableData] = React.useState(null);
+      const [isLoadingTables, setIsLoadingTables] = React.useState(false);
+      const [isLoadingData, setIsLoadingData] = React.useState(false);
+
+      // Fetch tables list
+      const fetchTables = async () => {
+        try {
+          setIsLoadingTables(true);
+          const response = await fetch(`${API_BASE}/api/database/tables`);
+          if (response.ok) {
+            const data = await response.json();
+            setTables(data.tables || []);
+          }
+        } catch (error) {
+          console.error('Error fetching tables:', error);
+        } finally {
+          setIsLoadingTables(false);
+        }
+      };
+
+      // Fetch table data
+      const fetchTableData = async (tableName) => {
+        if (!tableName) return;
+
+        try {
+          setIsLoadingData(true);
+          const response = await fetch(`${API_BASE}/api/database/tables/${tableName}?limit=50`);
+          if (response.ok) {
+            const data = await response.json();
+            setTableData(data);
+          }
+        } catch (error) {
+          console.error('Error fetching table data:', error);
+        } finally {
+          setIsLoadingData(false);
+        }
+      };
+
+      // Load tables on mount
+      React.useEffect(() => {
+        fetchTables();
+      }, []);
+
+      // Fetch data when table is selected
+      React.useEffect(() => {
+        if (selectedTable) {
+          fetchTableData(selectedTable);
+        }
+      }, [selectedTable]);
+
+      return (
+        <div className="pb-4">
+          {/* Header */}
+          <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
+            <div className="px-4 py-3">
+              <h1 className="text-base font-semibold">🗄️ Database Viewer</h1>
+              <p className="text-xs text-slate-400 mt-1">ดูข้อมูลตารางฐานข้อมูล PostgreSQL</p>
+            </div>
+          </header>
+
+          {/* Tables List */}
+          <section className="p-4">
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">เลือกตาราง:</label>
+              {isLoadingTables ? (
+                <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
+                  <div className="text-sm text-slate-400">กำลังโหลดรายการตาราง...</div>
+                </div>
+              ) : (
+                <select
+                  value={selectedTable}
+                  onChange={(e) => setSelectedTable(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="">-- เลือกตาราง --</option>
+                  {tables.map((table) => (
+                    <option key={table.table_name} value={table.table_name}>
+                      {table.table_name} ({table.column_count} columns)
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {/* Quick Links */}
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <button
+                onClick={() => window.open(`${API_BASE}/api/database/tables`, '_blank')}
+                className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition-colors"
+              >
+                📋 API Tables List
+              </button>
+              <button
+                onClick={() => window.open(`${API_BASE}/api/database/users/all`, '_blank')}
+                className="px-3 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-xs font-medium transition-colors"
+              >
+                👥 All Users
+              </button>
+            </div>
+          </section>
+
+          {/* Table Data */}
+          {selectedTable && (
+            <section className="px-4">
+              {isLoadingData ? (
+                <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
+                  <div className="text-sm text-slate-400">กำลังโหลดข้อมูลตาราง...</div>
+                </div>
+              ) : tableData ? (
+                <div className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+                  {/* Table Info */}
+                  <div className="px-4 py-3 bg-slate-900/60 border-b border-slate-700">
+                    <h3 className="text-sm font-semibold flex items-center gap-2">
+                      📊 Table: {tableData.tableName}
+                    </h3>
+                    <div className="text-xs text-slate-400 mt-1">
+                      Total rows: {tableData.total.toLocaleString()} |
+                      Showing: {tableData.offset}-{Math.min(tableData.offset + tableData.limit, tableData.total)}
+                    </div>
+                  </div>
+
+                  {/* Table Content */}
+                  <div className="overflow-x-auto max-h-96">
+                    <table className="w-full text-xs">
+                      <thead className="sticky top-0 bg-slate-900">
+                        <tr>
+                          {tableData.columns.map((col) => (
+                            <th key={col.column_name} className="px-3 py-2 text-left font-medium text-slate-300 border-b border-slate-700">
+                              <div>
+                                <div>{col.column_name}</div>
+                                <div className="text-[9px] text-slate-500">{col.data_type}</div>
+                              </div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tableData.data.map((row, idx) => (
+                          <tr key={idx} className="hover:bg-slate-700/30">
+                            {tableData.columns.map((col) => (
+                              <td key={col.column_name} className="px-3 py-2 border-t border-slate-800 text-slate-200">
+                                {row[col.column_name] !== null ? String(row[col.column_name]) : '-'}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination Info */}
+                  <div className="px-4 py-3 bg-slate-900/60 border-t border-slate-700 text-xs text-slate-400">
+                    <div className="flex items-center justify-between">
+                      <span>
+                        {tableData.data.length} of {tableData.total} rows
+                      </span>
+                      {tableData.offset > 0 && (
+                        <button
+                          onClick={() => fetchTableData(selectedTable)}
+                          className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs"
+                        >
+                          Refresh
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
+                  <div className="text-sm text-slate-400">ไม่พบข้อมูลตาราง</div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Info Section */}
+          <section className="px-4 pb-4 mt-4">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3">
+              <div className="flex items-start gap-2">
+                <div className="text-slate-400 mt-0.5">ℹ️</div>
+                <div className="flex-1">
+                  <div className="text-xs text-slate-400 leading-relaxed">
+                    <div className="mb-1">• เลือกตารางเพื่อดูข้อมูลจากฐานข้อมูลจริง</div>
+                    <div className="mb-1">• ข้อมูลจะถูกดึงจาก PostgreSQL Server โดยตรง</div>
+                    <div>• จำกัดการแสดงผล 50 แถวต่อครั้ง</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // Bottom Navigation
+    function BottomNav({ currentPage, setCurrentPage }) {
+      const navItems = [
+        { id: 'home', icon: '🏠', label: 'Home' },
+        { id: 'transactions', icon: '📋', label: 'รายการ' },
+        { id: 'tree', icon: '🌳', label: 'Tree' },
+        { id: 'acf', icon: '🔗', label: 'ACF' },
+        { id: 'profile', icon: '👤', label: 'Profile' },
+      ];
+
+      return (
+        <nav className="fixed bottom-0 left-0 right-0 z-30 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 bottom-nav-safe">
+          <div className="flex items-center justify-around px-2 py-2">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setCurrentPage(item.id)}
+                className={`flex flex-col items-center justify-center flex-1 py-2 rounded-lg transition-colors ${
+                  currentPage === item.id
+                    ? 'text-emerald-300'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span className="text-xl mb-0.5">{item.icon}</span>
+                <span className="text-xs font-medium">{item.label}</span>
+                {currentPage === item.id && (
+                  <div className="w-1 h-1 bg-emerald-400 rounded-full mt-1"></div>
+                )}
+              </button>
+            ))}
+          </div>
+        </nav>
+      );
+    }
+
+    // Render
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
