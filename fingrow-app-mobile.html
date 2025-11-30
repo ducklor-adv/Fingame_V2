@@ -1202,14 +1202,7 @@
                 <h2 className="text-xl font-bold mt-3">{user.username}</h2>
                 <p className="text-sm text-slate-400">{user.worldId}</p>
                 <div className="flex flex-col gap-2 mt-2 items-center">
-                  <div className="flex gap-2">
-                    <span className="px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs">
-                      Level {user.level}
-                    </span>
-                    <span className="px-2 py-1 bg-slate-700 text-slate-300 rounded-full text-xs">
-                      Run #{user.runNumber}
-                    </span>
-                  </div>
+                    {/* Level & Run removed from profile header per UI request */}
                   {user.inviterUsername && (
                     <span className="text-xs text-slate-400">
                       ผู้แนะนำ: <span className="text-emerald-400">@{user.inviterUsername}</span>
