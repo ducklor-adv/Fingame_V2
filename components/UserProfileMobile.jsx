@@ -208,20 +208,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 
             {/* User Info - centered on mobile */}
             <div className="flex-1 text-center sm:text-left pb-2">
-              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold">{profile.username}</h2>
-                <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-medium">
-                  Level {profile.level}
-                </span>
-              </div>
+                </div>
               {(profile.firstName || profile.lastName) && (
                 <p className="text-slate-400 mt-1 text-sm">
                   {profile.firstName} {profile.lastName}
                 </p>
               )}
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-slate-400">
-                <span>Run #{profile.runNumber}</span>
-                <span>•</span>
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-slate-400">
                 <span>Trust: {profile.trustScore.toFixed(1)}</span>
                 <span className="hidden sm:inline">•</span>
                 <span className="hidden sm:inline">

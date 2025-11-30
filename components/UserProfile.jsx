@@ -201,20 +201,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 
               {/* User Info */}
               <div className="flex-1 pb-2">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-2xl font-bold">{profile.username}</h2>
-                  <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-medium">
-                    Level {profile.level}
-                  </span>
-                </div>
+                {/* Level removed per UI request */}
                 {(profile.firstName || profile.lastName) && (
                   <p className="text-slate-400 mt-1">
                     {profile.firstName} {profile.lastName}
                   </p>
                 )}
                 <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
-                  <span>Run #{profile.runNumber}</span>
-                  <span>•</span>
+                  {/* Run removed per UI request */}
                   <span>Trust Score: {profile.trustScore.toFixed(1)}</span>
                   <span>•</span>
                   <span>เข้าร่วมเมื่อ {new Date(profile.createdAt).toLocaleDateString('th-TH')}</span>
