@@ -14,6 +14,7 @@ const finpointRouter = require('./api/finpoint');
 const networkRouter = require('./api/network');
 const insuranceRouter = require('./api/insurance');
 const databaseRouter = require('./api/database');
+const commissionPoolRouter = require('./api/commissionPoolRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -89,6 +90,7 @@ app.use('/api/finpoint', finpointRouter);
 app.use('/api/network', networkRouter);
 app.use('/api/insurance', insuranceRouter);
 app.use('/api/database', databaseRouter);
+app.use('/api', commissionPoolRouter); // Commission Pool routes
 
 // ---------- Error Handling ----------
 

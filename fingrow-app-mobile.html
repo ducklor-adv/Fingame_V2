@@ -501,7 +501,7 @@
     // Insurance Selection Modal Component
     function InsuranceSelectionModal({ level, userId, onClose }) {
       const [products, setProducts] = useState([]);
-      const [selectedProducts, setSelectedProducts] = useState([]);
+      const [modalSelectedProducts, setModalSelectedProducts] = useState([]);
       const [loading, setLoading] = useState(true);
       const [saving, setSaving] = useState(false);
 
@@ -536,10 +536,10 @@
       }, [level, userId]);
 
       const toggleProduct = (productId) => {
-        if (selectedProducts.includes(productId)) {
-          setSelectedProducts(selectedProducts.filter(id => id !== productId));
+        if (modalSelectedProducts.includes(productId)) {
+          setModalSelectedProducts(modalSelectedProducts.filter(id => id !== productId));
         } else {
-          setSelectedProducts([...selectedProducts, productId]);
+          setModalSelectedProducts([...modalSelectedProducts, productId]);
         }
       };
 
@@ -556,7 +556,7 @@
 
           // Deactivate products that were unselected
           for (const selection of currentLevelSelections) {
-            if (!selectedProducts.includes(selection.insuranceProductId)) {
+            if (!modalSelectedProducts.includes(selection.insuranceProductId)) {
               await fetch(`${API_BASE}/api/insurance/selections/${selection.id}`, {
                 method: 'DELETE'
               });
@@ -565,7 +565,7 @@
 
           // Add new products that were selected
           const currentIds = currentLevelSelections.map(s => s.insuranceProductId);
-          for (const productId of selectedProducts) {
+          for (const productId of modalSelectedProducts) {
             if (!currentIds.includes(productId)) {
               await fetch(`${API_BASE}/api/insurance/selections`, {
                 method: 'POST',
@@ -611,18 +611,18 @@
                       key={product.id}
                       onClick={() => toggleProduct(product.id)}
                       className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                        selectedProducts.includes(product.id)
+                        modalSelectedProducts.includes(product.id)
                           ? 'border-emerald-500 bg-emerald-500/10'
                           : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'
                       }`}
                     >
                       <div className="flex items-start gap-3">
                         <div className={`w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                          selectedProducts.includes(product.id)
+                          modalSelectedProducts.includes(product.id)
                             ? 'border-emerald-500 bg-emerald-500'
                             : 'border-slate-600'
                         }`}>
-                          {selectedProducts.includes(product.id) && (
+                          {modalSelectedProducts.includes(product.id) && (
                             <span className="text-white text-xs">✓</span>
                           )}
                         </div>
@@ -673,6 +673,9 @@
       const [selectedLevel, setSelectedLevel] = useState(null);
       const [insuranceSelections, setInsuranceSelections] = useState({});
       const [loadingSelections, setLoadingSelections] = useState(true);
+      const [showDemoFinpointModal, setShowDemoFinpointModal] = useState(false);
+      const [demoAmount, setDemoAmount] = useState(1000);
+      const [currentFinpoint, setCurrentFinpoint] = useState(data.currentFpBalance);
 
       // Fetch user's insurance selections
       useEffect(() => {
@@ -787,41 +790,97 @@
                   💎
                 </div>
               </div>
-              <div className="text-xs text-emerald-300/60">
-                อัปเดตล่าสุด: {data.lastUpdated}
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-emerald-300/60">
+                  อัปเดตล่าสุด: {data.lastUpdated}
+                </div>
+                <button
+                  onClick={() => setShowDemoFinpointModal(true)}
+                  className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-yellow-500/50 flex items-center gap-2"
+                >
+                  <span>💳</span>
+                  <span>รับ Finpoint (Demo)</span>
+                </button>
               </div>
             </div>
           </section>
 
-          {/* Today Stats - Horizontal Scroll */}
-          <section className="px-4 pb-4">
-            <div className="overflow-x-auto hide-scrollbar">
-              <div className="flex gap-3 pb-2">
-                <StatCard label="FP เพิ่มวันนี้" value={`+${data.todayEarned}`} color="emerald" />
-                <StatCard label="จากขายของ" value={`+${data.todayFromSecondhand}`} color="teal" />
-                <StatCard label="จากเครือข่าย" value={`+${data.todayFromUpline}`} color="cyan" />
-              </div>
-            </div>
-          </section>
+          {/* Demo Finpoint Purchase Modal */}
+          {showDemoFinpointModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowDemoFinpointModal(false)}>
+              <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                <div className="text-center mb-6">
+                  <div className="text-5xl mb-3">⚠️</div>
+                  <h3 className="text-xl font-bold text-amber-300 mb-2">Demo Finpoint</h3>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    นี่เป็น <span className="font-semibold text-amber-300">Demo Finpoint</span> เพื่อใช้ทดสอบระบบเท่านั้น
+                  </p>
+                  <p className="text-xs text-slate-400 mt-2">
+                    เมื่อระบบเปิดใช้จริง ต้องใช้เงินจริงในการซื้อ Finpoint
+                  </p>
+                </div>
 
-          {/* Network Snapshot */}
-          <section className="px-4 pb-4">
-            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <span>🌐</span> เครือข่าย ACF
-              </h3>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">สมาชิก</div>
-                  <div className="text-lg font-bold text-emerald-300">{data.networkSnapshot.networkSize.toLocaleString()}</div>
+                <div className="bg-slate-800/50 rounded-xl p-4 mb-6">
+                  <label className="block text-xs text-slate-400 mb-2">จำนวน Finpoint ที่ต้องการ</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      value={demoAmount}
+                      onChange={(e) => setDemoAmount(Math.max(0, parseInt(e.target.value) || 0))}
+                      className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-lg font-semibold text-center focus:outline-none focus:border-emerald-500"
+                      min="0"
+                      step="100"
+                    />
+                    <span className="text-slate-400 font-medium">FP</span>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    {[500, 1000, 5000, 10000].map(amount => (
+                      <button
+                        key={amount}
+                        onClick={() => setDemoAmount(amount)}
+                        className="flex-1 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs rounded-lg transition-colors"
+                      >
+                        {amount.toLocaleString()}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">ได้รับ FP แล้ว</div>
-                  <div className="text-lg font-bold text-cyan-300">{data.networkSnapshot.fpFromYou.toLocaleString()}</div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDemoFinpointModal(false)}
+                    className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(`${API_BASE}/api/users/${user.id}/demo-finpoint`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ amount: demoAmount })
+                        });
+                        if (response.ok) {
+                          const result = await response.json();
+                          setCurrentFinpoint(result.data.newFinpoint);
+                          data.currentFpBalance = result.data.newFinpoint;
+                          setShowDemoFinpointModal(false);
+                          alert(`เติม ${demoAmount.toLocaleString()} FP สำเร็จ!`);
+                        }
+                      } catch (error) {
+                        console.error('Error purchasing demo finpoint:', error);
+                        alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
+                      }
+                    }}
+                    className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                  >
+                    รับ Finpoint
+                  </button>
                 </div>
               </div>
             </div>
-          </section>
+          )}
 
           {/* Level Progress */}
           <section className="px-4 pb-4">
@@ -855,6 +914,13 @@
       const [filter, setFilter] = useState('all'); // all, dr, cr
       const [uplineList, setUplineList] = useState([]);
       const [loadingUpline, setLoadingUpline] = useState(true);
+      const [transactions, setTransactions] = useState([]);
+      const [loadingTransactions, setLoadingTransactions] = useState(true);
+      const [transactionSummary, setTransactionSummary] = useState({
+        totalFinpoint: 0,
+        totalReceived: 0,
+        totalSpent: 0
+      });
 
       // Fetch upline list
       useEffect(() => {
@@ -878,9 +944,40 @@
         }
       }, [user]);
 
-      const filteredLedger = data.recentLedger.filter(row => {
+      // Fetch transactions from commission_pool_distribution
+      useEffect(() => {
+        const fetchTransactions = async () => {
+          try {
+            setLoadingTransactions(true);
+            const response = await fetch(`${API_BASE}/api/users/${user.id}/transactions`);
+            if (response.ok) {
+              const result = await response.json();
+              if (result.success) {
+                setTransactions(result.data.transactions || []);
+                setTransactionSummary(result.data.summary || {
+                  totalFinpoint: 0,
+                  totalReceived: 0,
+                  totalSpent: 0
+                });
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching transactions:', error);
+            // Fallback to mock data if API fails
+            setTransactions(data.recentLedger || []);
+          } finally {
+            setLoadingTransactions(false);
+          }
+        };
+
+        if (user && user.id) {
+          fetchTransactions();
+        }
+      }, [user]);
+
+      const filteredLedger = transactions.filter(row => {
         if (filter === 'all') return true;
-        return row.drCr.toLowerCase() === filter;
+        return row.drCr && row.drCr.toLowerCase() === filter;
       });
 
       return (
@@ -932,27 +1029,33 @@
           {/* Summary Card */}
           <section className="px-4 pb-4">
             <div className="bg-gradient-to-br from-slate-900/60 to-slate-800/60 border border-slate-700/50 rounded-2xl p-4">
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">ยอดคงเหลือ</div>
-                  <div className="text-lg font-bold text-emerald-300">{data.currentFpBalance.toLocaleString()}</div>
-                  <div className="text-xs text-slate-500">FP</div>
+              {loadingTransactions ? (
+                <div className="text-center py-4 text-slate-400 text-sm">
+                  กำลังโหลดสรุป...
                 </div>
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">รับเข้า</div>
-                  <div className="text-lg font-bold text-emerald-300">
-                    {data.recentLedger.filter(r => r.drCr === 'DR').reduce((sum, r) => sum + r.amount, 0).toLocaleString()}
+              ) : (
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">ยอดคงเหลือ</div>
+                    <div className="text-lg font-bold text-emerald-300">{transactionSummary.totalFinpoint.toLocaleString()}</div>
+                    <div className="text-xs text-slate-500">FP</div>
                   </div>
-                  <div className="text-xs text-slate-500">FP</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">จ่ายออก</div>
-                  <div className="text-lg font-bold text-rose-300">
-                    {data.recentLedger.filter(r => r.drCr === 'CR').reduce((sum, r) => sum + r.amount, 0).toLocaleString()}
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">รับเข้า</div>
+                    <div className="text-lg font-bold text-emerald-300">
+                      {transactionSummary.totalReceived.toLocaleString()}
+                    </div>
+                    <div className="text-xs text-slate-500">FP</div>
                   </div>
-                  <div className="text-xs text-slate-500">FP</div>
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">จ่ายออก</div>
+                    <div className="text-lg font-bold text-rose-300">
+                      {transactionSummary.totalSpent.toLocaleString()}
+                    </div>
+                    <div className="text-xs text-slate-500">FP</div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </section>
 
@@ -963,19 +1066,19 @@
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
                   filter === 'all' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
                 }`}>
-                ทั้งหมด ({data.recentLedger.length})
+                ทั้งหมด ({transactions.length})
               </button>
               <button onClick={() => setFilter('dr')}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
                   filter === 'dr' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
                 }`}>
-                รับเข้า ({data.recentLedger.filter(r => r.drCr === 'DR').length})
+                รับเข้า ({transactions.filter(r => r.drCr === 'DR').length})
               </button>
               <button onClick={() => setFilter('cr')}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
                   filter === 'cr' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'
                 }`}>
-                จ่ายออก ({data.recentLedger.filter(r => r.drCr === 'CR').length})
+                จ่ายออก ({transactions.filter(r => r.drCr === 'CR').length})
               </button>
             </div>
           </section>
@@ -983,7 +1086,12 @@
           {/* Transaction List */}
           <section className="px-4 pb-4">
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
-              {filteredLedger.length === 0 ? (
+              {loadingTransactions ? (
+                <div className="px-4 py-8 text-center text-slate-400">
+                  <div className="text-3xl mb-2">⏳</div>
+                  <div className="text-sm">กำลังโหลดรายการ...</div>
+                </div>
+              ) : filteredLedger.length === 0 ? (
                 <div className="px-4 py-8 text-center text-slate-400">
                   <div className="text-3xl mb-2">📋</div>
                   <div className="text-sm">ไม่มีรายการ</div>
@@ -1004,14 +1112,21 @@
                             <div className="text-xs text-slate-400">{row.detail}</div>
                           </div>
                         </div>
-                        <div className="text-xs text-slate-500 ml-10">{row.datetime}</div>
+                        <div className="text-xs text-slate-500 ml-10">
+                          {row.datetime ? new Date(row.datetime).toLocaleString('th-TH', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }) : ''}
+                        </div>
                       </div>
                       <div className="text-right">
                         <div className={`text-base font-semibold ${row.drCr === 'DR' ? 'text-emerald-300' : 'text-rose-300'}`}>
-                          {row.drCr === 'DR' ? '+' : '-'}{row.amount.toLocaleString()}
+                          {row.displayAmount || (row.drCr === 'DR' ? '+' : '-') + Math.abs(row.amount).toLocaleString()}
                         </div>
                         <div className="text-xs text-slate-500">
-                          คงเหลือ: <span className="font-mono">{row.balanceAfter.toLocaleString()}</span>
+                          FP
                         </div>
                       </div>
                     </div>
@@ -1687,29 +1802,31 @@
     }
 
     // Helper Components
-    function StatCard({ label, value, color = 'emerald' }) {
-      const colors = {
-        emerald: 'from-emerald-900/40 to-emerald-800/40 border-emerald-700/50 text-emerald-300',
-        teal: 'from-teal-900/40 to-teal-800/40 border-teal-700/50 text-teal-300',
-        cyan: 'from-cyan-900/40 to-cyan-800/40 border-cyan-700/50 text-cyan-300',
-      };
-      return (
-        <div className={`flex-shrink-0 w-36 bg-gradient-to-br ${colors[color]} border rounded-xl px-4 py-3`}>
-          <div className="text-xs text-slate-400 mb-1">{label}</div>
-          <div className="text-lg font-bold">{value} FP</div>
-        </div>
-      );
-    }
-
     function ExpCard({ exp, selectedProducts = [], onSettingsClick }) {
+      const [isExpanded, setIsExpanded] = React.useState(false);
       const percent = exp.target > 0 ? Math.min(100, Math.round((exp.current / exp.target) * 100)) : 0;
       const canUse = exp.current >= exp.target;
 
+      // Calculate Finpoint summary
+      const totalRequiredFP = selectedProducts.reduce((sum, product) => sum + parseFloat(product.premiumTotal), 0);
+      const haveFP = exp.current;
+      const needFP = totalRequiredFP;
+      const missingFP = Math.max(0, totalRequiredFP - haveFP); // FP that is missing to complete this level
+
       return (
         <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-2">
+          {/* Header with level and controls */}
+          <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-medium">{exp.label}</h4>
             <div className="flex items-center gap-2">
+              {selectedProducts.length > 0 && (
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+                >
+                  {isExpanded ? '▼ ย่อ' : `ดูรายละเอียด (${selectedProducts.length})`}
+                </button>
+              )}
               <span className="text-xs text-slate-400">{percent}%</span>
               <button
                 onClick={() => onSettingsClick(exp)}
@@ -1721,10 +1838,29 @@
             </div>
           </div>
 
-          {/* Selected Insurance Products */}
-          {selectedProducts.length > 0 && (
-            <div className="mb-3 space-y-2">
-              {selectedProducts.map((product, idx) => (
+          {/* Status bar - progress from total calculation */}
+          <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-3">
+            <div className="h-full bg-emerald-400 transition-all" style={{ width: `${percent}%` }}></div>
+          </div>
+
+          {/* FP summary on the right side */}
+          <div className="flex items-center justify-end mb-3 text-xs">
+            <span className="text-slate-400">คุณมี</span>
+            <span className="font-semibold text-emerald-300 ml-1">{haveFP.toLocaleString()}</span>
+            <span className="text-slate-400 mx-1">FP | ต้องใช้</span>
+            <span className="font-semibold text-amber-300">{needFP.toLocaleString()}</span>
+            <span className="text-slate-400 mx-1">FP ยังขาด</span>
+            <span className="font-semibold text-red-300">{missingFP.toLocaleString()}</span>
+            <span className="text-slate-400 ml-1">FP</span>
+          </div>
+
+          {/* Collapsible insurance details */}
+          {isExpanded && selectedProducts.length > 0 && (
+            <div className="space-y-2 mb-3">
+              {selectedProducts.map((product, idx) => {
+                if (!product) return null;
+
+                return (
                 <div key={idx} className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50">
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <div className="flex-1 min-w-0">
@@ -1743,36 +1879,21 @@
                       style={{ width: `${Math.min(100, (exp.current / parseFloat(product.premiumTotal)) * 100)}%` }}
                     ></div>
                   </div>
-                  <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center justify-between mt-2">
                     <span className="text-[10px] text-slate-500">
                       ต้องสะสม {parseFloat(product.premiumTotal).toLocaleString()} FP
                     </span>
-                    <span className="text-[10px] text-emerald-400 font-medium">
-                      {Math.min(exp.current, parseFloat(product.premiumTotal)).toLocaleString()} / {parseFloat(product.premiumTotal).toLocaleString()} FP
-                    </span>
+                    <button
+                      className="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded transition-colors"
+                    >
+                      ซื้อประกัน
+                    </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
-
-          <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-2">
-            <div className="h-full bg-emerald-400 transition-all" style={{ width: `${percent}%` }}></div>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-400">
-              <span className="text-emerald-300 font-medium">{exp.current.toLocaleString()}</span> / {exp.target.toLocaleString()} FP
-            </span>
-            <button
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                canUse
-                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                  : 'bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30'
-              }`}
-            >
-              {canUse ? 'ใช้สิทธิ์' : 'ซื้อประกัน'}
-            </button>
-          </div>
         </div>
       );
     }
