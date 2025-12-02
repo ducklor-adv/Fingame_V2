@@ -333,6 +333,7 @@ router.get('/:userId/upline', async (req, res) => {
 
 function mapTreeNode(row) {
   return {
+    userDbId: row.id, // UUID for API calls
     userId: row.world_id,
     username: row.username,
     parentId: row.parent_id,

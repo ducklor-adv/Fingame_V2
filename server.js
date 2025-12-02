@@ -66,7 +66,13 @@ app.get('/', (req, res) => {
       insurance: {
         'GET /api/insurance/:userId/levels': 'Get level progress',
         'POST /api/insurance/:userId/purchase': 'Purchase insurance',
-        'POST /api/insurance/:userId/use-rights': 'Use insurance rights'
+        'POST /api/insurance/:userId/use-rights': 'Use insurance rights',
+        'GET /api/insurance/products': 'Get all insurance products (optionally filtered by level)',
+        'GET /api/insurance/products/:id': 'Get specific insurance product',
+        'GET /api/insurance/selections/:userId': 'Get user insurance selections',
+        'POST /api/insurance/selections': 'Create new insurance selection',
+        'DELETE /api/insurance/selections/:selectionId': 'Deactivate insurance selection',
+        'PUT /api/insurance/selections/:selectionId/priority': 'Update selection priority'
       },
       database: {
         'GET /api/database/tables': 'List all tables',

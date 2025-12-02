@@ -414,6 +414,63 @@ router.get('/:id/upline', async (req, res) => {
   }
 });
 
+// ============================================================================
+// GET /api/users/:id/upline-list
+// Get upline list with details (from upline_id field)
+// ============================================================================
+router.get('/:id/upline-list', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Get user's upline_id field
+    const userResult = await pool.query(
+      'SELECT upline_id FROM users WHERE id = $1',
+      [id]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const uplineIds = userResult.rows[0].upline_id;
+
+    // If no upline, return empty array
+    if (!uplineIds || uplineIds.length === 0) {
+      return res.json({ uplines: [] });
+    }
+
+    // Fetch upline details
+    const uplineResult = await pool.query(
+      `SELECT id, world_id, username, level
+       FROM users
+       WHERE id = ANY($1::uuid[])
+       ORDER BY level ASC`,
+      [uplineIds]
+    );
+
+    // Map to response format maintaining order from upline_id
+    const uplineMap = {};
+    uplineResult.rows.forEach(row => {
+      uplineMap[row.id] = {
+        id: row.id,
+        worldId: row.world_id,
+        username: row.username,
+        level: row.level
+      };
+    });
+
+    // Maintain order from upline_id array
+    const uplines = uplineIds
+      .map(id => uplineMap[id])
+      .filter(upline => upline); // Filter out any null values
+
+    res.json({ uplines });
+  } catch (error) {
+    console.error('Error fetching upline list:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // ---------- Export ----------
 
 module.exports = router;

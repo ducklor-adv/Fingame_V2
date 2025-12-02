@@ -210,7 +210,7 @@
         <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
           {/* Content */}
           {currentPage === 'home' && <HomePage data={dashboardData} user={userData} />}
-          {currentPage === 'transactions' && <TransactionsPage data={dashboardData} />}
+          {currentPage === 'transactions' && <TransactionsPage data={dashboardData} user={userData} />}
           {currentPage === 'tree' && <TreePage user={userData} />}
           {currentPage === 'acf' && <ACFPage user={userData} />}
           {currentPage === 'database' && <DatabaseViewer />}
@@ -498,10 +498,259 @@
       );
     }
 
+    // Insurance Selection Modal Component
+    function InsuranceSelectionModal({ level, userId, onClose }) {
+      const [products, setProducts] = useState([]);
+      const [selectedProducts, setSelectedProducts] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [saving, setSaving] = useState(false);
+
+      useEffect(() => {
+        const fetchData = async () => {
+          try {
+            setLoading(true);
+            // Fetch available products for this level
+            const productsRes = await fetch(`${API_BASE}/api/insurance/products?level=${level}`);
+            if (productsRes.ok) {
+              const productsData = await productsRes.json();
+              setProducts(productsData.products || []);
+            }
+
+            // Fetch user's current selections
+            const selectionsRes = await fetch(`${API_BASE}/api/insurance/selections/${userId}`);
+            if (selectionsRes.ok) {
+              const selectionsData = await selectionsRes.json();
+              const levelSelections = selectionsData.selections
+                .filter(s => s.product.fingrowLevel === level)
+                .map(s => s.insuranceProductId);
+              setSelectedProducts(levelSelections);
+            }
+          } catch (error) {
+            console.error('Error fetching insurance data:', error);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        fetchData();
+      }, [level, userId]);
+
+      const toggleProduct = (productId) => {
+        if (selectedProducts.includes(productId)) {
+          setSelectedProducts(selectedProducts.filter(id => id !== productId));
+        } else {
+          setSelectedProducts([...selectedProducts, productId]);
+        }
+      };
+
+      const handleSave = async () => {
+        try {
+          setSaving(true);
+
+          // Get current selections from server
+          const selectionsRes = await fetch(`${API_BASE}/api/insurance/selections/${userId}`);
+          const selectionsData = await selectionsRes.json();
+          const currentLevelSelections = selectionsData.selections.filter(
+            s => s.product.fingrowLevel === level
+          );
+
+          // Deactivate products that were unselected
+          for (const selection of currentLevelSelections) {
+            if (!selectedProducts.includes(selection.insuranceProductId)) {
+              await fetch(`${API_BASE}/api/insurance/selections/${selection.id}`, {
+                method: 'DELETE'
+              });
+            }
+          }
+
+          // Add new products that were selected
+          const currentIds = currentLevelSelections.map(s => s.insuranceProductId);
+          for (const productId of selectedProducts) {
+            if (!currentIds.includes(productId)) {
+              await fetch(`${API_BASE}/api/insurance/selections`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, insuranceProductId: productId })
+              });
+            }
+          }
+
+          onClose();
+        } catch (error) {
+          console.error('Error saving selections:', error);
+          alert('เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่');
+        } finally {
+          setSaving(false);
+        }
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-slate-800">
+              <h2 className="text-lg font-bold">เลือกแผนประกัน Level {level}</h2>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-5">
+              {loading ? (
+                <div className="text-center py-12 text-slate-400">กำลังโหลด...</div>
+              ) : products.length === 0 ? (
+                <div className="text-center py-12 text-slate-400">ไม่มีแผนประกันสำหรับ Level นี้</div>
+              ) : (
+                <div className="space-y-3">
+                  {products.map((product) => (
+                    <div
+                      key={product.id}
+                      onClick={() => toggleProduct(product.id)}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                        selectedProducts.includes(product.id)
+                          ? 'border-emerald-500 bg-emerald-500/10'
+                          : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                          selectedProducts.includes(product.id)
+                            ? 'border-emerald-500 bg-emerald-500'
+                            : 'border-slate-600'
+                        }`}>
+                          {selectedProducts.includes(product.id) && (
+                            <span className="text-white text-xs">✓</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-sm mb-1">{product.shortTitle || product.title}</h3>
+                          <div className="text-xs text-slate-400 mb-2">{product.insurerCompanyName}</div>
+                          <div className="flex items-center gap-3 text-xs">
+                            <span className="text-emerald-300 font-medium">
+                              {product.premiumTotal?.toLocaleString()} THB
+                            </span>
+                            <span className="text-slate-500">•</span>
+                            <span className="text-cyan-300">
+                              {product.finpointRatePer100} FP/100฿
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-5 border-t border-slate-800 flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 font-medium transition-colors"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex-1 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? 'กำลังบันทึก...' : 'บันทึก'}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     // Home Page (Dashboard)
     function HomePage({ data, user }) {
+      const [showInsuranceModal, setShowInsuranceModal] = useState(false);
+      const [selectedLevel, setSelectedLevel] = useState(null);
+      const [insuranceSelections, setInsuranceSelections] = useState({});
+      const [loadingSelections, setLoadingSelections] = useState(true);
+
+      // Fetch user's insurance selections
+      useEffect(() => {
+        const fetchSelections = async () => {
+          try {
+            setLoadingSelections(true);
+            const response = await fetch(`${API_BASE}/api/insurance/selections/${user.id}`);
+            if (response.ok) {
+              const data = await response.json();
+              // Group selections by level
+              const selectionsByLevel = {};
+              data.selections.forEach(selection => {
+                const level = selection.product.fingrowLevel;
+                if (!selectionsByLevel[level]) {
+                  selectionsByLevel[level] = [];
+                }
+                selectionsByLevel[level].push(selection.product);
+              });
+              setInsuranceSelections(selectionsByLevel);
+            }
+          } catch (error) {
+            console.error('Error fetching insurance selections:', error);
+          } finally {
+            setLoadingSelections(false);
+          }
+        };
+
+        if (user && user.id) {
+          fetchSelections();
+        }
+      }, [user]);
+
+      const handleSettingsClick = (exp) => {
+        // Extract level number from code (e.g., "LEVEL_1" -> 1)
+        const levelMatch = exp.code.match(/LEVEL_(\d+)/);
+        if (levelMatch) {
+          setSelectedLevel(parseInt(levelMatch[1]));
+          setShowInsuranceModal(true);
+        }
+      };
+
+      const handleModalClose = () => {
+        setShowInsuranceModal(false);
+        setSelectedLevel(null);
+        // Refresh selections after modal closes
+        const fetchSelections = async () => {
+          try {
+            const response = await fetch(`${API_BASE}/api/insurance/selections/${user.id}`);
+            if (response.ok) {
+              const data = await response.json();
+              const selectionsByLevel = {};
+              data.selections.forEach(selection => {
+                const level = selection.product.fingrowLevel;
+                if (!selectionsByLevel[level]) {
+                  selectionsByLevel[level] = [];
+                }
+                selectionsByLevel[level].push(selection.product);
+              });
+              setInsuranceSelections(selectionsByLevel);
+            }
+          } catch (error) {
+            console.error('Error fetching insurance selections:', error);
+          }
+        };
+        fetchSelections();
+      };
+
       return (
         <div className="pb-4">
+          {/* Insurance Selection Modal */}
+          {showInsuranceModal && (
+            <InsuranceSelectionModal
+              level={selectedLevel}
+              userId={user.id}
+              onClose={handleModalClose}
+            />
+          )}
+
           {/* Header */}
           <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
             <div className="px-4 py-3 flex items-center justify-between">
@@ -571,31 +820,6 @@
                   <div className="text-lg font-bold text-cyan-300">{data.networkSnapshot.fpFromYou.toLocaleString()}</div>
                 </div>
               </div>
-              <div className="mt-3 pt-3 border-t border-slate-700">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-xs text-slate-400">เส้นทางสู่ ROOT ({data.networkSnapshot.uplinePath.length} ชั้น)</div>
-                  <div className="text-xs text-slate-500">← เลื่อนดู →</div>
-                </div>
-                <div className="overflow-x-auto pb-2" style={{scrollbarWidth: 'thin', scrollbarColor: '#475569 #1e293b'}}>
-                  <div className="flex items-center gap-1 min-w-max">
-                    {data.networkSnapshot.uplinePath.map((node, idx) => (
-                      <React.Fragment key={idx}>
-                        <div className={`flex flex-col px-3 py-2 rounded-lg text-xs whitespace-nowrap ${
-                          idx === 0 ? 'bg-emerald-600 text-white font-semibold' :
-                          node.id === 'ROOT' || node.id === '25AAA0000' ? 'bg-blue-600 text-white font-semibold' :
-                          'bg-slate-700 text-slate-300'
-                        }`}>
-                          <div className="font-medium">{node.name}</div>
-                          <div className="text-[10px] opacity-70 mt-0.5">{node.worldId}</div>
-                        </div>
-                        {idx < data.networkSnapshot.uplinePath.length - 1 && (
-                          <div className="text-slate-400 flex-shrink-0 text-sm">→</div>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                </div>
-              </div>
             </div>
           </section>
 
@@ -606,9 +830,20 @@
               <span className="text-xs text-slate-400">ใช้ FP ซื้อประกัน</span>
             </div>
             <div className="space-y-3">
-              {data.expProgressList.map((exp) => (
-                <ExpCard key={exp.code} exp={exp} />
-              ))}
+              {data.expProgressList.map((exp) => {
+                const levelMatch = exp.code.match(/LEVEL_(\d+)/);
+                const levelNum = levelMatch ? parseInt(levelMatch[1]) : null;
+                const selectedProducts = levelNum && insuranceSelections[levelNum] ? insuranceSelections[levelNum] : [];
+
+                return (
+                  <ExpCard
+                    key={exp.code}
+                    exp={exp}
+                    selectedProducts={selectedProducts}
+                    onSettingsClick={handleSettingsClick}
+                  />
+                );
+              })}
             </div>
           </section>
         </div>
@@ -616,8 +851,32 @@
     }
 
     // Transactions Page (รายการ)
-    function TransactionsPage({ data }) {
+    function TransactionsPage({ data, user }) {
       const [filter, setFilter] = useState('all'); // all, dr, cr
+      const [uplineList, setUplineList] = useState([]);
+      const [loadingUpline, setLoadingUpline] = useState(true);
+
+      // Fetch upline list
+      useEffect(() => {
+        const fetchUplineList = async () => {
+          try {
+            setLoadingUpline(true);
+            const response = await fetch(`${API_BASE}/api/users/${user.id}/upline-list`);
+            if (response.ok) {
+              const data = await response.json();
+              setUplineList(data.uplines || []);
+            }
+          } catch (error) {
+            console.error('Error fetching upline list:', error);
+          } finally {
+            setLoadingUpline(false);
+          }
+        };
+
+        if (user && user.id) {
+          fetchUplineList();
+        }
+      }, [user]);
 
       const filteredLedger = data.recentLedger.filter(row => {
         if (filter === 'all') return true;
@@ -634,8 +893,44 @@
             </div>
           </header>
 
-          {/* Summary Card */}
+          {/* Commission Pool List */}
           <section className="p-4">
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-slate-200">Commission Pool List</h3>
+                <span className="text-xs text-slate-400">{uplineList.length} คน</span>
+              </div>
+              {loadingUpline ? (
+                <div className="text-center py-4 text-slate-400 text-sm">
+                  กำลังโหลด...
+                </div>
+              ) : uplineList.length === 0 ? (
+                <div className="text-center py-4 text-slate-400 text-sm">
+                  ไม่มี upline
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {uplineList.map((upline, idx) => (
+                    <div key={upline.id} className="flex items-center gap-3 p-3 bg-slate-800/40 rounded-lg">
+                      <div className="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-300 flex items-center justify-center text-xs font-bold">
+                        {idx + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-slate-200 truncate">{upline.username}</div>
+                        <div className="text-xs text-slate-400">{upline.worldId}</div>
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        Level {upline.level}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Summary Card */}
+          <section className="px-4 pb-4">
             <div className="bg-gradient-to-br from-slate-900/60 to-slate-800/60 border border-slate-700/50 rounded-2xl p-4">
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div>
@@ -746,42 +1041,68 @@
 
     // Tree Page
     function TreePage({ user }) {
-      const [selectedRoot, setSelectedRoot] = useState(user.worldId);
+      const [viewingUser, setViewingUser] = useState({ id: user.id, worldId: user.worldId, username: user.username, parentId: null });
       const [networkData, setNetworkData] = useState([]);
       const [isLoading, setIsLoading] = useState(true);
+      const [parentInfo, setParentInfo] = useState(null);
 
       // Fetch network tree from API
       useEffect(() => {
         const fetchNetworkTree = async () => {
           try {
             setIsLoading(true);
-            const response = await fetch(`${API_BASE}/api/network/${user.id}/tree`);
+            const response = await fetch(`${API_BASE}/api/network/${viewingUser.id}/tree`);
             if (response.ok) {
               const data = await response.json();
+
+              // Store parent info if exists
+              if (data.root && data.root.parentId) {
+                setParentInfo({
+                  id: data.root.parentId,
+                  worldId: null, // Will fetch from user API
+                  username: null
+                });
+
+                // Fetch parent user info
+                fetch(`${API_BASE}/api/users/${data.root.parentId}`)
+                  .then(res => res.json())
+                  .then(parentData => {
+                    setParentInfo({
+                      id: parentData.id,
+                      worldId: parentData.worldId,
+                      username: parentData.username
+                    });
+                  })
+                  .catch(err => console.error('Failed to fetch parent info:', err));
+              } else {
+                setParentInfo(null);
+              }
+
               // Transform API data to match component format
               if (data.children && data.children.length > 0) {
                 setNetworkData([{
-                  userId: user.worldId,
-                  username: user.username,
-                  parentId: null,
-                  childCount: user.childCount || 0,
-                  avatarUrl: user.avatarUrl || null,
+                  userId: viewingUser.worldId,
+                  username: viewingUser.username,
+                  parentId: data.root?.parentId || null,
+                  childCount: data.childCount || 0,
+                  avatarUrl: null,
                   children: data.children.map(child => ({
                     userId: child.userId,
                     username: child.username,
                     childCount: child.childCount || 0,
-                    avatarUrl: child.avatarUrl || null,
-                    children: child.children || []
+                    avatarUrl: null,
+                    children: child.children || [],
+                    userDbId: child.userDbId // Keep DB ID for navigation
                   }))
                 }]);
               } else {
                 // No children, show empty
                 setNetworkData([{
-                  userId: user.worldId,
-                  username: user.username,
-                  parentId: null,
+                  userId: viewingUser.worldId,
+                  username: viewingUser.username,
+                  parentId: data.root?.parentId || null,
                   childCount: 0,
-                  avatarUrl: user.avatarUrl || null,
+                  avatarUrl: null,
                   children: []
                 }]);
               }
@@ -797,10 +1118,10 @@
           }
         };
 
-        if (user && user.id) {
+        if (viewingUser && viewingUser.id) {
           fetchNetworkTree();
         }
-      }, [user]);
+      }, [viewingUser]);
 
       return (
         <div className="pb-4">
@@ -820,23 +1141,33 @@
                   👤
                 </div>
                 <div>
-                  <div className="text-sm font-semibold">{user.worldId} · {user.username}</div>
-                  <div className="text-xs text-slate-400">Horizontal View (Real Data)</div>
+                  <div className="text-xs text-slate-400">View from:</div>
+                  <div className="text-sm font-semibold">{viewingUser.worldId} · {viewingUser.username}</div>
                 </div>
               </div>
-            </div>
-            <div className="mb-3">
-              <label className="block text-xs text-slate-300 mb-2">View from:</label>
-              <select
-                value={selectedRoot}
-                onChange={(e) => setSelectedRoot(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm"
-              >
-                <option value={user.worldId}>{user.worldId} - {user.username}</option>
-              </select>
+              <div className="flex gap-2">
+                {parentInfo && (
+                  <button
+                    onClick={() => setViewingUser({ id: parentInfo.id, worldId: parentInfo.worldId, username: parentInfo.username })}
+                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs flex items-center gap-1"
+                    title={`ย้อนกลับไปดู ${parentInfo.username}`}
+                  >
+                    <span>←</span>
+                    <span>Back</span>
+                  </button>
+                )}
+                {viewingUser.worldId !== user.worldId && (
+                  <button
+                    onClick={() => setViewingUser({ id: user.id, worldId: user.worldId, username: user.username })}
+                    className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
             </div>
             <p className="text-xs text-slate-400">
-              Showing network structure from database • Click to explore subtree
+              คลิกที่การ์ดของ user เพื่อดูเครือข่ายของเขา
             </p>
           </section>
 
@@ -847,88 +1178,88 @@
                 <div className="text-2xl mb-2">⏳</div>
                 <div className="text-sm text-slate-400">กำลังโหลดข้อมูลเครือข่าย...</div>
               </div>
-            ) : networkData.length === 0 ? (
+            ) : networkData.length === 0 || !networkData[0].children || networkData[0].children.length === 0 ? (
               <div className="text-center py-8">
                 <div className="text-2xl mb-2">📭</div>
-                <div className="text-sm text-slate-400">ไม่พบข้อมูลเครือข่าย</div>
+                <div className="text-sm text-slate-400">ยังไม่มีเครือข่ายในสายงาน</div>
               </div>
             ) : (
-              <div className="space-y-4">
-                {networkData.map((parent) => (
-                <div key={parent.userId} className="network-row">
-                  {/* Parent Card (Left) + Children Wrap (Right) */}
-                  <div className="flex flex-col sm:grid sm:grid-cols-[200px_1fr] gap-4">
-                    {/* Parent Card */}
-                    <article className="parent-card bg-slate-800/50 border border-slate-700 rounded-lg p-3 hover:bg-slate-800 hover:border-emerald-500 transition-all cursor-pointer h-full flex flex-col">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="relative">
-                          <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center ring-2 ring-emerald-400">
+              <div className="space-y-6">
+                {/* Loop through root's children (Level 1) */}
+                {networkData[0].children.map((child, childIndex) => (
+                  <div key={child.userId} className="network-row border-b border-slate-800 pb-3 last:border-0">
+                    {/* Parent + Children in same row */}
+                    <div className="grid grid-cols-6 gap-1">
+                      {/* Parent Card - 1 column */}
+                      <article
+                        className="parent-card bg-gradient-to-br from-emerald-600 to-emerald-700 border-2 border-emerald-400 rounded-lg p-1.5 hover:from-emerald-500 hover:to-emerald-600 transition-all cursor-pointer min-h-[60px] flex flex-col items-center justify-center shadow-lg shadow-emerald-900/50"
+                        onClick={() => {
+                          if (child.userDbId) {
+                            setViewingUser({ id: child.userDbId, worldId: child.userId, username: child.username });
+                          }
+                        }}
+                      >
+                        <div className="relative mb-0.5">
+                          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-[11px] ring-2 ring-white/40">
                             👤
                           </div>
-                          {parent.childCount > 0 && (
-                            <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-slate-900">
-                              {parent.childCount}
+                          {child.childCount > 0 && (
+                            <div className="absolute -bottom-0.5 -right-0.5 bg-yellow-400 text-slate-900 text-[7px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center ring-1 ring-emerald-700">
+                              {child.childCount}
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-semibold truncate">{parent.username}</div>
-                          <div className="text-[10px] text-slate-400">{parent.userId}</div>
+                        <div className="text-[8.5px] text-center truncate w-full text-white leading-tight font-bold">
+                          {child.username}
                         </div>
-                      </div>
-                      <div className="text-[10px] text-emerald-400 mt-auto">
-                        ◈ {parent.childCount} children
-                      </div>
-                    </article>
+                        <div className="text-[7px] text-emerald-200 font-semibold">
+                          ◈{child.childCount || 0}
+                        </div>
+                      </article>
 
-                    {/* Children Wrap */}
-                    <div className="children-wrap border-l-2 border-slate-700 pl-4 h-full">
-                      <div className="text-xs font-semibold text-slate-400 mb-3">
-                        → Children of <span className="text-white">{parent.username}</span>
-                        <span className="text-slate-500 ml-2">({parent.children.length}/5)</span>
-                      </div>
-
-                      {/* Children Grid - 5 columns on desktop, 2 on mobile */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                        {parent.children.map((child) => (
-                          <div
-                            key={child.userId}
-                            className="child-card bg-slate-800/30 border border-slate-700 rounded-lg p-2 hover:bg-slate-800 hover:border-cyan-400 transition-all cursor-pointer min-h-[120px] flex flex-col items-center"
-                          >
-                            <div className="relative mb-2">
-                              <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center ring-2 ring-cyan-400">
-                                👤
-                              </div>
-                              {child.childCount > 0 && (
-                                <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-slate-900">
-                                  {child.childCount}
+                      {/* Children Grid - 5 columns */}
+                          {(child.children || []).map((grandchild) => (
+                            <div
+                              key={grandchild.userId}
+                              className="grandchild-card bg-slate-800/20 rounded p-1 hover:bg-slate-700/40 transition-all cursor-pointer min-h-[60px] flex flex-col items-center justify-center"
+                              onClick={() => {
+                                if (grandchild.userDbId) {
+                                  setViewingUser({ id: grandchild.userDbId, worldId: grandchild.userId, username: grandchild.username });
+                                }
+                              }}
+                            >
+                              <div className="relative mb-0.5">
+                                <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px]">
+                                  👤
                                 </div>
-                              )}
+                                {grandchild.childCount > 0 && (
+                                  <div className="absolute -bottom-0.5 -right-0.5 bg-emerald-500 text-white text-[6px] font-bold rounded-full w-3 h-3 flex items-center justify-center">
+                                    {grandchild.childCount}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-[8px] text-center truncate w-full text-slate-300 leading-tight">
+                                {grandchild.username}
+                              </div>
+                              <div className="text-[7px] text-cyan-400">
+                                ◈{grandchild.childCount || 0}
+                              </div>
                             </div>
-                            <div className="text-[10px] text-center truncate w-full text-slate-300 mt-2">
-                              {child.username}
-                            </div>
-                            <div className="text-[9px] text-cyan-400 mt-1">
-                              ◈ {child.childCount}
-                            </div>
-                          </div>
-                        ))}
+                          ))}
 
-                        {/* Empty Slots */}
-                        {Array.from({ length: Math.max(0, 5 - parent.children.length) }).map((_, i) => (
-                          <div
-                            key={`empty-${i}`}
-                            className="child-card empty border-2 border-dashed border-slate-700 rounded-lg p-2 bg-transparent min-h-[120px] flex flex-col items-center cursor-default"
-                          >
-                            <div className="w-10 h-10 rounded-full border-2 border-dashed border-slate-600"></div>
-                            <div className="text-[9px] text-slate-600 mt-2">Slot {parent.children.length + i + 1}</div>
-                          </div>
-                        ))}
-                      </div>
+                      {/* Empty Slots */}
+                      {Array.from({ length: Math.max(0, 5 - (child.children || []).length) }).map((_, i) => (
+                        <div
+                          key={`empty-${childIndex}-${i}`}
+                          className="grandchild-card empty border border-dashed border-slate-700/30 rounded p-1 bg-transparent min-h-[60px] flex flex-col items-center justify-center cursor-default"
+                        >
+                          <div className="w-6 h-6 rounded-full border border-dashed border-slate-600/30"></div>
+                          <div className="text-[7px] text-slate-600 mt-0.5">{(child.children || []).length + i + 1}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
               </div>
             )}
           </section>
@@ -966,7 +1297,6 @@
 
     // ACF Page
     function ACFPage({ user }) {
-      const [selectedRoot, setSelectedRoot] = useState(user.worldId);
       const [userNetwork, setUserNetwork] = useState([]);
       const [isLoading, setIsLoading] = useState(true);
 
@@ -1046,23 +1376,22 @@
             </div>
           </header>
 
-          {/* Root Selector */}
+          {/* Root Info */}
           <section className="p-4 border-b border-slate-800 bg-slate-900/40">
-            <label className="block text-sm font-medium mb-2">Root ที่ต้องการดู</label>
-            <select
-              value={selectedRoot}
-              onChange={(e) => setSelectedRoot(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              disabled={isLoading || userNetwork.length === 0}
-            >
-              {userNetwork.map((node) => (
-                <option key={node.id} value={node.userId}>
-                  {node.userId} - {node.username}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="block text-sm font-medium mb-1">Root ที่ต้องการดู</label>
+                <div className="text-base font-semibold text-emerald-400">
+                  {user.worldId} - {user.username}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-slate-400">Level</div>
+                <div className="text-lg font-bold">{user.level || 0}</div>
+              </div>
+            </div>
             <p className="text-xs text-slate-400 mt-2">
-              * ข้อมูลจากฐานข้อมูลจริง - แสดงเฉพาะเครือข่ายภายใต้สายงานของคุณ
+              * ข้อมูลจากฐานข้อมูลจริง - แสดงเครือข่ายภายใต้สายงานของคุณ
             </p>
           </section>
 
@@ -1182,20 +1511,27 @@
         <div className="pb-4">
           <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800 px-4 py-3 flex items-center justify-between">
             <h1 className="text-base font-semibold">โปรไฟล์</h1>
-            {!editing ? (
-              <button onClick={() => setEditing(true)} className="px-3 py-1.5 bg-emerald-600 rounded-lg text-xs">
-                แก้ไข
-              </button>
-            ) : (
-              <div className="flex gap-2">
-                <button onClick={() => { setEditing(false); setForm(user); }} className="px-3 py-1.5 bg-slate-700 rounded-lg text-xs">
-                  ยกเลิก
-                </button>
-                <button onClick={handleSave} className="px-3 py-1.5 bg-emerald-600 rounded-lg text-xs">
-                  บันทึก
-                </button>
-              </div>
-            )}
+            <div className="flex gap-2">
+              {!editing ? (
+                <>
+                  <button onClick={() => setEditing(true)} className="px-3 py-1.5 bg-emerald-600 rounded-lg text-xs">
+                    แก้ไข
+                  </button>
+                  <button onClick={handleLogout} className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 rounded-lg text-xs">
+                    ออกจากระบบ
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => { setEditing(false); setForm(user); }} className="px-3 py-1.5 bg-slate-700 rounded-lg text-xs">
+                    ยกเลิก
+                  </button>
+                  <button onClick={handleSave} className="px-3 py-1.5 bg-emerald-600 rounded-lg text-xs">
+                    บันทึก
+                  </button>
+                </>
+              )}
+            </div>
           </header>
 
           {/* Profile Header */}
@@ -1296,52 +1632,8 @@
             </div>
           </section>
 
-          {/* Stats */}
-          <section className="px-4 py-4 border-b border-slate-800">
-            <div className="grid grid-cols-3 gap-3">
-              <div className="text-center">
-                <div className="text-sm text-slate-400">ยอดขาย</div>
-                <div className="text-lg font-bold text-emerald-300">{user.totalSales}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm text-slate-400">ยอดซื้อ</div>
-                <div className="text-lg font-bold text-cyan-300">{user.totalPurchases}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm text-slate-400">Trust</div>
-                <div className="text-lg font-bold text-slate-300">{user.trustScore}</div>
-              </div>
-            </div>
-          </section>
-
-          {/* Finpoint */}
-          <section className="px-4 py-4">
-            <div className="bg-gradient-to-br from-emerald-900/60 to-teal-900/60 border border-emerald-700/50 rounded-2xl p-4">
-              <h3 className="text-xs uppercase text-emerald-300 mb-3">Finpoint</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">Own FP</div>
-                  <div className="text-xl font-bold text-emerald-300">{user.ownFinpoint.toLocaleString()}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">Total FP</div>
-                  <div className="text-xl font-semibold text-teal-300">{user.totalFinpoint.toLocaleString()}</div>
-                </div>
-              </div>
-            </div>
-          </section>
-
           {/* Info Form */}
           <section className="px-4 pb-4 space-y-3">
-            {/* Logout Button */}
-            <button
-              onClick={handleLogout}
-              className="w-full px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
-            >
-              <span>🚪</span>
-              <span>ออกจากระบบ</span>
-            </button>
-
             {/* ข้อมูลส่วนตัว */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
               <h3 className="text-sm font-semibold">ข้อมูลส่วนตัว</h3>
@@ -1409,7 +1701,7 @@
       );
     }
 
-    function ExpCard({ exp }) {
+    function ExpCard({ exp, selectedProducts = [], onSettingsClick }) {
       const percent = exp.target > 0 ? Math.min(100, Math.round((exp.current / exp.target) * 100)) : 0;
       const canUse = exp.current >= exp.target;
 
@@ -1417,8 +1709,53 @@
         <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <h4 className="text-sm font-medium">{exp.label}</h4>
-            <span className="text-xs text-slate-400">{percent}%</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400">{percent}%</span>
+              <button
+                onClick={() => onSettingsClick(exp)}
+                className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-xs transition-colors"
+                title="ตั้งค่าแผนประกัน"
+              >
+                ⚙️
+              </button>
+            </div>
           </div>
+
+          {/* Selected Insurance Products */}
+          {selectedProducts.length > 0 && (
+            <div className="mb-3 space-y-2">
+              {selectedProducts.map((product, idx) => (
+                <div key={idx} className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50">
+                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-slate-200 truncate">{product.shortTitle}</div>
+                      <div className="text-[10px] text-slate-400">{product.insurerCompanyName}</div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className="text-xs font-semibold text-emerald-300">{parseFloat(product.premiumTotal).toLocaleString()} ฿</div>
+                      <div className="text-[10px] text-cyan-400">{parseFloat(product.finpointRatePer100).toFixed(1)} FP/100฿</div>
+                    </div>
+                  </div>
+                  {/* Progress bar for this insurance */}
+                  <div className="w-full h-1.5 rounded-full bg-slate-700 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all"
+                      style={{ width: `${Math.min(100, (exp.current / parseFloat(product.premiumTotal)) * 100)}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-[10px] text-slate-500">
+                      ต้องสะสม {parseFloat(product.premiumTotal).toLocaleString()} FP
+                    </span>
+                    <span className="text-[10px] text-emerald-400 font-medium">
+                      {Math.min(exp.current, parseFloat(product.premiumTotal)).toLocaleString()} / {parseFloat(product.premiumTotal).toLocaleString()} FP
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-2">
             <div className="h-full bg-emerald-400 transition-all" style={{ width: `${percent}%` }}></div>
           </div>
@@ -1663,7 +2000,7 @@
       const navItems = [
         { id: 'home', icon: '🏠', label: 'Home' },
         { id: 'transactions', icon: '📋', label: 'รายการ' },
-        { id: 'tree', icon: '🌳', label: 'Tree' },
+        { id: 'tree', icon: '🕸️', label: 'Tree' },
         { id: 'acf', icon: '🔗', label: 'ACF' },
         { id: 'profile', icon: '👤', label: 'Profile' },
       ];
