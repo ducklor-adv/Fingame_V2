@@ -2,3 +2,4 @@
 
 # Ignore big binaries and final installers
 Final/
+frontend/node_modules/
