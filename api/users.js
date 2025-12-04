@@ -261,6 +261,117 @@ router.get('/username/:username', async (req, res) => {
 });
 
 /**
+ * POST /api/users/google-signin
+ * Register or login with Google
+ */
+router.post('/google-signin', async (req, res) => {
+  try {
+    const { googleId, email, firstName, lastName, avatarUrl } = req.body;
+
+    if (!googleId || !email) {
+      return res.status(400).json({ error: 'Missing required fields: googleId and email' });
+    }
+
+    // Check if user already exists by email
+    const existingUser = await pool.query(
+      `${baseUserSelect} WHERE u.email = $1`,
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      // User exists, return their profile
+      const profile = mapUserProfile(existingUser.rows[0]);
+      return res.json(profile);
+    }
+
+    // Generate unique World ID
+    const generateWorldId = async () => {
+      const year = new Date().getFullYear().toString().slice(-2);
+      let attempts = 0;
+      const maxAttempts = 100;
+
+      while (attempts < maxAttempts) {
+        const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const worldId = `${year}${random}`;
+
+        // Check if World ID already exists
+        const checkResult = await pool.query(
+          'SELECT id FROM users WHERE world_id = $1',
+          [worldId]
+        );
+
+        if (checkResult.rows.length === 0) {
+          return worldId;
+        }
+
+        attempts++;
+      }
+
+      throw new Error('Failed to generate unique World ID');
+    };
+
+    const worldId = await generateWorldId();
+
+    // Generate username from email (before @)
+    const baseUsername = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
+    let username = baseUsername;
+    let usernameAttempt = 1;
+
+    // Ensure username is unique
+    while (true) {
+      const checkUsername = await pool.query(
+        'SELECT id FROM users WHERE username = $1',
+        [username]
+      );
+
+      if (checkUsername.rows.length === 0) {
+        break;
+      }
+
+      username = `${baseUsername}${usernameAttempt}`;
+      usernameAttempt++;
+    }
+
+    // Create new user
+    const now = Date.now();
+    const insertResult = await pool.query(
+      `INSERT INTO users (
+        world_id, username, email, first_name, last_name, avatar_url,
+        regist_type, user_type, level, run_number,
+        is_active, is_verified, verification_level, trust_score,
+        own_finpoint, total_finpoint, max_network,
+        child_count, max_children, acf_accepting,
+        total_sales, total_purchases,
+        estimated_inventory_value, estimated_item_count,
+        created_at, updated_at, last_login
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6,
+        'google', 'member', 1, 1,
+        true, true, 1, 50.0,
+        0, 0, 7,
+        0, 7, true,
+        0, 0,
+        0, 0,
+        $7, $7, $7
+      ) RETURNING *`,
+      [worldId, username, email, firstName || 'User', lastName || '', avatarUrl, now]
+    );
+
+    // Fetch the created user with joined data
+    const result = await pool.query(
+      `${baseUserSelect} WHERE u.id = $1`,
+      [insertResult.rows[0].id]
+    );
+
+    const profile = mapUserProfile(result.rows[0]);
+    res.status(201).json(profile);
+  } catch (error) {
+    console.error('Error in Google Sign-In:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
+  }
+});
+
+/**
  * POST /api/users/:id/upload-avatar
  * Upload profile avatar image
  */
