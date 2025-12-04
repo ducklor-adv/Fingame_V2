@@ -43,35 +43,22 @@ router.get('/:userId/levels', async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Get user's FP spent on each level (from ledger)
-    const result = await pool.query(
-      `SELECT
-        simulated_source_type,
-        SUM(simulated_fp_amount) as total_spent
-      FROM simulated_fp_ledger
-      WHERE user_id = $1
-        AND dr_cr = 'CR'
-        AND simulated_source_type LIKE 'insurance_%'
-      GROUP BY simulated_source_type`,
+    // Get user's total FP balance from commission_pool_distribution
+    const balanceResult = await pool.query(
+      `SELECT COALESCE(SUM(amount), 0) as total_balance
+       FROM commission_pool_distribution
+       WHERE recipient_user_id = $1`,
       [userId]
     );
 
-    // Build progress map
-    const progressMap = {};
-    result.rows.forEach(row => {
-      const levelMatch = row.simulated_source_type.match(/LEVEL_(\d+)/);
-      if (levelMatch) {
-        const levelCode = `LEVEL_${levelMatch[1]}`;
-        progressMap[levelCode] = parseFloat(row.total_spent);
-      }
-    });
+    const currentBalance = parseFloat(balanceResult.rows[0].total_balance);
 
-    // Build response
+    // Build response - show current balance for all levels
     const levels = Object.entries(LEVELS).map(([code, config]) => ({
       code,
       label: config.label,
       target: config.target,
-      current: progressMap[code] || 0,
+      current: currentBalance, // Show total FP balance for all levels
     }));
 
     res.json({ levels });
@@ -263,8 +250,11 @@ router.get('/products', async (req, res) => {
         coverage_term_months, sum_insured_main, coverage_detail_json,
         currency_code, premium_total, premium_base,
         tax_vat_percent, tax_vat_amount, government_levy_amount, stamp_duty_amount,
-        commission_percent, commission_to_fingrow_percent, commission_to_network_percent,
-        finpoint_rate_per_100, finpoint_distribution_config, fingrow_level,
+        commission_percent, commission_to_fingrow_percent,
+        commission_seller_percent, commission_pool_percent,
+        commission_amount, commission_fingrow_amount,
+        commission_seller_amount, commission_pool_amount,
+        finpoint_price, finpoint_rate_per_100, finpoint_distribution_config, fingrow_level,
         cover_image_url, brochure_url, tags,
         is_active, is_featured, sort_order, effective_from, effective_to,
         created_at, updated_at
@@ -316,7 +306,13 @@ router.get('/products', async (req, res) => {
         stampDutyAmount: row.stamp_duty_amount,
         commissionPercent: row.commission_percent,
         commissionToFingrowPercent: row.commission_to_fingrow_percent,
-        commissionToNetworkPercent: row.commission_to_network_percent,
+        commissionSellerPercent: row.commission_seller_percent,
+        commissionPoolPercent: row.commission_pool_percent,
+        commissionAmount: row.commission_amount,
+        commissionFingrowAmount: row.commission_fingrow_amount,
+        commissionSellerAmount: row.commission_seller_amount,
+        commissionPoolAmount: row.commission_pool_amount,
+        finpointPrice: row.finpoint_price,
         finpointRatePer100: row.finpoint_rate_per_100,
         finpointDistributionConfig: row.finpoint_distribution_config,
         fingrowLevel: row.fingrow_level,
@@ -567,6 +563,251 @@ router.put('/selections/:selectionId/priority', async (req, res) => {
   } catch (error) {
     console.error('Error updating selection priority:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/insurance/:userId/purchased
+ * Get list of insurance products that user has already purchased
+ */
+router.get('/:userId/purchased', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const result = await pool.query(
+      `SELECT DISTINCT insurance_product_id
+       FROM insurance_orders
+       WHERE user_id = $1 AND order_status = 'COMPLETED'`,
+      [userId]
+    );
+
+    const purchasedProductIds = result.rows.map(row => row.insurance_product_id);
+
+    res.json({
+      userId,
+      purchasedProductIds
+    });
+  } catch (error) {
+    console.error('Error fetching purchased products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/insurance/purchase
+ * Purchase insurance product using Finpoint from commission pool
+ */
+router.post('/purchase', async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const { userId, insuranceProductId } = req.body;
+    console.log('🛒 Purchase request:', { userId, insuranceProductId });
+
+    if (!userId || !insuranceProductId) {
+      console.log('❌ Missing required fields');
+      return res.status(400).json({ error: 'userId and insuranceProductId are required' });
+    }
+
+    await client.query('BEGIN');
+
+    // Get user's current FP balance from commission_pool_distribution
+    const balanceResult = await client.query(
+      `SELECT COALESCE(SUM(amount), 0) as current_balance
+       FROM commission_pool_distribution
+       WHERE recipient_user_id = $1`,
+      [userId]
+    );
+
+    const currentBalance = parseFloat(balanceResult.rows[0].current_balance);
+    console.log('💰 Current FP balance:', currentBalance);
+
+    // Get insurance product details including distribution config
+    const productResult = await client.query(
+      `SELECT id, title, short_title, finpoint_price, premium_total, fingrow_level,
+              commission_percent, commission_amount, commission_fingrow_amount,
+              commission_seller_amount, commission_pool_amount,
+              finpoint_distribution_config
+       FROM insurance_product
+       WHERE id = $1 AND is_active = true AND deleted_at IS NULL`,
+      [insuranceProductId]
+    );
+
+    console.log('📦 Product query result:', { found: productResult.rows.length, insuranceProductId });
+
+    if (productResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      console.log('❌ Product not found or not active');
+      return res.status(404).json({ error: 'Insurance product not found or not active' });
+    }
+
+    const product = productResult.rows[0];
+    const finpointPrice = parseFloat(product.finpoint_price || product.premium_total);
+
+    // Check if user has enough FP
+    if (currentBalance < finpointPrice) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({
+        error: 'Insufficient Finpoint balance',
+        required: finpointPrice,
+        current: currentBalance,
+        missing: finpointPrice - currentBalance
+      });
+    }
+
+    // Generate order number
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+    const countResult = await client.query(
+      `SELECT COUNT(*) as count FROM insurance_orders WHERE created_at >= CURRENT_DATE`
+    );
+    const orderCount = parseInt(countResult.rows[0].count) + 1;
+    const orderNumber = `INS-${dateStr}-${orderCount.toString().padStart(4, '0')}`;
+
+    // Create insurance order
+    const orderResult = await client.query(
+      `INSERT INTO insurance_orders (
+        order_number,
+        user_id,
+        insurance_product_id,
+        order_status,
+        finpoint_spent,
+        premium_amount,
+        commission_rate,
+        total_commission,
+        management_fee,
+        seller_commission,
+        commission_pool,
+        payment_method,
+        created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
+      RETURNING id, created_at`,
+      [
+        orderNumber,
+        userId,
+        insuranceProductId,
+        'COMPLETED',
+        finpointPrice,
+        product.premium_total,
+        product.commission_percent,
+        product.commission_amount,
+        product.commission_fingrow_amount,
+        product.commission_seller_amount,
+        product.commission_pool_amount,
+        'finpoint'
+      ]
+    );
+
+    const orderId = orderResult.rows[0].id;
+    const orderDate = orderResult.rows[0].created_at;
+
+    // Deduct FP from commission pool by creating negative entry
+    await client.query(
+      `INSERT INTO commission_pool_distribution (
+        insurance_order_id,
+        recipient_user_id,
+        recipient_role,
+        upline_level,
+        share_portion,
+        amount,
+        distributed_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+      [orderId, userId, 'finpoint_spent', null, 0, -finpointPrice]
+    );
+
+    // Distribute commission pool to upline and self
+    const distributionConfig = product.finpoint_distribution_config || { levels: [40, 20, 15, 10, 7, 5, 3], self_bonus: 15 };
+    const commissionPoolAmount = parseFloat(product.commission_pool_amount);
+
+    // Get user's upline path
+    const uplineResult = await client.query(
+      `WITH RECURSIVE upline_path AS (
+        SELECT id, parent_id, 1 as level
+        FROM users
+        WHERE id = $1
+        UNION ALL
+        SELECT u.id, u.parent_id, up.level + 1
+        FROM users u
+        INNER JOIN upline_path up ON u.id = up.parent_id
+        WHERE up.level < 7
+      )
+      SELECT id, level FROM upline_path WHERE level > 1 ORDER BY level`,
+      [userId]
+    );
+
+    const uplineUsers = uplineResult.rows;
+
+    // Distribute to upline (7 levels)
+    for (let i = 0; i < distributionConfig.levels.length; i++) {
+      const uplineLevel = i + 1;
+      const sharePercent = distributionConfig.levels[i];
+      const shareAmount = (commissionPoolAmount * sharePercent) / 100;
+
+      if (uplineUsers[i]) {
+        // Has upline at this level - distribute to upline
+        await client.query(
+          `INSERT INTO commission_pool_distribution (
+            insurance_order_id,
+            recipient_user_id,
+            recipient_role,
+            upline_level,
+            share_portion,
+            amount,
+            distributed_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+          [orderId, uplineUsers[i].id, 'upline', uplineLevel, sharePercent, shareAmount]
+        );
+      }
+      // If no upline at this level, the commission stays with Fingrow (no record created)
+    }
+
+    // Distribute self bonus back to buyer
+    const selfBonusPercent = distributionConfig.self_bonus || 0;
+    if (selfBonusPercent > 0) {
+      const selfBonusAmount = (commissionPoolAmount * selfBonusPercent) / 100;
+      await client.query(
+        `INSERT INTO commission_pool_distribution (
+          insurance_order_id,
+          recipient_user_id,
+          recipient_role,
+          upline_level,
+          share_portion,
+          amount,
+          distributed_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+        [orderId, userId, 'self_bonus', null, selfBonusPercent, selfBonusAmount]
+      );
+    }
+
+    await client.query('COMMIT');
+
+    // Calculate new balance
+    const newBalance = currentBalance - finpointPrice;
+
+    console.log('✅ Purchase successful:', { orderId, finpointSpent: finpointPrice, newBalance });
+
+    res.status(201).json({
+      success: true,
+      message: 'Insurance purchased successfully',
+      data: {
+        orderId: orderId,
+        orderDate: orderDate,
+        product: {
+          id: product.id,
+          title: product.short_title || product.title,
+          level: product.fingrow_level
+        },
+        finpointSpent: finpointPrice,
+        newBalance: newBalance
+      }
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('❌ Error purchasing insurance:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
+  } finally {
+    client.release();
   }
 });
 

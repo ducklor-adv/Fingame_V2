@@ -16,7 +16,18 @@
       "Bash(node add_new_user.js:*)",
       "Bash(python:*)",
       "Bash(start:*)",
-      "Bash(node add_three_users.js:*)"
+      "Bash(node add_three_users.js:*)",
+      "Bash(node add_four_users.js:*)",
+      "Bash(node update_acf_function.js:*)",
+      "Bash(node:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -h localhost -p 5433 -U fingrow_user -d fingame -c \"SELECT world_id FROM users ORDER BY world_id DESC LIMIT 10;\")",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill //F //PID 51620)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -h localhost -p 5433 -U fingrow_user -d fingame -c \"\\dt\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -h localhost -p 5433 -U fingrow_user -d fingame -c \"SELECT DISTINCT insurer_company_name FROM insurance_product LIMIT 10;\")",
+      "Bash(git add:*)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []

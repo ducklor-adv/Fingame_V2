@@ -37,6 +37,12 @@ app.get('/fingrow-app-mobile', (req, res) => {
   res.sendFile(__dirname + '/fingrow-app-mobile.html');
 });
 
+// Register page - redirect to mobile app with ref parameter
+app.get('/register', (req, res) => {
+  const refCode = req.query.ref || '';
+  res.redirect(`/fingrow-app-mobile.html${refCode ? '?ref=' + refCode : ''}`);
+});
+
 // ---------- Routes ----------
 
 app.get('/', (req, res) => {

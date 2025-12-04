@@ -261,12 +261,41 @@ router.get('/username/:username', async (req, res) => {
 });
 
 /**
+ * GET /api/users/referral/:code
+ * Get user by referral code (World ID, invite_code, or username)
+ */
+router.get('/referral/:code', async (req, res) => {
+  try {
+    const { code } = req.params;
+
+    const result = await pool.query(
+      `${baseUserSelect}
+       WHERE u.world_id = $1
+          OR u.invite_code = $1
+          OR u.username = $1
+       LIMIT 1`,
+      [code]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const profile = mapUserProfile(result.rows[0]);
+    res.json(profile);
+  } catch (error) {
+    console.error('Error fetching user by referral code:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * POST /api/users/google-signin
  * Register or login with Google
  */
 router.post('/google-signin', async (req, res) => {
   try {
-    const { googleId, email, firstName, lastName, avatarUrl } = req.body;
+    const { googleId, email, firstName, lastName, avatarUrl, referralCode } = req.body;
 
     if (!googleId || !email) {
       return res.status(400).json({ error: 'Missing required fields: googleId and email' });
@@ -332,12 +361,62 @@ router.post('/google-signin', async (req, res) => {
       usernameAttempt++;
     }
 
-    // Create new user
-    const now = Date.now();
+    // Determine inviter: use referralCode if provided, otherwise System Root
+    let inviterId;
+    if (referralCode) {
+      // Find inviter by referral code (try World ID, invite_code, or username)
+      const inviterResult = await pool.query(
+        `SELECT id FROM users
+         WHERE world_id = $1
+            OR invite_code = $1
+            OR username = $1
+         LIMIT 1`,
+        [referralCode]
+      );
+
+      if (inviterResult.rows.length === 0) {
+        return res.status(400).json({
+          error: `รหัสแนะนำไม่ถูกต้อง: ${referralCode}`,
+          message: 'ไม่พบรหัสแนะนำในระบบ กรุณาตรวจสอบและลองใหม่อีกครั้ง'
+        });
+      }
+
+      inviterId = inviterResult.rows[0].id;
+    } else {
+      // Use System Root as default inviter
+      const systemRootResult = await pool.query(
+        'SELECT id FROM users WHERE world_id = $1',
+        ['25AAA0000']
+      );
+
+      if (systemRootResult.rows.length === 0) {
+        throw new Error('System Root user not found. Please ensure 25AAA0000 exists.');
+      }
+
+      inviterId = systemRootResult.rows[0].id;
+    }
+
+    // Get next run_number
+    const runNumberResult = await pool.query(
+      'SELECT COALESCE(MAX(run_number), 0) + 1 as next_run_number FROM users'
+    );
+    const runNumber = runNumberResult.rows[0].next_run_number;
+
+    // Find best parent using ACF placement function
+    const placementResult = await pool.query(
+      'SELECT find_next_acf_parent($1) as parent_id',
+      [inviterId] // Start searching from inviter's network
+    );
+    const parentId = placementResult.rows[0].parent_id;
+
+    // Create new user with inviter and ACF parent
+    const nowTimestamp = Date.now(); // BIGINT for created_at, updated_at
+    const nowDate = new Date(); // TIMESTAMP for last_login
     const insertResult = await pool.query(
       `INSERT INTO users (
         world_id, username, email, first_name, last_name, avatar_url,
         regist_type, user_type, level, run_number,
+        inviter_id, parent_id,
         is_active, is_verified, verification_level, trust_score,
         own_finpoint, total_finpoint, max_network,
         child_count, max_children, acf_accepting,
@@ -346,16 +425,25 @@ router.post('/google-signin', async (req, res) => {
         created_at, updated_at, last_login
       ) VALUES (
         $1, $2, $3, $4, $5, $6,
-        'google', 'member', 1, 1,
+        'google', 'member', 1, $7,
+        $8, $9,
         true, true, 1, 50.0,
         0, 0, 7,
-        0, 7, true,
+        0, 5, true,
         0, 0,
         0, 0,
-        $7, $7, $7
+        $10, $10, $11
       ) RETURNING *`,
-      [worldId, username, email, firstName || 'User', lastName || '', avatarUrl, now]
+      [worldId, username, email, firstName || 'User', lastName || '', avatarUrl, runNumber, inviterId, parentId, nowTimestamp, nowDate]
     );
+
+    // Update parent's child_count
+    if (parentId) {
+      await pool.query(
+        'UPDATE users SET child_count = child_count + 1 WHERE id = $1',
+        [parentId]
+      );
+    }
 
     // Fetch the created user with joined data
     const result = await pool.query(

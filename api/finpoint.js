@@ -30,22 +30,30 @@ router.get('/:userId/balance', async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const result = await pool.query(
-      `SELECT
-        own_finpoint,
-        total_finpoint
-      FROM users
-      WHERE id = $1`,
+    // Check if user exists
+    const userCheck = await pool.query(
+      'SELECT id FROM users WHERE id = $1',
       [userId]
     );
 
-    if (result.rows.length === 0) {
+    if (userCheck.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Calculate balance from commission_pool_distribution
+    const balanceResult = await pool.query(
+      `SELECT
+        COALESCE(SUM(amount), 0) as current_balance
+      FROM commission_pool_distribution
+      WHERE recipient_user_id = $1`,
+      [userId]
+    );
+
+    const currentBalance = parseFloat(balanceResult.rows[0].current_balance);
+
     res.json({
-      currentBalance: parseFloat(result.rows[0].own_finpoint),
-      totalEarned: parseFloat(result.rows[0].total_finpoint),
+      currentBalance: currentBalance,
+      totalEarned: currentBalance, // For now, same as current balance
     });
   } catch (error) {
     console.error('Error fetching FP balance:', error);
