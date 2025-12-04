@@ -80,6 +80,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<UserProfile>>({});
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Load user profile
   useEffect(() => {
@@ -129,6 +130,37 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 
   const handleChange = (field: keyof UserProfile, value: any) => {
     setEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingAvatar(true);
+
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const response = await fetch(`/api/users/${userId}/upload-avatar`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar');
+      }
+
+      const data = await response.json();
+      setProfile(data.profile);
+      setEditForm(data.profile);
+      onUpdate?.(data.profile);
+    } catch (error) {
+      console.error('Failed to upload avatar:', error);
+      alert('ไม่สามารถอัปโหลดรูปภาพได้ กรุณาลองใหม่');
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   if (loading) {
@@ -220,12 +252,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({
           <div className="px-6 pb-6">
             <div className="flex items-end gap-6 -mt-16">
               {/* Avatar */}
-              <div className="relative">
+              <div className="relative group">
                 <div className="w-32 h-32 rounded-full border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-4xl overflow-hidden">
                   {profile.avatarUrl ? (
                     <img src={profile.avatarUrl} alt={profile.username} className="w-full h-full object-cover" />
                   ) : (
                     <span>👤</span>
+                  )}
+                  {uploadingAvatar && (
+                    <div className="absolute inset-0 bg-slate-900/80 flex items-center justify-center">
+                      <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
                   )}
                 </div>
                 {profile.isVerified && (
@@ -233,6 +270,19 @@ export const UserProfile: React.FC<UserProfileProps> = ({
                     ✓
                   </div>
                 )}
+                {/* Upload button overlay */}
+                <label className="absolute inset-0 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="w-full h-full rounded-full bg-slate-900/70 flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">📷 เปลี่ยนรูป</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                    disabled={uploadingAvatar}
+                  />
+                </label>
               </div>
 
               {/* User Info */}

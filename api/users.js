@@ -10,8 +10,49 @@
 
 const express = require('express');
 const { Pool } = require('pg');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '..', 'uploads', 'profiles');
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Generate unique filename: userId_timestamp.ext
+    const userId = req.params.id;
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    cb(null, `${userId}_${timestamp}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: function (req, file, cb) {
+    // Accept images only
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed (jpeg, jpg, png, gif, webp)'));
+    }
+  }
+});
 
 // PostgreSQL connection
 // Note: Docker container uses 'trust' authentication internally
@@ -216,6 +257,61 @@ router.get('/username/:username', async (req, res) => {
   } catch (error) {
     console.error('Error fetching user by username:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/users/:id/upload-avatar
+ * Upload profile avatar image
+ */
+router.post('/:id/upload-avatar', upload.single('avatar'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Get the file path relative to server root
+    const filename = req.file.filename;
+    const avatarUrl = `/uploads/profiles/${filename}`;
+
+    // Delete old profile image if exists
+    const userResult = await pool.query(
+      'SELECT profile_image_filename FROM users WHERE id = $1',
+      [id]
+    );
+
+    if (userResult.rows.length > 0 && userResult.rows[0].profile_image_filename) {
+      const oldFilePath = path.join(__dirname, '..', 'uploads', 'profiles', userResult.rows[0].profile_image_filename);
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath);
+      }
+    }
+
+    // Update user profile with new avatar
+    const result = await pool.query(
+      `UPDATE users
+       SET avatar_url = $1,
+           profile_image_filename = $2
+       WHERE id = $3
+       RETURNING *`,
+      [avatarUrl, filename, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const profile = mapUserProfile(result.rows[0]);
+    res.json({
+      message: 'Avatar uploaded successfully',
+      avatarUrl,
+      profile
+    });
+  } catch (error) {
+    console.error('Error uploading avatar:', error);
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 

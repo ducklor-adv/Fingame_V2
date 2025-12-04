@@ -29,6 +29,8 @@ app.use(morgan('dev'));
 app.use(express.static('dist'));
 // Also serve from current directory (for development)
 app.use(express.static('.'));
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
 
 // Serve HTML file on root path for direct access
 app.get('/fingrow-app-mobile', (req, res) => {

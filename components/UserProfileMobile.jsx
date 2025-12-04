@@ -81,6 +81,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<UserProfile>>({});
   const [activeTab, setActiveTab] = useState<'info' | 'address' | 'settings'>('info');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Load user profile
   useEffect(() => {
@@ -130,6 +131,37 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 
   const handleChange = (field: keyof UserProfile, value: any) => {
     setEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingAvatar(true);
+
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const response = await fetch(`/api/users/${userId}/upload-avatar`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar');
+      }
+
+      const data = await response.json();
+      setProfile(data.profile);
+      setEditForm(data.profile);
+      onUpdate?.(data.profile);
+    } catch (error) {
+      console.error('Failed to upload avatar:', error);
+      alert('ไม่สามารถอัปโหลดรูปภาพได้ กรุณาลองใหม่');
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   if (loading) {
@@ -227,12 +259,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         <div className="px-4 pb-4">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-12 sm:-mt-16">
             {/* Avatar */}
-            <div className="relative flex-shrink-0">
+            <div className="relative flex-shrink-0 group">
               <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-3xl sm:text-4xl overflow-hidden">
                 {profile.avatarUrl ? (
                   <img src={profile.avatarUrl} alt={profile.username} className="w-full h-full object-cover" />
                 ) : (
                   <span>👤</span>
+                )}
+                {uploadingAvatar && (
+                  <div className="absolute inset-0 bg-slate-900/80 flex items-center justify-center">
+                    <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
                 )}
               </div>
               {profile.isVerified && (
@@ -240,6 +277,36 @@ export const UserProfile: React.FC<UserProfileProps> = ({
                   ✓
                 </div>
               )}
+              {/* Upload button - visible on mobile, hover on desktop */}
+              <label className="absolute inset-0 rounded-full cursor-pointer opacity-0 active:opacity-100 sm:group-hover:opacity-100 transition-opacity">
+                <div className="w-full h-full rounded-full bg-slate-900/70 flex flex-col items-center justify-center">
+                  <span className="text-2xl sm:text-3xl">📷</span>
+                  <span className="text-white text-xs sm:text-sm font-medium mt-1">เปลี่ยนรูป</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                  disabled={uploadingAvatar}
+                />
+              </label>
+              {/* Mobile: Tap to upload button */}
+              <button
+                onClick={() => document.getElementById('mobile-avatar-upload')?.click()}
+                className="absolute -bottom-2 right-0 sm:hidden w-10 h-10 bg-emerald-600 rounded-full border-4 border-slate-900 flex items-center justify-center text-lg shadow-lg active:scale-95 transition-transform"
+                disabled={uploadingAvatar}
+              >
+                📷
+              </button>
+              <input
+                id="mobile-avatar-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+                disabled={uploadingAvatar}
+              />
             </div>
 
             {/* User Info - centered on mobile */}

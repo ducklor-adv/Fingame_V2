@@ -141,7 +141,7 @@
             ]);
 
             setDashboardData({
-              currentFpBalance: finpoint.balance || 0,
+              currentFpBalance: finpoint.currentBalance || 0,
               lastUpdated: new Date().toLocaleString('th-TH'),
               todayEarned: today.totalEarned || 0,
               todayFromSecondhand: today.fromSecondhand || 0,
@@ -209,7 +209,7 @@
       return (
         <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
           {/* Content */}
-          {currentPage === 'home' && <HomePage data={dashboardData} user={userData} />}
+          {currentPage === 'home' && <HomePage data={dashboardData} user={userData} onRefresh={fetchUserData} setDashboardData={setDashboardData} />}
           {currentPage === 'transactions' && <TransactionsPage data={dashboardData} user={userData} />}
           {currentPage === 'tree' && <TreePage user={userData} />}
           {currentPage === 'acf' && <ACFPage user={userData} />}
@@ -523,7 +523,7 @@
               const levelSelections = selectionsData.selections
                 .filter(s => s.product.fingrowLevel === level)
                 .map(s => s.insuranceProductId);
-              setSelectedProducts(levelSelections);
+              setModalSelectedProducts(levelSelections);
             }
           } catch (error) {
             console.error('Error fetching insurance data:', error);
@@ -630,12 +630,8 @@
                           <h3 className="font-medium text-sm mb-1">{product.shortTitle || product.title}</h3>
                           <div className="text-xs text-slate-400 mb-2">{product.insurerCompanyName}</div>
                           <div className="flex items-center gap-3 text-xs">
-                            <span className="text-emerald-300 font-medium">
-                              {product.premiumTotal?.toLocaleString()} THB
-                            </span>
-                            <span className="text-slate-500">•</span>
-                            <span className="text-cyan-300">
-                              {product.finpointRatePer100} FP/100฿
+                            <span className="text-cyan-300 font-medium">
+                              {product.finpointPrice?.toLocaleString()} FP
                             </span>
                           </div>
                         </div>
@@ -668,14 +664,33 @@
     }
 
     // Home Page (Dashboard)
-    function HomePage({ data, user }) {
+    function HomePage({ data, user, onRefresh, setDashboardData }) {
       const [showInsuranceModal, setShowInsuranceModal] = useState(false);
       const [selectedLevel, setSelectedLevel] = useState(null);
       const [insuranceSelections, setInsuranceSelections] = useState({});
       const [loadingSelections, setLoadingSelections] = useState(true);
+      const [isAddingFP, setIsAddingFP] = useState(false);
       const [showDemoFinpointModal, setShowDemoFinpointModal] = useState(false);
       const [demoAmount, setDemoAmount] = useState(1000);
+      const [isQuickAdd, setIsQuickAdd] = useState(false); // Track if opened from purchase modal
       const [currentFinpoint, setCurrentFinpoint] = useState(data.currentFpBalance);
+      const [purchasedProductIds, setPurchasedProductIds] = useState([]);
+
+      // Fetch purchased products
+      useEffect(() => {
+        const fetchPurchased = async () => {
+          try {
+            const response = await fetch(`${API_BASE}/api/insurance/${user.id}/purchased`);
+            if (response.ok) {
+              const data = await response.json();
+              setPurchasedProductIds(data.purchasedProductIds || []);
+            }
+          } catch (error) {
+            console.error('Error fetching purchased products:', error);
+          }
+        };
+        fetchPurchased();
+      }, [user.id]);
 
       // Fetch user's insurance selections
       useEffect(() => {
@@ -692,7 +707,11 @@
                 if (!selectionsByLevel[level]) {
                   selectionsByLevel[level] = [];
                 }
-                selectionsByLevel[level].push(selection.product);
+                // Merge selection data with product data so we have insuranceProductId
+                selectionsByLevel[level].push({
+                  ...selection.product,
+                  insuranceProductId: selection.insuranceProductId
+                });
               });
               setInsuranceSelections(selectionsByLevel);
             }
@@ -795,7 +814,12 @@
                   อัปเดตล่าสุด: {data.lastUpdated}
                 </div>
                 <button
-                  onClick={() => setShowDemoFinpointModal(true)}
+                  onClick={() => {
+                    setIsQuickAdd(false);
+                    setDemoAmount(1000);
+                    setShowDemoFinpointModal(true);
+                  }}
+                  data-demo-finpoint
                   className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-yellow-500/50 flex items-center gap-2"
                 >
                   <span>💳</span>
@@ -830,32 +854,46 @@
                       className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-lg font-semibold text-center focus:outline-none focus:border-emerald-500"
                       min="0"
                       step="100"
+                      readOnly={isQuickAdd}
                     />
                     <span className="text-slate-400 font-medium">FP</span>
                   </div>
-                  <div className="flex gap-2 mt-3">
-                    {[500, 1000, 5000, 10000].map(amount => (
-                      <button
-                        key={amount}
-                        onClick={() => setDemoAmount(amount)}
-                        className="flex-1 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs rounded-lg transition-colors"
-                      >
-                        {amount.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
+                  {!isQuickAdd && (
+                    <div className="flex gap-2 mt-3">
+                      {[500, 1000, 5000, 10000].map(amount => (
+                        <button
+                          key={amount}
+                          onClick={() => setDemoAmount(amount)}
+                          className="flex-1 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs rounded-lg transition-colors"
+                        >
+                          {amount.toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {isQuickAdd && (
+                    <div className="mt-2 text-xs text-emerald-400 text-center">
+                      ✓ จำนวนที่ยังขาดสำหรับการซื้อประกัน
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-3">
                   <button
-                    onClick={() => setShowDemoFinpointModal(false)}
+                    onClick={() => {
+                      setShowDemoFinpointModal(false);
+                      setIsQuickAdd(false);
+                    }}
                     className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors"
                   >
                     ยกเลิก
                   </button>
                   <button
                     onClick={async () => {
+                      if (isAddingFP) return; // Prevent double submission
+
                       try {
+                        setIsAddingFP(true);
                         const response = await fetch(`${API_BASE}/api/users/${user.id}/demo-finpoint`, {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
@@ -865,17 +903,34 @@
                           const result = await response.json();
                           setCurrentFinpoint(result.data.newFinpoint);
                           data.currentFpBalance = result.data.newFinpoint;
+
+                          // Refresh insurance levels to update FP balance
+                          const levelsResponse = await fetch(`${API_BASE}/api/insurance/${user.id}/levels`);
+                          if (levelsResponse.ok) {
+                            const levelsData = await levelsResponse.json();
+                            // Update dashboard data with new levels
+                            setDashboardData(prev => ({
+                              ...prev,
+                              currentFpBalance: result.data.newFinpoint,
+                              expProgressList: levelsData.levels || []
+                            }));
+                          }
+
                           setShowDemoFinpointModal(false);
+                          setIsQuickAdd(false);
                           alert(`เติม ${demoAmount.toLocaleString()} FP สำเร็จ!`);
                         }
                       } catch (error) {
                         console.error('Error purchasing demo finpoint:', error);
                         alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
+                      } finally {
+                        setIsAddingFP(false);
                       }
                     }}
-                    className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                    disabled={isAddingFP}
+                    className={`flex-1 px-4 py-3 ${isAddingFP ? 'bg-emerald-800 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'} text-white rounded-lg font-medium transition-colors`}
                   >
-                    รับ Finpoint
+                    {isAddingFP ? 'กำลังเติม...' : 'รับ Finpoint'}
                   </button>
                 </div>
               </div>
@@ -899,7 +954,23 @@
                     key={exp.code}
                     exp={exp}
                     selectedProducts={selectedProducts}
+                    userId={user.id}
+                    currentFpBalance={data.currentFpBalance}
+                    purchasedProductIds={purchasedProductIds}
                     onSettingsClick={handleSettingsClick}
+                    onOpenDemoFinpoint={(amount) => {
+                      setDemoAmount(amount);
+                      setIsQuickAdd(true);
+                      setShowDemoFinpointModal(true);
+                    }}
+                    onPurchaseComplete={() => {
+                      // Refresh data after purchase
+                      if (onRefresh) onRefresh();
+                      // Refresh purchased list
+                      fetch(`${API_BASE}/api/insurance/${user.id}/purchased`)
+                        .then(res => res.json())
+                        .then(data => setPurchasedProductIds(data.purchasedProductIds || []));
+                    }}
                   />
                 );
               })}
@@ -1609,6 +1680,7 @@
     function ProfilePage({ user, setUser, onLogout }) {
       const [editing, setEditing] = useState(false);
       const [form, setForm] = useState(user);
+      const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
       const handleSave = () => {
         setUser(form);
@@ -1619,6 +1691,37 @@
       const handleLogout = () => {
         if (confirm('ต้องการออกจากระบบหรือไม่?')) {
           onLogout();
+        }
+      };
+
+      const handleAvatarUpload = async (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        try {
+          setUploadingAvatar(true);
+
+          const formData = new FormData();
+          formData.append('avatar', file);
+
+          const response = await fetch(`${API_BASE}/api/users/${user.id}/upload-avatar`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to upload avatar');
+          }
+
+          const data = await response.json();
+          setUser(data.profile);
+          setForm(data.profile);
+          alert('✅ อัปโหลดรูปโปรไฟล์สำเร็จ!');
+        } catch (error) {
+          console.error('Failed to upload avatar:', error);
+          alert('❌ ไม่สามารถอัปโหลดรูปภาพได้ กรุณาลองใหม่');
+        } finally {
+          setUploadingAvatar(false);
         }
       };
 
@@ -1654,15 +1757,40 @@
             <div className="h-24 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600"></div>
             <div className="px-4 pb-4 -mt-12">
               <div className="flex flex-col items-center text-center">
-                <div className="relative">
-                  <div className="w-24 h-24 rounded-full border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-3xl">
-                    👤
+                <div className="relative group">
+                  <div className="w-24 h-24 rounded-full border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-3xl overflow-hidden">
+                    {user.avatarUrl ? (
+                      <img src={user.avatarUrl} alt={user.username} className="w-full h-full object-cover" />
+                    ) : (
+                      <span>👤</span>
+                    )}
+                    {uploadingAvatar && (
+                      <div className="absolute inset-0 bg-slate-900/80 flex items-center justify-center">
+                        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
                   </div>
                   {user.isVerified && (
                     <div className="absolute bottom-0 right-0 w-8 h-8 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center text-sm">
                       ✓
                     </div>
                   )}
+                  {/* Upload button */}
+                  <button
+                    onClick={() => document.getElementById('avatar-upload-input').click()}
+                    disabled={uploadingAvatar}
+                    className="absolute -bottom-1 right-0 w-9 h-9 bg-emerald-600 hover:bg-emerald-700 rounded-full border-4 border-slate-900 flex items-center justify-center text-base shadow-lg active:scale-95 transition-transform disabled:opacity-50"
+                  >
+                    📷
+                  </button>
+                  <input
+                    id="avatar-upload-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                    disabled={uploadingAvatar}
+                  />
                 </div>
                 <h2 className="text-xl font-bold mt-3">{user.username}</h2>
                 <p className="text-sm text-slate-400">{user.worldId}</p>
@@ -1802,8 +1930,11 @@
     }
 
     // Helper Components
-    function ExpCard({ exp, selectedProducts = [], onSettingsClick }) {
+    function ExpCard({ exp, selectedProducts = [], onSettingsClick, onOpenDemoFinpoint, userId, currentFpBalance, purchasedProductIds = [], onPurchaseComplete }) {
       const [isExpanded, setIsExpanded] = React.useState(false);
+      const [showPurchaseModal, setShowPurchaseModal] = React.useState(false);
+      const [selectedProduct, setSelectedProduct] = React.useState(null);
+      const [showDuplicateWarning, setShowDuplicateWarning] = React.useState(false);
       const percent = exp.target > 0 ? Math.min(100, Math.round((exp.current / exp.target) * 100)) : 0;
       const canUse = exp.current >= exp.target;
 
@@ -1812,6 +1943,83 @@
       const haveFP = exp.current;
       const needFP = totalRequiredFP;
       const missingFP = Math.max(0, totalRequiredFP - haveFP); // FP that is missing to complete this level
+
+      const handlePurchaseInsurance = (product, currentBalance) => {
+        const finpointPrice = parseFloat(product.finpointPrice || product.premiumTotal);
+        const missingFP = Math.max(0, finpointPrice - currentBalance);
+        const productId = product.insuranceProductId || product.id;
+        const isPurchased = purchasedProductIds.includes(productId);
+
+        setSelectedProduct({ ...product, currentBalance, finpointPrice, missingFP, isPurchased });
+
+        // If already purchased, show duplicate warning
+        if (isPurchased) {
+          setShowDuplicateWarning(true);
+        } else {
+          setShowPurchaseModal(true);
+        }
+      };
+
+      const confirmPurchase = async () => {
+        if (!selectedProduct) return;
+
+        // Check if user has enough FP
+        if (selectedProduct.missingFP > 0) {
+          // Not enough FP - close modal, user needs to add FP via Demo button
+          setShowPurchaseModal(false);
+          setSelectedProduct(null);
+          return;
+        }
+
+        try {
+          // Get product ID - the selection object has insuranceProductId at the root level
+          const productId = selectedProduct.insuranceProductId || selectedProduct.id || selectedProduct.productId;
+
+          if (!productId) {
+            console.error('No product ID found in selectedProduct:', selectedProduct);
+            alert('❌ ข้อมูลสินค้าไม่ครบถ้วน กรุณาลองใหม่อีกครั้ง');
+            setShowPurchaseModal(false);
+            setSelectedProduct(null);
+            return;
+          }
+
+          // Call purchase API
+          const response = await fetch(`${API_BASE}/api/insurance/purchase`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId,
+              insuranceProductId: productId
+            })
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || 'Purchase failed');
+          }
+
+          // Success - show success message
+          alert(`✅ ซื้อประกันสำเร็จ!\n\n` +
+                `รายการ: ${selectedProduct.title}\n` +
+                `ใช้ Finpoint: ${result.data.finpointSpent.toLocaleString('th-TH', {minimumFractionDigits: 2})} FP\n` +
+                `คงเหลือ: ${result.data.newBalance.toLocaleString('th-TH', {minimumFractionDigits: 2})} FP`);
+
+          // Close modal
+          setShowPurchaseModal(false);
+          setSelectedProduct(null);
+
+          // Refresh data via callback
+          if (onPurchaseComplete) {
+            onPurchaseComplete();
+          }
+        } catch (error) {
+          console.error('Error purchasing insurance:', error);
+          alert('❌ เกิดข้อผิดพลาดในการซื้อประกัน: ' + error.message);
+        }
+      };
 
       return (
         <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
@@ -1860,38 +2068,182 @@
               {selectedProducts.map((product, idx) => {
                 if (!product) return null;
 
+                const finpointPrice = parseFloat(product.finpointPrice || product.premiumTotal);
+                const premiumBaht = parseFloat(product.premiumTotal);
+                const missingFP = Math.max(0, finpointPrice - exp.current);
+                const hasEnough = exp.current >= finpointPrice;
+
                 return (
-                <div key={idx} className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50">
-                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div key={idx} className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+                  <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-medium text-slate-200 truncate">{product.shortTitle}</div>
                       <div className="text-[10px] text-slate-400">{product.insurerCompanyName}</div>
+                      <div className="text-[10px] text-slate-300 mt-1">ราคา {premiumBaht.toLocaleString()} บาท</div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <div className="text-xs font-semibold text-emerald-300">{parseFloat(product.premiumTotal).toLocaleString()} ฿</div>
-                      <div className="text-[10px] text-cyan-400">{parseFloat(product.finpointRatePer100).toFixed(1)} FP/100฿</div>
+                      <div className="text-base font-bold text-amber-400">{finpointPrice.toLocaleString()} FP</div>
                     </div>
                   </div>
-                  {/* Progress bar for this insurance */}
-                  <div className="w-full h-1.5 rounded-full bg-slate-700 overflow-hidden">
+
+                  {/* Status message */}
+                  <div className={`text-xs mb-2 ${hasEnough ? 'text-emerald-400' : 'text-orange-400'}`}>
+                    {hasEnough ? '✓ คุณมี Finpoint เพียงพอ' : `⚠ ยังขาด ${missingFP.toLocaleString()} FP`}
+                  </div>
+
+                  {/* Progress bar */}
+                  <div className="w-full h-1.5 rounded-full bg-slate-700 overflow-hidden mb-2">
                     <div
                       className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all"
-                      style={{ width: `${Math.min(100, (exp.current / parseFloat(product.premiumTotal)) * 100)}%` }}
+                      style={{ width: `${Math.min(100, (exp.current / finpointPrice) * 100)}%` }}
                     ></div>
                   </div>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] text-slate-500">
-                      ต้องสะสม {parseFloat(product.premiumTotal).toLocaleString()} FP
-                    </span>
-                    <button
-                      className="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded transition-colors"
-                    >
-                      ซื้อประกัน
-                    </button>
+
+                  <div className="flex items-center justify-end">
+                    {(() => {
+                      const productId = product.insuranceProductId || product.id;
+                      const isPurchased = purchasedProductIds.includes(productId);
+                      return (
+                        <button
+                          onClick={() => handlePurchaseInsurance(product, currentFpBalance)}
+                          className={`text-xs ${isPurchased ? 'bg-slate-600 hover:bg-slate-500' : 'bg-emerald-600 hover:bg-emerald-700'} text-white px-3 py-1.5 rounded transition-colors`}
+                        >
+                          {isPurchased ? 'ซื้อแล้ว (ซื้อซ้ำ?)' : 'ซื้อ (ระบบทดสอบ)'}
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* Purchase Confirmation Modal */}
+          {showPurchaseModal && selectedProduct && (
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+              <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full">
+                <h3 className="text-lg font-semibold mb-4 text-center">
+                  {selectedProduct.missingFP > 0 ? 'Finpoint ไม่เพียงพอ' : 'ยืนยันการซื้อประกัน'}
+                </h3>
+
+                <div className="bg-slate-800/50 rounded-lg p-4 mb-4">
+                  <div className="text-sm text-slate-300 mb-2">{selectedProduct.shortTitle}</div>
+                  <div className="text-xs text-slate-400 mb-3">{selectedProduct.insurerCompanyName}</div>
+                  <div className="text-amber-400 text-lg font-bold text-center">{selectedProduct.finpointPrice.toLocaleString()} FP</div>
+                </div>
+
+                {selectedProduct.missingFP > 0 ? (
+                  // Not enough FP
+                  <>
+                    <div className="bg-red-900/20 border border-red-700/50 rounded-lg p-4 mb-6">
+                      <div className="text-red-400 text-sm text-center mb-2">
+                        ⚠️ ยังขาดอีก <span className="font-bold text-lg">{selectedProduct.missingFP.toLocaleString()}</span> FP
+                      </div>
+                      <div className="text-slate-400 text-xs text-center">
+                        โปรดเติม Finpoint
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setShowPurchaseModal(false);
+                          setSelectedProduct(null);
+                        }}
+                        className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-lg transition-colors"
+                      >
+                        ยกเลิก
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowPurchaseModal(false);
+                          setSelectedProduct(null);
+                          // Call parent function to open demo finpoint modal
+                          if (onOpenDemoFinpoint) {
+                            onOpenDemoFinpoint(selectedProduct.missingFP);
+                          }
+                        }}
+                        className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white py-2.5 rounded-lg transition-colors font-medium"
+                      >
+                        💳 รับ Finpoint (Demo)
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  // Enough FP
+                  <>
+                    <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-3 mb-6">
+                      <div className="text-amber-400 text-sm text-center">
+                        ⚠️ เป็นเพียงระบบการทดสอบการรันซื้อเท่านั้น
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setShowPurchaseModal(false);
+                          setSelectedProduct(null);
+                        }}
+                        className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-lg transition-colors"
+                      >
+                        ยกเลิก
+                      </button>
+                      <button
+                        onClick={confirmPurchase}
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg transition-colors font-medium"
+                      >
+                        ยืนยัน
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Duplicate Purchase Warning Modal */}
+          {showDuplicateWarning && selectedProduct && (
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+              <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-md overflow-hidden">
+                {/* Header */}
+                <div className="px-5 py-4 border-b border-slate-800">
+                  <h3 className="text-lg font-semibold text-amber-400">⚠️ คุณได้ซื้อประกันนี้แล้ว</h3>
+                </div>
+
+                {/* Content */}
+                <div className="p-5">
+                  <div className="mb-4">
+                    <p className="text-slate-300 mb-2">
+                      คุณได้ซื้อประกัน <span className="font-medium text-white">{selectedProduct.title}</span> ไปแล้ว
+                    </p>
+                    <p className="text-slate-400 text-sm">
+                      ต้องการซื้อซ้ำใช่หรือไม่? (กรณีมีรถหลายคัน หรือต้องการความคุ้มครองเพิ่มเติม)
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                        setShowDuplicateWarning(false);
+                        setSelectedProduct(null);
+                      }}
+                      className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-lg transition-colors"
+                    >
+                      ยกเลิก
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDuplicateWarning(false);
+                        setShowPurchaseModal(true);
+                      }}
+                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-lg transition-colors font-medium"
+                    >
+                      ยืนยันซื้อซ้ำ
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
