@@ -216,6 +216,7 @@
           {currentPage === 'tree' && <TreePage user={userData} />}
           {currentPage === 'acf' && <ACFPage user={userData} />}
           {currentPage === 'database' && <DatabaseViewer />}
+          {currentPage === 'notifications' && <NotificationsPage />}
           {currentPage === 'profile' && <ProfilePage user={userData} setUser={setUserData} onLogout={() => {
             localStorage.removeItem('userId');
             localStorage.removeItem('worldId');
@@ -1458,6 +1459,29 @@
               </div>
             </div>
           </section>
+        </div>
+      );
+    }
+
+    // Notifications Page
+    function NotificationsPage() {
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 p-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="text-2xl">🔔</div>
+                <div>
+                  <h2 className="text-lg font-semibold">การแจ้งเตือน</h2>
+                  <p className="text-slate-400 text-sm">การอัปเดตล่าสุดของคุณ</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center text-slate-400 text-sm">
+                ยังไม่มีการแจ้งเตือนใหม่
+              </div>
+            </div>
+          </div>
         </div>
       );
     }
@@ -2731,6 +2755,7 @@
         { id: 'transactions', icon: '📋', label: 'รายการ' },
         { id: 'tree', icon: '🕸️', label: 'Tree' },
         { id: 'acf', icon: '🔗', label: 'ACF' },
+        { id: 'notifications', icon: '🔔', label: 'แจ้งเตือน' },
         { id: 'profile', icon: '👤', label: 'Profile' },
       ];
 
