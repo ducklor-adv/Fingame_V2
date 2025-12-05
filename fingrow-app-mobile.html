@@ -258,12 +258,8 @@
           const fetchInviterInfo = async () => {
             setLoadingInviter(true);
             try {
-              // Try to find user by World ID, invite_code, or username
-              let response = await fetch(`${API_BASE}/api/users/world/${referralCode}`);
-
-              if (!response.ok) {
-                response = await fetch(`${API_BASE}/api/users/username/${referralCode}`);
-              }
+              // Use invite_code referral lookup only
+              const response = await fetch(`${API_BASE}/api/users/referral/${referralCode}`);
 
               if (response.ok) {
                 const user = await response.json();
