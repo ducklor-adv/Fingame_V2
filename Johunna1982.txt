@@ -1,0 +1,10 @@
+Johunna1982*
+budtboyapp@gmail.com
+
+johunna@gmail.com
+
+.\scripts\setup-ssl.ps1 -Domain "http://fingrow.world"
+
+openssl req -x509 -newkey rsa:2048 -keyout nginx/ssl/server.key -out nginx/ssl/server.crt -days 365 \
+  -subj "/C=TH/ST=Bangkok/L=Bangkok/O=Fingrow/CN=yourdomain.com
+
