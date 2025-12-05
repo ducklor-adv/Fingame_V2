@@ -5,25 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Fingrow - Finpoint Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Prefer local UMD bundles to avoid CDN/CORS blocks; fallback to CDN if missing -->
-  <script src="/node_modules/react/umd/react.production.min.js"></script>
-  <script>
-    if (typeof React === 'undefined') {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"><\\/script>');
-    }
-  </script>
-  <script src="/node_modules/react-dom/umd/react-dom.production.min.js"></script>
-  <script>
-    if (typeof ReactDOM === 'undefined') {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"><\\/script>');
-    }
-  </script>
-  <script src="/node_modules/@babel/standalone/babel.min.js"></script>
-  <script>
-    if (typeof Babel === 'undefined') {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.5/babel.min.js"><\\/script>');
-    }
-  </script>
+  <!-- Use CDN UMD bundles (jsDelivr) to avoid local 404/CORS issues -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.5/babel.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     input, select, textarea { font-size: 16px !important; }

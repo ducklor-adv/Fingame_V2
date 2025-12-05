@@ -7,6 +7,7 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
 require('dotenv').config();
 
 const usersRouter = require('./api/users');
@@ -29,6 +30,10 @@ app.use(morgan('dev'));
 app.use(express.static('dist'));
 // Also serve from current directory (for development)
 app.use(express.static('.'));
+// Serve dependencies for local UMD bundles (React/ReactDOM/Babel)
+// Prefer frontend/node_modules (where React lives), fallback to root node_modules if present
+app.use('/node_modules', express.static(path.join(__dirname, 'frontend', 'node_modules')));
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
 
