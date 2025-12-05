@@ -631,12 +631,6 @@
                     </div>
                   )}
 
-                  {/* Google Sign-In Button Placeholder */}
-                  <div id="google-signin-button" className="flex justify-center min-h-[44px]">
-                    {/* Loading indicator will show until Google button renders */}
-                    <div className="text-slate-400 text-sm">กำลังโหลด Google Sign-In...</div>
-                  </div>
-
                   {/* Show inviter info if available */}
                   {referralCode && (
                     <div className="mt-4 p-4 bg-emerald-900/20 border border-emerald-500/50 rounded-lg">
@@ -692,6 +686,12 @@
                       )}
                     </div>
                   )}
+
+                  {/* Google Sign-In Button Placeholder (below inviter card) */}
+                  <div id="google-signin-button" className="flex justify-center min-h-[44px]">
+                    {/* Loading indicator will show until Google button renders */}
+                    <div className="text-slate-400 text-sm">กำลังโหลด Google Sign-In...</div>
+                  </div>
 
                   {/* Divider */}
                   <div className="relative my-6">
