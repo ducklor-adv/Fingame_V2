@@ -108,6 +108,8 @@
       const [dashboardData, setDashboardData] = useState(null);
       const [isLoading, setIsLoading] = useState(true);
       const [isLoggedIn, setIsLoggedIn] = useState(false);
+      const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+      const [notificationReadIds, setNotificationReadIds] = useState([]);
 
       // Fetch data from API
       const fetchUserData = async () => {
@@ -186,6 +188,48 @@
         }
       }, []);
 
+      // Load read notification ids from localStorage when user changes
+      useEffect(() => {
+        if (userData?.id) {
+          const saved = localStorage.getItem(`notifReadIds_${userData.id}`);
+          try {
+            const parsed = saved ? JSON.parse(saved) : [];
+            setNotificationReadIds(Array.isArray(parsed) ? parsed : []);
+          } catch (e) {
+            setNotificationReadIds([]);
+          }
+        } else {
+          setNotificationReadIds([]);
+          setUnreadNotificationCount(0);
+        }
+      }, [userData?.id]);
+
+      // Background fetch to update unread count (evenเมื่อไม่ได้เปิดแท็บแจ้งเตือน)
+      useEffect(() => {
+        let isMounted = true;
+        const fetchNotifications = async () => {
+          if (!userData?.id) return;
+          try {
+            const res = await fetch(`${API_BASE}/api/users/${userData.id}/notifications`);
+            if (res.ok) {
+              const data = await res.json();
+              const list = data.notifications || [];
+              const unread = list.filter(n => !notificationReadIds.includes(n.id)).length;
+              if (isMounted) setUnreadNotificationCount(unread);
+            }
+          } catch (e) {
+            // ignore background errors
+          }
+        };
+        fetchNotifications();
+
+        const interval = setInterval(fetchNotifications, 30000); // poll ทุก 30 วิ
+        return () => {
+          isMounted = false;
+          clearInterval(interval);
+        };
+      }, [userData?.id, notificationReadIds]);
+
       // Show login page if not logged in
       if (!isLoggedIn && !isLoading) {
         return <LoginPage onLogin={(userId, worldId) => {
@@ -216,7 +260,15 @@
           {currentPage === 'tree' && <TreePage user={userData} />}
           {currentPage === 'acf' && <ACFPage user={userData} />}
           {currentPage === 'database' && <DatabaseViewer />}
-          {currentPage === 'notifications' && <NotificationsPage />}
+          {currentPage === 'notifications' && (
+            <NotificationsPage
+              user={userData}
+              readIds={notificationReadIds}
+              setReadIds={setNotificationReadIds}
+              setUnreadNotificationCount={setUnreadNotificationCount}
+              isActive
+            />
+          )}
           {currentPage === 'profile' && <ProfilePage user={userData} setUser={setUserData} onLogout={() => {
             localStorage.removeItem('userId');
             localStorage.removeItem('worldId');
@@ -226,7 +278,11 @@
           }} />}
 
           {/* Bottom Navigation */}
-          <BottomNav currentPage={currentPage} setCurrentPage={setCurrentPage} />
+          <BottomNav
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            unreadNotificationCount={unreadNotificationCount}
+          />
         </div>
       );
     }
@@ -1464,7 +1520,69 @@
     }
 
     // Notifications Page
-    function NotificationsPage() {
+    function NotificationsPage({ user, readIds, setReadIds, setUnreadNotificationCount, isActive }) {
+      const [notifications, setNotifications] = useState([]);
+      const [isLoading, setIsLoading] = useState(true);
+      const [error, setError] = useState('');
+
+      useEffect(() => {
+        const fetchNotifications = async () => {
+          try {
+            setIsLoading(true);
+            setError('');
+            const response = await fetch(`${API_BASE}/api/users/${user.id}/notifications`);
+            if (response.ok) {
+              const data = await response.json();
+              const list = data.notifications || [];
+              setNotifications(list);
+              // Keep existing readIds; new items default unread
+              const unreadCount = list.filter(n => !readIds.includes(n.id)).length;
+              setUnreadNotificationCount(unreadCount);
+            } else {
+              setError('โหลดการแจ้งเตือนไม่สำเร็จ');
+            }
+          } catch (err) {
+            setError('โหลดการแจ้งเตือนไม่สำเร็จ');
+          } finally {
+            setIsLoading(false);
+          }
+        };
+
+        if (user?.id) {
+          fetchNotifications();
+        }
+      }, [user?.id, isActive, readIds, setUnreadNotificationCount]);
+
+      // When opening notifications, clear unread badge
+      useEffect(() => {
+        if (isActive) {
+          setUnreadNotificationCount(0);
+        }
+      }, [isActive, setUnreadNotificationCount]);
+
+      const unreadCount = notifications.filter(n => !readIds.includes(n.id)).length;
+
+      const persistReadIds = (next) => {
+        setReadIds(next);
+        if (user?.id) {
+          localStorage.setItem(`notifReadIds_${user.id}`, JSON.stringify(next));
+        }
+      };
+
+      const markAsRead = (id) => {
+        setReadIds((prev) => {
+          if (prev.includes(id)) return prev;
+          const next = [...prev, id];
+          persistReadIds(next);
+          return next;
+        });
+      };
+
+      const markAllAsRead = () => {
+        const next = notifications.map(n => n.id);
+        persistReadIds(next);
+      };
+
       return (
         <div className="min-h-screen bg-slate-950 text-slate-100 p-4">
           <div className="max-w-4xl mx-auto">
@@ -1473,13 +1591,65 @@
                 <div className="text-2xl">🔔</div>
                 <div>
                   <h2 className="text-lg font-semibold">การแจ้งเตือน</h2>
-                  <p className="text-slate-400 text-sm">การอัปเดตล่าสุดของคุณ</p>
+                  <p className="text-slate-400 text-sm">อัปเดตเกี่ยวกับเครือข่ายของคุณ</p>
                 </div>
               </div>
 
-              <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center text-slate-400 text-sm">
-                ยังไม่มีการแจ้งเตือนใหม่
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-xs text-slate-400">ไม่ได้อ่าน: {unreadCount}</div>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllAsRead}
+                    className="text-xs px-2 py-1 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                  >
+                    ทำเครื่องหมายว่าอ่านแล้วทั้งหมด
+                  </button>
+                )}
               </div>
+
+              {isLoading ? (
+                <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center text-slate-400 text-sm">
+                  กำลังโหลดการแจ้งเตือน...
+                </div>
+              ) : error ? (
+                <div className="bg-rose-900/20 border border-rose-500/50 rounded-xl p-4 text-center text-rose-300 text-sm">
+                  {error}
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center text-slate-400 text-sm">
+                  ยังไม่มีการแจ้งเตือนใหม่
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {notifications.map((item, idx) => {
+                    const isRead = readIds.includes(item.id);
+                    return (
+                      <div
+                        key={idx}
+                        className={`bg-slate-800/40 border rounded-xl p-4 cursor-pointer transition-colors ${
+                          isRead ? 'border-slate-700 opacity-80' : 'border-emerald-700'
+                        }`}
+                        onClick={() => markAsRead(item.id)}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              {!isRead && <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>}
+                              <div className="text-sm text-slate-200">{item.message}</div>
+                            </div>
+                            <div className="text-xs text-slate-500 mt-1">
+                              {item.createdAt ? new Date(item.createdAt).toLocaleString('th-TH') : ''}
+                            </div>
+                          </div>
+                          <div className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-400 capitalize">
+                            {item.type || 'info'}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -2749,7 +2919,7 @@
     }
 
     // Bottom Navigation
-    function BottomNav({ currentPage, setCurrentPage }) {
+    function BottomNav({ currentPage, setCurrentPage, unreadNotificationCount }) {
       const navItems = [
         { id: 'home', icon: '🏠', label: 'Home' },
         { id: 'transactions', icon: '📋', label: 'รายการ' },
@@ -2772,7 +2942,14 @@
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                <span className="text-xl mb-0.5">{item.icon}</span>
+                <span className="relative text-xl mb-0.5">
+                  {item.icon}
+                  {item.id === 'notifications' && unreadNotificationCount > 0 && (
+                    <span className="absolute -top-2 -right-3 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-amber-400 text-black text-[11px] font-bold rounded-full ring-2 ring-slate-900">
+                      {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                    </span>
+                  )}
+                </span>
                 <span className="text-xs font-medium">{item.label}</span>
                 {currentPage === item.id && (
                   <div className="w-1 h-1 bg-emerald-400 rounded-full mt-1"></div>

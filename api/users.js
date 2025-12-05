@@ -566,6 +566,83 @@ router.post('/:id/upload-avatar', upload.single('avatar'), async (req, res) => {
   }
 });
 
+// Notifications derived from user relations (signup/ACF placement)
+router.get('/:id/notifications', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch recent users where requester is inviter or parent
+    const result = await pool.query(
+      `
+      SELECT
+        child.id,
+        child.first_name, child.last_name, child.username, child.created_at,
+        child.inviter_id, child.parent_id,
+        inv.first_name AS inviter_first_name, inv.last_name AS inviter_last_name, inv.username AS inviter_username,
+        par.first_name AS parent_first_name, par.last_name AS parent_last_name, par.username AS parent_username
+      FROM users child
+      LEFT JOIN users inv ON inv.id = child.inviter_id
+      LEFT JOIN users par ON par.id = child.parent_id
+      WHERE child.inviter_id = $1
+         OR child.parent_id = $1
+      ORDER BY child.created_at DESC
+      LIMIT 50
+      `,
+      [id]
+    );
+
+    const formatName = (first, last, username) => {
+      if (first || last) {
+        return `${first || ''} ${last || ''}`.trim();
+      }
+      return username || 'ไม่ทราบชื่อ';
+    };
+
+    const notifications = result.rows.map(row => {
+      const childName = formatName(row.first_name, row.last_name, row.username);
+      const inviterName = formatName(row.inviter_first_name, row.inviter_last_name, row.inviter_username);
+      const parentName = formatName(row.parent_first_name, row.parent_last_name, row.parent_username);
+      const createdAt = parseInt(row.created_at);
+
+      // Case 1: came via this user's invite_code
+      if (row.inviter_id === id) {
+        if (row.parent_id === id) {
+          return {
+            id: row.id,
+            type: 'invite_direct',
+            message: `${childName} ได้สมัครโดยรหัสของคุณ โดยมีคุณเป็น Parent`,
+            createdAt
+          };
+        } else {
+          return {
+            id: row.id,
+            type: 'invite_reroute',
+            message: `${childName} ได้สมัครโดยรหัสของคุณ แต่ระบบ ACF จัดไปให้ ${parentName} ในสายงานของคุณ`,
+            createdAt
+          };
+        }
+      }
+
+      // Case 2: received as child via ACF (parent = user, inviter someone else)
+      if (row.parent_id === id && row.inviter_id !== id) {
+        return {
+          id: row.id,
+          type: 'acf_child',
+          message: `คุณได้รับ Child ${childName} จากระบบ ACF โดยมี ${inviterName} เป็นผู้แนะนำ`,
+          createdAt
+        };
+      }
+
+      return null;
+    }).filter(Boolean);
+
+    res.json({ notifications });
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 /**
  * PATCH /api/users/:id
  * Update user profile
