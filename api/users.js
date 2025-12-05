@@ -591,6 +591,34 @@ router.get('/:id/notifications', async (req, res) => {
       [id]
     );
 
+    // Fetch recent finpoint distributions to this user (cast to text for compatibility)
+    const fpResult = await pool.query(
+      `
+      SELECT
+        d.insurance_order_id as order_id,
+        d.amount,
+        d.recipient_role,
+        d.upline_level,
+        d.distributed_at,
+        d.transaction_type,
+        d.description,
+        io.user_id AS buyer_id,
+        buyer.first_name AS buyer_first_name,
+        buyer.last_name AS buyer_last_name,
+        buyer.username AS buyer_username,
+        prod.fingrow_level AS product_level
+      FROM commission_pool_distribution d
+      LEFT JOIN insurance_orders io ON io.id = d.insurance_order_id
+      LEFT JOIN users buyer ON buyer.id = io.user_id
+      LEFT JOIN insurance_product prod ON prod.id = io.insurance_product_id
+      WHERE CAST(d.recipient_user_id AS TEXT) = $1::text
+        AND d.amount > 0
+      ORDER BY d.distributed_at DESC
+      LIMIT 50
+      `,
+      [id]
+    );
+
     const formatName = (first, last, username) => {
       if (first || last) {
         return `${first || ''} ${last || ''}`.trim();
@@ -598,7 +626,7 @@ router.get('/:id/notifications', async (req, res) => {
       return username || 'ไม่ทราบชื่อ';
     };
 
-    const notifications = result.rows.map(row => {
+    const signupNotifications = result.rows.map(row => {
       const childName = formatName(row.first_name, row.last_name, row.username);
       const inviterName = formatName(row.inviter_first_name, row.inviter_last_name, row.inviter_username);
       const parentName = formatName(row.parent_first_name, row.parent_last_name, row.parent_username);
@@ -608,14 +636,14 @@ router.get('/:id/notifications', async (req, res) => {
       if (row.inviter_id === id) {
         if (row.parent_id === id) {
           return {
-            id: row.id,
+            id: `invite-${row.id}`,
             type: 'invite_direct',
             message: `${childName} ได้สมัครโดยรหัสของคุณ โดยมีคุณเป็น Parent`,
             createdAt
           };
         } else {
           return {
-            id: row.id,
+            id: `invite-${row.id}`,
             type: 'invite_reroute',
             message: `${childName} ได้สมัครโดยรหัสของคุณ แต่ระบบ ACF จัดไปให้ ${parentName} ในสายงานของคุณ`,
             createdAt
@@ -626,7 +654,7 @@ router.get('/:id/notifications', async (req, res) => {
       // Case 2: received as child via ACF (parent = user, inviter someone else)
       if (row.parent_id === id && row.inviter_id !== id) {
         return {
-          id: row.id,
+          id: `acfchild-${row.id}`,
           type: 'acf_child',
           message: `คุณได้รับ Child ${childName} จากระบบ ACF โดยมี ${inviterName} เป็นผู้แนะนำ`,
           createdAt
@@ -635,6 +663,34 @@ router.get('/:id/notifications', async (req, res) => {
 
       return null;
     }).filter(Boolean);
+
+    const finpointNotifications = fpResult.rows.map(row => {
+      const createdAt = row.distributed_at ? new Date(row.distributed_at).getTime() : Date.now();
+      const amount = parseFloat(row.amount) || 0;
+
+      // Demo finpoint (no order, transaction_type = demo)
+      if (row.transaction_type === 'demo' || row.recipient_role === 'demo_purchase' || !row.order_id) {
+        return {
+          id: `fp-demo-${createdAt}-${amount}`,
+          type: 'finpoint_demo',
+          message: `ระบบเติม Finpoint จำนวน ${amount} สำเร็จแล้ว`,
+          createdAt
+        };
+      }
+
+      const buyerName = formatName(row.buyer_first_name, row.buyer_last_name, row.buyer_username);
+      const level = row.product_level || '-';
+      return {
+        id: `fp-${row.order_id || 'none'}-${createdAt}-${amount}`,
+        type: 'finpoint_gain',
+        message: `คุณได้รับ ${amount} FP จากระบบ จาก ${buyerName} ซื้อประกัน Level ${level}`,
+        createdAt
+      };
+    });
+
+    const notifications = [...signupNotifications, ...finpointNotifications]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 100);
 
     res.json({ notifications });
   } catch (error) {
