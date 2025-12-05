@@ -258,13 +258,7 @@
           const fetchInviterInfo = async () => {
             setLoadingInviter(true);
             try {
-              // Try to find user by World ID, invite_code, or username
-              let response = await fetch(`${API_BASE}/api/users/world/${referralCode}`);
-
-              if (!response.ok) {
-                response = await fetch(`${API_BASE}/api/users/username/${referralCode}`);
-              }
-
+              const response = await fetch(`${API_BASE}/api/users/referral/${referralCode}`);
               if (response.ok) {
                 const user = await response.json();
                 setInviterInfo({
@@ -2072,12 +2066,16 @@
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2">
                       <div className="font-mono text-sm text-emerald-300 font-bold">
-                        {user.inviteCode || user.worldId}
+                        {user.inviteCode || 'ยังไม่มีรหัสเชิญ'}
                       </div>
                     </div>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(user.inviteCode || user.worldId);
+                        if (!user.inviteCode) {
+                          alert('ยังไม่มีรหัสเชิญ กรุณาลองใหม่');
+                          return;
+                        }
+                        navigator.clipboard.writeText(user.inviteCode);
                         alert('📋 คัดลอกรหัสเชิญแล้ว!');
                       }}
                       className="px-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-medium transition-colors whitespace-nowrap"
@@ -2093,12 +2091,16 @@
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2">
                       <div className="text-xs text-cyan-300 truncate">
-                        {window.location.origin}/register?ref={user.inviteCode || user.worldId}
+                        {user.inviteCode ? `${window.location.origin}/register?ref=${user.inviteCode}` : 'ยังไม่มีลิงก์เชิญ'}
                       </div>
                     </div>
                     <button
                       onClick={() => {
-                        const inviteLink = `${window.location.origin}/register?ref=${user.inviteCode || user.worldId}`;
+                        if (!user.inviteCode) {
+                          alert('ยังไม่มีลิงก์เชิญ กรุณาลองใหม่');
+                          return;
+                        }
+                        const inviteLink = `${window.location.origin}/register?ref=${user.inviteCode}`;
                         navigator.clipboard.writeText(inviteLink);
                         alert('📋 คัดลอกลิงก์เชิญแล้ว!');
                       }}
@@ -2112,7 +2114,11 @@
                 {/* Share Button */}
                 <button
                   onClick={() => {
-                    const inviteLink = `${window.location.origin}/register?ref=${user.inviteCode || user.worldId}`;
+                    if (!user.inviteCode) {
+                      alert('ยังไม่มีลิงก์เชิญ กรุณาลองใหม่');
+                      return;
+                    }
+                    const inviteLink = `${window.location.origin}/register?ref=${user.inviteCode}`;
                     const shareText = `🎉 มาร่วมเป็นส่วนหนึ่งของ Fingrow กับผม!\n\n✨ ซื้อขายของมือสองได้ง่ายๆ\n💰 รับ Finpoint จากทุกการซื้อขาย\n🎁 สร้างรายได้จากเครือข่าย\n\n👉 ลงทะเบียนที่: ${inviteLink}`;
 
                     if (navigator.share) {

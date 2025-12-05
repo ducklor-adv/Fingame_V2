@@ -171,6 +171,46 @@ function mapUserProfile(row) {
   };
 }
 
+// Generate a unique invite code (6-10 chars) based on username when possible
+const INVITE_CODE_MAX_ATTEMPTS = 50;
+async function generateUniqueInviteCode(username) {
+  const prefix = (username || 'INVITE')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toUpperCase()
+    .slice(0, 6) || 'INVITE';
+
+  for (let attempt = 0; attempt < INVITE_CODE_MAX_ATTEMPTS; attempt++) {
+    const randomSuffix = Math.random().toString(36).replace(/[^a-z0-9]/g, '').toUpperCase().slice(0, 4 + (attempt % 2));
+    const candidate = `${prefix}${randomSuffix}`.slice(0, 10); // keep within 10 chars
+
+    const existing = await pool.query(
+      'SELECT 1 FROM users WHERE invite_code = $1',
+      [candidate]
+    );
+
+    if (existing.rows.length === 0) {
+      return candidate;
+    }
+  }
+
+  throw new Error('Failed to generate unique invite code after multiple attempts');
+}
+
+// Ensure invite_code exists for a given user row (used for legacy rows)
+async function ensureInviteCode(userRow) {
+  if (!userRow || userRow.invite_code) {
+    return userRow;
+  }
+
+  const newInviteCode = await generateUniqueInviteCode(userRow.username || userRow.world_id);
+  const updated = await pool.query(
+    'UPDATE users SET invite_code = $1 WHERE id = $2 RETURNING *',
+    [newInviteCode, userRow.id]
+  );
+
+  return updated.rows[0];
+}
+
 // Base SELECT that joins inviter and parent users so endpoints can return human-friendly inviter/parent fields
 const baseUserSelect = `
   SELECT u.*,
@@ -202,7 +242,8 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const profile = mapUserProfile(result.rows[0]);
+    const ensured = await ensureInviteCode(result.rows[0]);
+    const profile = mapUserProfile(ensured);
     res.json(profile);
   } catch (error) {
     console.error('Error fetching user:', error);
@@ -227,7 +268,8 @@ router.get('/world/:worldId', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const profile = mapUserProfile(result.rows[0]);
+    const ensured = await ensureInviteCode(result.rows[0]);
+    const profile = mapUserProfile(ensured);
     res.json(profile);
   } catch (error) {
     console.error('Error fetching user by world_id:', error);
@@ -252,7 +294,8 @@ router.get('/username/:username', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const profile = mapUserProfile(result.rows[0]);
+    const ensured = await ensureInviteCode(result.rows[0]);
+    const profile = mapUserProfile(ensured);
     res.json(profile);
   } catch (error) {
     console.error('Error fetching user by username:', error);
@@ -262,26 +305,29 @@ router.get('/username/:username', async (req, res) => {
 
 /**
  * GET /api/users/referral/:code
- * Get user by referral code (World ID, invite_code, or username)
+ * Get user by referral code (invite_code only; case-insensitive)
  */
 router.get('/referral/:code', async (req, res) => {
   try {
-    const { code } = req.params;
+    const referralCode = (req.params.code || '').trim();
+
+    if (!referralCode) {
+      return res.status(400).json({ error: 'Referral code is required' });
+    }
 
     const result = await pool.query(
       `${baseUserSelect}
-       WHERE u.world_id = $1
-          OR u.invite_code = $1
-          OR u.username = $1
+       WHERE UPPER(u.invite_code) = UPPER($1)
        LIMIT 1`,
-      [code]
+      [referralCode]
     );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const profile = mapUserProfile(result.rows[0]);
+    const ensured = await ensureInviteCode(result.rows[0]);
+    const profile = mapUserProfile(ensured);
     res.json(profile);
   } catch (error) {
     console.error('Error fetching user by referral code:', error);
@@ -308,8 +354,13 @@ router.post('/google-signin', async (req, res) => {
     );
 
     if (existingUser.rows.length > 0) {
-      // User exists, return their profile
-      const profile = mapUserProfile(existingUser.rows[0]);
+      // User exists, ensure invite_code present before return
+      const ensuredUser = await ensureInviteCode(existingUser.rows[0]);
+      const refreshed = await pool.query(
+        `${baseUserSelect} WHERE u.id = $1`,
+        [ensuredUser.id]
+      );
+      const profile = mapUserProfile(refreshed.rows[0]);
       return res.json(profile);
     }
 
@@ -361,15 +412,16 @@ router.post('/google-signin', async (req, res) => {
       usernameAttempt++;
     }
 
+    // Generate invite code for this new user
+    const inviteCode = await generateUniqueInviteCode(username);
+
     // Determine inviter: use referralCode if provided, otherwise System Root
     let inviterId;
     if (referralCode) {
-      // Find inviter by referral code (try World ID, invite_code, or username)
+      // Find inviter by invite_code (strict)
       const inviterResult = await pool.query(
         `SELECT id FROM users
-         WHERE world_id = $1
-            OR invite_code = $1
-            OR username = $1
+         WHERE UPPER(invite_code) = UPPER($1)
          LIMIT 1`,
         [referralCode]
       );
@@ -416,7 +468,7 @@ router.post('/google-signin', async (req, res) => {
       `INSERT INTO users (
         world_id, username, email, first_name, last_name, avatar_url,
         regist_type, user_type, level, run_number,
-        inviter_id, parent_id,
+        inviter_id, parent_id, invite_code,
         is_active, is_verified, verification_level, trust_score,
         own_finpoint, total_finpoint, max_network,
         child_count, max_children, acf_accepting,
@@ -426,15 +478,15 @@ router.post('/google-signin', async (req, res) => {
       ) VALUES (
         $1, $2, $3, $4, $5, $6,
         'google', 'member', 1, $7,
-        $8, $9,
+        $8, $9, $10,
         true, true, 1, 50.0,
         0, 0, 7,
         0, 5, true,
         0, 0,
         0, 0,
-        $10, $10, $11
+        $11, $11, $12
       ) RETURNING *`,
-      [worldId, username, email, firstName || 'User', lastName || '', avatarUrl, runNumber, inviterId, parentId, nowTimestamp, nowDate]
+      [worldId, username, email, firstName || 'User', lastName || '', avatarUrl, runNumber, inviterId, parentId, inviteCode, nowTimestamp, nowTimestamp, nowDate]
     );
 
     // Update parent's child_count
