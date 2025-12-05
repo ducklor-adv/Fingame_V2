@@ -484,7 +484,7 @@ router.post('/google-signin', async (req, res) => {
         0, 5, true,
         0, 0,
         0, 0,
-        $11, $11, $12
+        $11, $12, $13
       ) RETURNING *`,
       [worldId, username, email, firstName || 'User', lastName || '', avatarUrl, runNumber, inviterId, parentId, inviteCode, nowTimestamp, nowTimestamp, nowDate]
     );
