@@ -1,35 +1,39 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: fingame-postgres
-    environment:
-      POSTGRES_DB: fingame
-      POSTGRES_USER: fingrow_user
-      POSTGRES_PASSWORD: fingrow_pass_2025
-      POSTGRES_HOST_AUTH_METHOD: md5
+  nginx:
+    image: nginx:alpine
     ports:
-      - "5433:5432"
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./init_postgres.sql:/docker-entrypoint-initdb.d/01-init.sql
-      - postgres_data:/var/lib/postgresql/data
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/ssl:/etc/nginx/ssl
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fingrow_user -d fingame"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-  adminer:
-    image: adminer:latest
-    container_name: fingame-adminer
+  app:
+    build: .
     ports:
-      - "8080:8080"
+      - "3001:3001"
     environment:
-      ADMINER_DEFAULT_SERVER: postgres
-    depends_on:
-      - postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=fingamev2
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - PORT=3001
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=fingamev2
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
 
 volumes:
-  postgres_data:
-    driver: local
+  pgdata:
