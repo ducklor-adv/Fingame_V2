@@ -28,6 +28,10 @@ if ! command -v certbot &> /dev/null; then
     apt-get update && apt-get install -y certbot
 fi
 
+# Stop nginx to free port 80 for certbot
+echo "Stopping nginx to free port 80..."
+docker compose stop nginx
+
 # Generate certificate
 echo "Generating SSL certificate..."
 certbot certonly --standalone -d $DOMAIN --non-interactive --agree-tos --email $EMAIL
@@ -36,6 +40,8 @@ certbot certonly --standalone -d $DOMAIN --non-interactive --agree-tos --email $
 if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
     echo "ERROR: Certificate generation failed"
     echo "Check logs at: /var/log/letsencrypt/letsencrypt.log"
+    echo "Restarting nginx..."
+    docker compose start nginx
     exit 1
 fi
 
@@ -46,12 +52,22 @@ cp /etc/letsencrypt/live/$DOMAIN/privkey.pem $SSL_DIR/key.pem
 chmod 644 $SSL_DIR/cert.pem
 chmod 600 $SSL_DIR/key.pem
 
+# Enable SSL in nginx config
+sed -i '21,31s/# //' nginx/nginx.conf
+sed -i '10s/# //' docker-compose.yml
+
+# Restart nginx with SSL enabled
+echo "Restarting nginx with SSL enabled..."
+docker compose up -d nginx
+
 echo ""
 echo "✅ SSL certificates generated for $DOMAIN"
 echo "Certificates saved to:"
 echo "  - $SSL_DIR/cert.pem"
 echo "  - $SSL_DIR/key.pem"
 echo ""
-echo "Add to crontab for auto-renewal:"
+echo "🔐 HTTPS is now enabled at https://$DOMAIN"
+echo ""
+echo "Add to crontab for auto-renewal (certbot auto-renews, this restarts nginx after renewal):"
 echo "0 12 * * * /usr/bin/certbot renew --quiet && docker compose restart nginx"
 
