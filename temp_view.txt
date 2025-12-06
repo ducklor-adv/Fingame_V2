@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -36,14 +36,14 @@
       id: "4d003630-3ed6-4d80-89fd-5c1d2f017be1",
       worldId: "25AAA0001",
       username: "somchai_jaidee",
-      firstName: "สมชาย",
-      lastName: "ใจดี",
-      firstName: "สมชาย",
-      lastName: "ใจดี",
+      firstName: "α╕¬α╕íα╕èα╕▓α╕ó",
+      lastName: "α╣âα╕êα╕öα╕╡",
+      firstName: "α╕¬α╕íα╕èα╕▓α╕ó",
+      lastName: "α╣âα╕êα╕öα╕╡",
       email: "somchai@fingrow.com",
       phone: "0812345678",
       avatarUrl: null,
-      bio: "ผู้ใช้งานทดสอบระบบ Fingrow",
+      bio: "α╕£α╕╣α╣ëα╣âα╕èα╣ëα╕çα╕▓α╕Öα╕ùα╕öα╕¬α╕¡α╕Üα╕úα╕░α╕Üα╕Ü Fingrow",
       isVerified: true,
       verificationLevel: 3,
       trustScore: 95.5,
@@ -60,10 +60,10 @@
       totalFinpoint: 12500,
       maxNetwork: 19531,
       addressNumber: "123/45",
-      addressStreet: "ถนนสุขุมวิท",
-      addressSubDistrict: "คลองเตย",
-      addressDistrict: "คลองเตย",
-      addressProvince: "กรุงเทพมหานคร",
+      addressStreet: "α╕ûα╕Öα╕Öα╕¬α╕╕α╕éα╕╕α╕íα╕ºα╕┤α╕ù",
+      addressSubDistrict: "α╕äα╕Ñα╕¡α╕çα╣Çα╕òα╕ó",
+      addressDistrict: "α╕äα╕Ñα╕¡α╕çα╣Çα╕òα╕ó",
+      addressProvince: "α╕üα╕úα╕╕α╕çα╣Çα╕ùα╕₧α╕íα╕½α╕▓α╕Öα╕äα╕ú",
       addressPostalCode: "10110",
     };
 
@@ -74,28 +74,28 @@
       todayFromSecondhand: 80,
       todayFromUpline: 40,
       expProgressList: [
-        { code: "LEVEL_1", label: "Level 1 – พรบ.", target: 600, current: 420 },
-        { code: "LEVEL_2", label: "Level 2 – ประกันภัยรถ", target: 5000, current: 1350 },
-        { code: "LEVEL_3", label: "Level 3 – ประกันสุขภาพ", target: 20000, current: 2500 },
-        { code: "LEVEL_4", label: "Level 4 – ประกันชีวิต", target: 50000, current: 0 },
+        { code: "LEVEL_1", label: "Level 1 ΓÇô α╕₧α╕úα╕Ü.", target: 600, current: 420 },
+        { code: "LEVEL_2", label: "Level 2 ΓÇô α╕¢α╕úα╕░α╕üα╕▒α╕Öα╕áα╕▒α╕óα╕úα╕û", target: 5000, current: 1350 },
+        { code: "LEVEL_3", label: "Level 3 ΓÇô α╕¢α╕úα╕░α╕üα╕▒α╕Öα╕¬α╕╕α╕éα╕áα╕▓α╕₧", target: 20000, current: 2500 },
+        { code: "LEVEL_4", label: "Level 4 ΓÇô α╕¢α╕úα╕░α╕üα╕▒α╕Öα╕èα╕╡α╕ºα╕┤α╕ò", target: 50000, current: 0 },
       ],
       recentLedger: [
-        { id: 1, datetime: "23/11 14:10", category: "ขายของมือสอง", detail: "#S-1021", drCr: "DR", amount: 70, balanceAfter: 3250 },
-        { id: 2, datetime: "23/11 09:00", category: "พรบ. คืนเงิน", detail: "Self 45%", drCr: "DR", amount: 30, balanceAfter: 3180 },
-        { id: 3, datetime: "22/11 18:30", category: "Network Bonus", detail: "จาก downline", drCr: "DR", amount: 15, balanceAfter: 3150 },
-        { id: 4, datetime: "22/11 10:15", category: "ขายของมือสอง", detail: "#S-1015", drCr: "DR", amount: 55, balanceAfter: 3135 },
-        { id: 5, datetime: "21/11 16:20", category: "ซื้อประกันสุขภาพ", detail: "#E-450", drCr: "CR", amount: 200, balanceAfter: 3080 },
+        { id: 1, datetime: "23/11 14:10", category: "α╕éα╕▓α╕óα╕éα╕¡α╕çα╕íα╕╖α╕¡α╕¬α╕¡α╕ç", detail: "#S-1021", drCr: "DR", amount: 70, balanceAfter: 3250 },
+        { id: 2, datetime: "23/11 09:00", category: "α╕₧α╕úα╕Ü. α╕äα╕╖α╕Öα╣Çα╕çα╕┤α╕Ö", detail: "Self 45%", drCr: "DR", amount: 30, balanceAfter: 3180 },
+        { id: 3, datetime: "22/11 18:30", category: "Network Bonus", detail: "α╕êα╕▓α╕ü downline", drCr: "DR", amount: 15, balanceAfter: 3150 },
+        { id: 4, datetime: "22/11 10:15", category: "α╕éα╕▓α╕óα╕éα╕¡α╕çα╕íα╕╖α╕¡α╕¬α╕¡α╕ç", detail: "#S-1015", drCr: "DR", amount: 55, balanceAfter: 3135 },
+        { id: 5, datetime: "21/11 16:20", category: "α╕ïα╕╖α╣ëα╕¡α╕¢α╕úα╕░α╕üα╕▒α╕Öα╕¬α╕╕α╕éα╕áα╕▓α╕₧", detail: "#E-450", drCr: "CR", amount: 200, balanceAfter: 3080 },
       ],
       networkSnapshot: {
         networkSize: 1235,
         fpFromYou: 120,
         uplinePath: [
-          { id: "25AAA0001", name: "สมชาย ใจดี", worldId: "25AAA0001" },
-          { id: "25AAA0015", name: "สมหญิง รักดี", worldId: "25AAA0015" },
-          { id: "25AAA0032", name: "สมศักดิ์ มั่งคั่ง", worldId: "25AAA0032" },
-          { id: "25AAA0087", name: "สมพร สุขใจ", worldId: "25AAA0087" },
-          { id: "25AAA0120", name: "วิชัย เจริญ", worldId: "25AAA0120" },
-          { id: "25AAA0230", name: "ประยุทธ ดีงาม", worldId: "25AAA0230" },
+          { id: "25AAA0001", name: "α╕¬α╕íα╕èα╕▓α╕ó α╣âα╕êα╕öα╕╡", worldId: "25AAA0001" },
+          { id: "25AAA0015", name: "α╕¬α╕íα╕½α╕ìα╕┤α╕ç α╕úα╕▒α╕üα╕öα╕╡", worldId: "25AAA0015" },
+          { id: "25AAA0032", name: "α╕¬α╕íα╕¿α╕▒α╕üα╕öα╕┤α╣î α╕íα╕▒α╣êα╕çα╕äα╕▒α╣êα╕ç", worldId: "25AAA0032" },
+          { id: "25AAA0087", name: "α╕¬α╕íα╕₧α╕ú α╕¬α╕╕α╕éα╣âα╕ê", worldId: "25AAA0087" },
+          { id: "25AAA0120", name: "α╕ºα╕┤α╕èα╕▒α╕ó α╣Çα╕êα╕úα╕┤α╕ì", worldId: "25AAA0120" },
+          { id: "25AAA0230", name: "α╕¢α╕úα╕░α╕óα╕╕α╕ùα╕ÿ α╕öα╕╡α╕çα╕▓α╕í", worldId: "25AAA0230" },
           { id: "25AAA0000", name: "SYSTEM ROOT", worldId: "25AAA0000" },
         ],
       },
@@ -204,7 +204,7 @@
         }
       }, [userData?.id]);
 
-      // Background fetch to update unread count (evenเมื่อไม่ได้เปิดแท็บแจ้งเตือน)
+      // Background fetch to update unread count (evenα╣Çα╕íα╕╖α╣êα╕¡α╣äα╕íα╣êα╣äα╕öα╣ëα╣Çα╕¢α╕┤α╕öα╣üα╕ùα╣çα╕Üα╣üα╕êα╣ëα╕çα╣Çα╕òα╕╖α╕¡α╕Ö)
       useEffect(() => {
         let isMounted = true;
         const fetchNotifications = async () => {
@@ -223,7 +223,7 @@
         };
         fetchNotifications();
 
-        const interval = setInterval(fetchNotifications, 30000); // poll ทุก 30 วิ
+        const interval = setInterval(fetchNotifications, 30000); // poll α╕ùα╕╕α╕ü 30 α╕ºα╕┤
         return () => {
           isMounted = false;
           clearInterval(interval);
@@ -244,8 +244,8 @@
         return (
           <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-4xl mb-4">💎</div>
-              <div className="text-lg font-semibold">กำลังโหลดข้อมูล...</div>
+              <div className="text-4xl mb-4">≡ƒÆÄ</div>
+              <div className="text-lg font-semibold">α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ...</div>
               <div className="text-sm text-slate-400 mt-2">Fingrow Dashboard</div>
             </div>
           </div>
@@ -353,10 +353,10 @@
             const user = await response.json();
             onLogin(user.id, user.worldId);
           } else {
-            setError('ไม่พบผู้ใช้');
+            setError('α╣äα╕íα╣êα╕₧α╕Üα╕£α╕╣α╣ëα╣âα╕èα╣ë');
           }
         } catch (err) {
-          setError('เกิดข้อผิดพลาด: ' + err.message);
+          setError('α╣Çα╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö: ' + err.message);
         } finally {
           setIsLoading(false);
         }
@@ -365,7 +365,7 @@
       const handleCredentialLogin = async (e) => {
         e.preventDefault();
         if (!username.trim() || !password.trim()) {
-          setError('กรุณาใส่ Username และ Password');
+          setError('α╕üα╕úα╕╕α╕ôα╕▓α╣âα╕¬α╣ê Username α╣üα╕Ñα╕░ Password');
           return;
         }
 
@@ -380,7 +380,7 @@
               const user = await response.json();
               onLogin(user.id, user.worldId);
             } else {
-              setError('ไม่พบผู้ใช้ System Root');
+              setError('α╣äα╕íα╣êα╕₧α╕Üα╕£α╕╣α╣ëα╣âα╕èα╣ë System Root');
             }
           } else {
             // Try to find user by username
@@ -390,11 +390,11 @@
               // In production, verify password on server
               onLogin(user.id, user.worldId);
             } else {
-              setError('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+              setError('α╕èα╕╖α╣êα╕¡α╕£α╕╣α╣ëα╣âα╕èα╣ëα╕½α╕úα╕╖α╕¡α╕úα╕½α╕▒α╕¬α╕£α╣êα╕▓α╕Öα╣äα╕íα╣êα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç');
             }
           }
         } catch (err) {
-          setError('เกิดข้อผิดพลาด: ' + err.message);
+          setError('α╣Çα╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö: ' + err.message);
         } finally {
           setIsLoading(false);
         }
@@ -403,7 +403,7 @@
       const handleWorldIdLogin = async (e) => {
         e.preventDefault();
         if (!worldId.trim()) {
-          setError('กรุณาใส่ World ID');
+          setError('α╕üα╕úα╕╕α╕ôα╕▓α╣âα╕¬α╣ê World ID');
           return;
         }
         handleQuickLogin(worldId.trim());
@@ -438,11 +438,11 @@
             onLogin(user.id, user.worldId);
           } else {
             const errorData = await response.json();
-            setError(errorData.error || 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
+            setError(errorData.error || 'α╣Çα╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕öα╣âα╕Öα╕üα╕▓α╕úα╕¬α╕íα╕▒α╕äα╕úα╕¬α╕íα╕▓α╕èα╕┤α╕ü');
           }
         } catch (err) {
           console.error('Google Sign-In Error:', err);
-          setError('เกิดข้อผิดพลาด: ' + err.message);
+          setError('α╣Çα╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö: ' + err.message);
         } finally {
           setIsLoading(false);
         }
@@ -474,7 +474,7 @@
                 setError(''); // Clear any loading errors
               } catch (err) {
                 console.error('Google Sign-In initialization error:', err);
-                setError('ไม่สามารถโหลด Google Sign-In ได้ กรุณาตรวจสอบ Client ID');
+                setError('α╣äα╕íα╣êα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╣éα╕½α╕Ñα╕ö Google Sign-In α╣äα╕öα╣ë α╕üα╕úα╕╕α╕ôα╕▓α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü Client ID');
               }
             } else {
               // Google script not loaded yet, retry after delay
@@ -498,14 +498,14 @@
                 Fingrow
               </h1>
               <div className="text-emerald-200 font-semibold mt-1 drop-shadow-[0_0_8px_rgba(52,211,153,0.7)]">
-                Simulation Version (ระบบจำลอง)
+                Simulation Version (α╕úα╕░α╕Üα╕Üα╕êα╕│α╕Ñα╕¡α╕ç)
               </div>
-              <p className="text-amber-300 text-sm mt-2">ระบบ Automation ที่ช่วยเราหมุนค่าใช้จ่าย กลับมาเป็นรายได้ แบบฟินๆ</p>
+              <p className="text-amber-300 text-sm mt-2">α╕úα╕░α╕Üα╕Ü Automation α╕ùα╕╡α╣êα╕èα╣êα╕ºα╕óα╣Çα╕úα╕▓α╕½α╕íα╕╕α╕Öα╕äα╣êα╕▓α╣âα╕èα╣ëα╕êα╣êα╕▓α╕ó α╕üα╕Ñα╕▒α╕Üα╕íα╕▓α╣Çα╕¢α╣çα╕Öα╕úα╕▓α╕óα╣äα╕öα╣ë α╣üα╕Üα╕Üα╕ƒα╕┤α╕Öα╣å</p>
             </div>
 
             {/* Login Card */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 backdrop-blur-lg">
-              <h2 className="text-xl font-semibold mb-6 text-center">เข้าสู่ระบบ</h2>
+              <h2 className="text-xl font-semibold mb-6 text-center">α╣Çα╕éα╣ëα╕▓α╕¬α╕╣α╣êα╕úα╕░α╕Üα╕Ü</h2>
 
               {/* Login Mode Tabs */}
               <div className="flex gap-2 mb-6">
@@ -537,7 +537,7 @@
                       : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                   }`}
                 >
-                  สมัครสมาชิก
+                  α╕¬α╕íα╕▒α╕äα╕úα╕¬α╕íα╕▓α╕èα╕┤α╕ü
                 </button>
               </div>
 
@@ -546,13 +546,13 @@
                 <>
                   {/* Admin/Root Login */}
                   <div className="mb-4">
-                    <p className="text-sm text-slate-400 mb-3">🔑 ผู้ดูแลระบบ:</p>
+                    <p className="text-sm text-slate-400 mb-3">≡ƒöæ α╕£α╕╣α╣ëα╕öα╕╣α╣üα╕Ñα╕úα╕░α╕Üα╕Ü:</p>
                     <button
                       onClick={() => handleQuickLogin('25AAA0000')}
                       disabled={isLoading}
                       className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      <span>👑</span>
+                      <span>≡ƒææ</span>
                       <span>System Root (25AAA0000)</span>
                     </button>
                   </div>
@@ -574,14 +574,14 @@
                       disabled={isLoading}
                       className="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                     >
-                      🧑 Somchai Jaidee (25AAA0001)
+                      ≡ƒºæ Somchai Jaidee (25AAA0001)
                     </button>
                     <button
                       onClick={() => handleQuickLogin('25AAA0002')}
                       disabled={isLoading}
                       className="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                     >
-                      👩 Somsri Rakdee (25AAA0002)
+                      ≡ƒæ⌐ Somsri Rakdee (25AAA0002)
                     </button>
                   </div>
 
@@ -591,7 +591,7 @@
                       <div className="w-full border-t border-slate-700"></div>
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-slate-900 px-2 text-slate-400">หรือ World ID</span>
+                      <span className="bg-slate-900 px-2 text-slate-400">α╕½α╕úα╕╖α╕¡ World ID</span>
                     </div>
                   </div>
 
@@ -605,7 +605,7 @@
                         type="text"
                         value={worldId}
                         onChange={(e) => setWorldId(e.target.value)}
-                        placeholder="เช่น 25AAA0001"
+                        placeholder="α╣Çα╕èα╣êα╕Ö 25AAA0001"
                         className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
@@ -621,7 +621,7 @@
                       disabled={isLoading}
                       className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                     >
-                      {isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+                      {isLoading ? 'α╕üα╕│α╕Ñα╕▒α╕çα╣Çα╕éα╣ëα╕▓α╕¬α╕╣α╣êα╕úα╕░α╕Üα╕Ü...' : 'α╣Çα╕éα╣ëα╕▓α╕¬α╕╣α╣êα╕úα╕░α╕Üα╕Ü'}
                     </button>
                   </form>
                 </>
@@ -651,7 +651,7 @@
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó"
                       className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                   </div>
@@ -667,12 +667,12 @@
                     disabled={isLoading}
                     className="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                   >
-                    {isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+                    {isLoading ? 'α╕üα╕│α╕Ñα╕▒α╕çα╣Çα╕éα╣ëα╕▓α╕¬α╕╣α╣êα╕úα╕░α╕Üα╕Ü...' : 'α╣Çα╕éα╣ëα╕▓α╕¬α╕╣α╣êα╕úα╕░α╕Üα╕Ü'}
                   </button>
 
                   {/* Hint */}
                   <div className="text-xs text-slate-500 text-center">
-                    💡 Admin: username = <code className="text-blue-400">system_root</code>, password = <code className="text-blue-400">system_root</code>
+                    ≡ƒÆí Admin: username = <code className="text-blue-400">system_root</code>, password = <code className="text-blue-400">system_root</code>
                   </div>
                 </form>
               )}
@@ -681,8 +681,8 @@
               {loginMode === 'register' && (
                 <div className="space-y-4">
                   <div className="text-center mb-6">
-                    <h3 className="text-lg font-medium text-slate-200 mb-2">สมัครสมาชิกด้วย Google</h3>
-                    <p className="text-sm text-slate-400">เข้าสู่ระบบด้วย Google Account ของคุณ</p>
+                    <h3 className="text-lg font-medium text-slate-200 mb-2">α╕¬α╕íα╕▒α╕äα╕úα╕¬α╕íα╕▓α╕èα╕┤α╕üα╕öα╣ëα╕ºα╕ó Google</h3>
+                    <p className="text-sm text-slate-400">α╣Çα╕éα╣ëα╕▓α╕¬α╕╣α╣êα╕úα╕░α╕Üα╕Üα╕öα╣ëα╕ºα╕ó Google Account α╕éα╕¡α╕çα╕äα╕╕α╕ô</p>
                   </div>
 
                   {error && (
@@ -695,12 +695,12 @@
                   {referralCode && (
                     <div className="mt-4 p-4 bg-emerald-900/20 border border-emerald-500/50 rounded-lg">
                       <div className="text-emerald-300 text-sm text-center mb-3">
-                        รหัสแนะนำ: <span className="font-bold">{referralCode}</span>
+                        α╕úα╕½α╕▒α╕¬α╣üα╕Öα╕░α╕Öα╕│: <span className="font-bold">{referralCode}</span>
                       </div>
 
                       {loadingInviter ? (
                         <div className="text-center text-slate-400 text-xs">
-                          กำลังตรวจสอบผู้แนะนำ...
+                          α╕üα╕│α╕Ñα╕▒α╕çα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕£α╕╣α╣ëα╣üα╕Öα╕░α╕Öα╕│...
                         </div>
                       ) : inviterInfo ? (
                         <div className="flex items-center gap-3 bg-slate-800/50 rounded-lg p-3">
@@ -741,7 +741,7 @@
                         </div>
                       ) : (
                         <div className="text-center text-rose-400 text-xs">
-                          ไม่พบผู้แนะนำในระบบ
+                          α╣äα╕íα╣êα╕₧α╕Üα╕£α╕╣α╣ëα╣üα╕Öα╕░α╕Öα╕│α╣âα╕Öα╕úα╕░α╕Üα╕Ü
                         </div>
                       )}
                     </div>
@@ -750,7 +750,7 @@
                   {/* Google Sign-In Button Placeholder (below inviter card) */}
                   <div id="google-signin-button" className="flex justify-center min-h-[44px]">
                     {/* Loading indicator will show until Google button renders */}
-                    <div className="text-slate-400 text-sm">กำลังโหลด Google Sign-In...</div>
+                    <div className="text-slate-400 text-sm">α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕ö Google Sign-In...</div>
                   </div>
 
                   {/* Divider */}
@@ -759,14 +759,14 @@
                       <div className="w-full border-t border-slate-700"></div>
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-slate-900 px-2 text-slate-400">ข้อมูล</span>
+                      <span className="bg-slate-900 px-2 text-slate-400">α╕éα╣ëα╕¡α╕íα╕╣α╕Ñ</span>
                     </div>
                   </div>
 
                   <div className="text-xs text-slate-400 space-y-2">
-                    <p>✅ ใช้ข้อมูล Google Account ของคุณในการสมัครสมาชิก</p>
-                    <p>✅ ปลอดภัย และสะดวกรวดเร็ว</p>
-                    <p>✅ ไม่ต้องจดจำรหัสผ่าน</p>
+                    <p>Γ£à α╣âα╕èα╣ëα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ Google Account α╕éα╕¡α╕çα╕äα╕╕α╕ôα╣âα╕Öα╕üα╕▓α╕úα╕¬α╕íα╕▒α╕äα╕úα╕¬α╕íα╕▓α╕èα╕┤α╕ü</p>
+                    <p>Γ£à α╕¢α╕Ñα╕¡α╕öα╕áα╕▒α╕ó α╣üα╕Ñα╕░α╕¬α╕░α╕öα╕ºα╕üα╕úα╕ºα╕öα╣Çα╕úα╣çα╕º</p>
+                    <p>Γ£à α╣äα╕íα╣êα╕òα╣ëα╕¡α╕çα╕êα╕öα╕êα╕│α╕úα╕½α╕▒α╕¬α╕£α╣êα╕▓α╕Ö</p>
                   </div>
                 </div>
               )}
@@ -774,6 +774,8 @@
               {/* Info */}
               <div className="mt-6 pt-6 border-t border-slate-800">
                 <div className="text-xs text-slate-400 space-y-1">
+                  <p>≡ƒÆí <strong>α╕ùα╕öα╕¬α╕¡α╕Üα╕úα╕░α╕Üα╕Ü:</strong> α╣âα╕èα╣ë World ID α╕öα╣ëα╕▓α╕Öα╕Üα╕Öα╣Çα╕₧α╕╖α╣êα╕¡α╕ùα╕öα╕¬α╕¡α╕Ü</p>
+                  <p>≡ƒùä∩╕Å <strong>α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕úα╕┤α╕ç:</strong> α╣Çα╕èα╕╖α╣êα╕¡α╕íα╕üα╕▒α╕Ü PostgreSQL Database</p>
                 </div>
               </div>
             </div>
@@ -867,7 +869,7 @@
           onClose();
         } catch (error) {
           console.error('Error saving selections:', error);
-          alert('เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่');
+          alert('α╣Çα╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕öα╣âα╕Öα╕üα╕▓α╕úα╕Üα╕▒α╕Öα╕ùα╕╢α╕ü α╕üα╕úα╕╕α╕ôα╕▓α╕Ñα╕¡α╕çα╣âα╕½α╕íα╣ê');
         } finally {
           setSaving(false);
         }
@@ -878,21 +880,21 @@
           <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-800">
-              <h2 className="text-lg font-bold">เลือกแผนประกัน Level {level}</h2>
+              <h2 className="text-lg font-bold">α╣Çα╕Ñα╕╖α╕¡α╕üα╣üα╕£α╕Öα╕¢α╕úα╕░α╕üα╕▒α╕Ö Level {level}</h2>
               <button
                 onClick={onClose}
                 className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
               >
-                ✕
+                Γ£ò
               </button>
             </div>
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-5">
               {loading ? (
-                <div className="text-center py-12 text-slate-400">กำลังโหลด...</div>
+                <div className="text-center py-12 text-slate-400">α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕ö...</div>
               ) : products.length === 0 ? (
-                <div className="text-center py-12 text-slate-400">ไม่มีแผนประกันสำหรับ Level นี้</div>
+                <div className="text-center py-12 text-slate-400">α╣äα╕íα╣êα╕íα╕╡α╣üα╕£α╕Öα╕¢α╕úα╕░α╕üα╕▒α╕Öα╕¬α╕│α╕½α╕úα╕▒α╕Ü Level α╕Öα╕╡α╣ë</div>
               ) : (
                 <div className="space-y-3">
                   {products.map((product) => (
@@ -912,7 +914,7 @@
                             : 'border-slate-600'
                         }`}>
                           {modalSelectedProducts.includes(product.id) && (
-                            <span className="text-white text-xs">✓</span>
+                            <span className="text-white text-xs">Γ£ô</span>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -937,14 +939,14 @@
                 onClick={onClose}
                 className="flex-1 px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 font-medium transition-colors"
               >
-                ยกเลิก
+                α╕óα╕üα╣Çα╕Ñα╕┤α╕ü
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
                 className="flex-1 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {saving ? 'กำลังบันทึก...' : 'บันทึก'}
+                {saving ? 'α╕üα╕│α╕Ñα╕▒α╕çα╕Üα╕▒α╕Öα╕ùα╕╢α╕ü...' : 'α╕Üα╕▒α╕Öα╕ùα╕╢α╕ü'}
               </button>
             </div>
           </div>
@@ -1075,13 +1077,13 @@
                 </div>
               </div>
               <div className="flex items-center gap-2 text-xs">
-                <span className="hidden sm:inline text-slate-400">สวัสดี,</span>
+                <span className="hidden sm:inline text-slate-400">α╕¬α╕ºα╕▒α╕¬α╕öα╕╡,</span>
                 <span className="font-medium">{user.firstName}</span>
                 <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center overflow-hidden">
                   {user.avatarUrl ? (
                     <img src={user.avatarUrl} alt={user.username} className="w-full h-full object-cover" />
                   ) : (
-                    <span>👤</span>
+                    <span>≡ƒæñ</span>
                   )}
                 </div>
               </div>
@@ -1093,7 +1095,7 @@
             <div className="bg-gradient-to-br from-emerald-900/60 to-teal-900/60 border border-emerald-700/50 rounded-2xl p-5 shadow-lg">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h2 className="text-xs uppercase tracking-wide text-emerald-300/80">ยอด Finpoint</h2>
+                  <h2 className="text-xs uppercase tracking-wide text-emerald-300/80">α╕óα╕¡α╕ö Finpoint</h2>
                   <p className="mt-1 text-3xl sm:text-4xl font-bold text-emerald-300">
                     {data.currentFpBalance.toLocaleString()} <span className="text-lg">FP</span>
                   </p>
@@ -1106,7 +1108,7 @@
               </div>
               <div className="flex items-center justify-between">
                 <div className="text-xs text-emerald-300/60">
-                  อัปเดตล่าสุด: {data.lastUpdated}
+                  α╕¡α╕▒α╕¢α╣Çα╕öα╕òα╕Ñα╣êα╕▓α╕¬α╕╕α╕ö: {data.lastUpdated}
                 </div>
                 <button
                   onClick={() => {
@@ -1117,8 +1119,8 @@
                   data-demo-finpoint
                   className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-yellow-500/50 flex items-center gap-2"
                 >
-                  <span>💳</span>
-                  <span>รับ Finpoint (Demo)</span>
+                  <span>≡ƒÆ│</span>
+                  <span>α╕úα╕▒α╕Ü Finpoint (Demo)</span>
                 </button>
               </div>
             </div>
@@ -1129,18 +1131,18 @@
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowDemoFinpointModal(false)}>
               <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
                 <div className="text-center mb-6">
-                  <div className="text-5xl mb-3">⚠️</div>
+                  <div className="text-5xl mb-3">ΓÜá∩╕Å</div>
                   <h3 className="text-xl font-bold text-amber-300 mb-2">Demo Finpoint</h3>
                   <p className="text-sm text-slate-300 leading-relaxed">
-                    นี่เป็น <span className="font-semibold text-amber-300">Demo Finpoint</span> เพื่อใช้ทดสอบระบบเท่านั้น
+                    α╕Öα╕╡α╣êα╣Çα╕¢α╣çα╕Ö <span className="font-semibold text-amber-300">Demo Finpoint</span> α╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕èα╣ëα╕ùα╕öα╕¬α╕¡α╕Üα╕úα╕░α╕Üα╕Üα╣Çα╕ùα╣êα╕▓α╕Öα╕▒α╣ëα╕Ö
                   </p>
                   <p className="text-xs text-slate-400 mt-2">
-                    เมื่อระบบเปิดใช้จริง ต้องใช้เงินจริงในการซื้อ Finpoint
+                    α╣Çα╕íα╕╖α╣êα╕¡α╕úα╕░α╕Üα╕Üα╣Çα╕¢α╕┤α╕öα╣âα╕èα╣ëα╕êα╕úα╕┤α╕ç α╕òα╣ëα╕¡α╕çα╣âα╕èα╣ëα╣Çα╕çα╕┤α╕Öα╕êα╕úα╕┤α╕çα╣âα╕Öα╕üα╕▓α╕úα╕ïα╕╖α╣ëα╕¡ Finpoint
                   </p>
                 </div>
 
                 <div className="bg-slate-800/50 rounded-xl p-4 mb-6">
-                  <label className="block text-xs text-slate-400 mb-2">จำนวน Finpoint ที่ต้องการ</label>
+                  <label className="block text-xs text-slate-400 mb-2">α╕êα╕│α╕Öα╕ºα╕Ö Finpoint α╕ùα╕╡α╣êα╕òα╣ëα╕¡α╕çα╕üα╕▓α╕ú</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
@@ -1168,7 +1170,7 @@
                   )}
                   {isQuickAdd && (
                     <div className="mt-2 text-xs text-emerald-400 text-center">
-                      ✓ จำนวนที่ยังขาดสำหรับการซื้อประกัน
+                      Γ£ô α╕êα╕│α╕Öα╕ºα╕Öα╕ùα╕╡α╣êα╕óα╕▒α╕çα╕éα╕▓α╕öα╕¬α╕│α╕½α╕úα╕▒α╕Üα╕üα╕▓α╕úα╕ïα╕╖α╣ëα╕¡α╕¢α╕úα╕░α╕üα╕▒α╕Ö
                     </div>
                   )}
                 </div>
@@ -1181,7 +1183,7 @@
                     }}
                     className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors"
                   >
-                    ยกเลิก
+                    α╕óα╕üα╣Çα╕Ñα╕┤α╕ü
                   </button>
                   <button
                     onClick={async () => {
@@ -1213,11 +1215,11 @@
 
                           setShowDemoFinpointModal(false);
                           setIsQuickAdd(false);
-                          alert(`เติม ${demoAmount.toLocaleString()} FP สำเร็จ!`);
+                          alert(`α╣Çα╕òα╕┤α╕í ${demoAmount.toLocaleString()} FP α╕¬α╕│α╣Çα╕úα╣çα╕ê!`);
                         }
                       } catch (error) {
                         console.error('Error purchasing demo finpoint:', error);
-                        alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
+                        alert('α╣Çα╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö α╕üα╕úα╕╕α╕ôα╕▓α╕Ñα╕¡α╕çα╕¡α╕╡α╕üα╕äα╕úα╕▒α╣ëα╕ç');
                       } finally {
                         setIsAddingFP(false);
                       }
@@ -1225,7 +1227,7 @@
                     disabled={isAddingFP}
                     className={`flex-1 px-4 py-3 ${isAddingFP ? 'bg-emerald-800 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'} text-white rounded-lg font-medium transition-colors`}
                   >
-                    {isAddingFP ? 'กำลังเติม...' : 'รับ Finpoint'}
+                    {isAddingFP ? 'α╕üα╕│α╕Ñα╕▒α╕çα╣Çα╕òα╕┤α╕í...' : 'α╕úα╕▒α╕Ü Finpoint'}
                   </button>
                 </div>
               </div>
@@ -1235,8 +1237,8 @@
           {/* Level Progress */}
           <section className="px-4 pb-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold">เป้าหมาย Level</h3>
-              <span className="text-xs text-slate-400">ใช้ FP ซื้อประกัน</span>
+              <h3 className="text-sm font-semibold">α╣Çα╕¢α╣ëα╕▓α╕½α╕íα╕▓α╕ó Level</h3>
+              <span className="text-xs text-slate-400">α╣âα╕èα╣ë FP α╕ïα╕╖α╣ëα╕¡α╕¢α╕úα╕░α╕üα╕▒α╕Ö</span>
             </div>
             <div className="space-y-3">
               {data.expProgressList.map((exp) => {
@@ -1275,7 +1277,7 @@
       );
     }
 
-    // Transactions Page (รายการ)
+    // Transactions Page (α╕úα╕▓α╕óα╕üα╕▓α╕ú)
     function TransactionsPage({ data, user }) {
       const [filter, setFilter] = useState('all'); // all, dr, cr
       const [uplineList, setUplineList] = useState([]);
@@ -1351,8 +1353,8 @@
           {/* Header */}
           <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
             <div className="px-4 py-3">
-              <h1 className="text-base font-semibold">รายการธุรกรรม</h1>
-              <p className="text-xs text-slate-400 mt-1">ประวัติการใช้งาน Finpoint</p>
+              <h1 className="text-base font-semibold">α╕úα╕▓α╕óα╕üα╕▓α╕úα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í</h1>
+              <p className="text-xs text-slate-400 mt-1">α╕¢α╕úα╕░α╕ºα╕▒α╕òα╕┤α╕üα╕▓α╕úα╣âα╕èα╣ëα╕çα╕▓α╕Ö Finpoint</p>
             </div>
           </header>
 
@@ -1361,15 +1363,15 @@
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-slate-200">Commission Pool List</h3>
-                <span className="text-xs text-slate-400">{uplineList.length} คน</span>
+                <span className="text-xs text-slate-400">{uplineList.length} α╕äα╕Ö</span>
               </div>
               {loadingUpline ? (
                 <div className="text-center py-4 text-slate-400 text-sm">
-                  กำลังโหลด...
+                  α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕ö...
                 </div>
               ) : uplineList.length === 0 ? (
                 <div className="text-center py-4 text-slate-400 text-sm">
-                  ไม่มี upline
+                  α╣äα╕íα╣êα╕íα╕╡ upline
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -1397,24 +1399,24 @@
             <div className="bg-gradient-to-br from-slate-900/60 to-slate-800/60 border border-slate-700/50 rounded-2xl p-4">
               {loadingTransactions ? (
                 <div className="text-center py-4 text-slate-400 text-sm">
-                  กำลังโหลดสรุป...
+                  α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕öα╕¬α╕úα╕╕α╕¢...
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
-                    <div className="text-xs text-slate-400 mb-1">ยอดคงเหลือ</div>
+                    <div className="text-xs text-slate-400 mb-1">α╕óα╕¡α╕öα╕äα╕çα╣Çα╕½α╕Ñα╕╖α╕¡</div>
                     <div className="text-lg font-bold text-emerald-300">{transactionSummary.totalFinpoint.toLocaleString()}</div>
                     <div className="text-xs text-slate-500">FP</div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-400 mb-1">รับเข้า</div>
+                    <div className="text-xs text-slate-400 mb-1">α╕úα╕▒α╕Üα╣Çα╕éα╣ëα╕▓</div>
                     <div className="text-lg font-bold text-emerald-300">
                       {transactionSummary.totalReceived.toLocaleString()}
                     </div>
                     <div className="text-xs text-slate-500">FP</div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-400 mb-1">จ่ายออก</div>
+                    <div className="text-xs text-slate-400 mb-1">α╕êα╣êα╕▓α╕óα╕¡α╕¡α╕ü</div>
                     <div className="text-lg font-bold text-rose-300">
                       {transactionSummary.totalSpent.toLocaleString()}
                     </div>
@@ -1432,19 +1434,19 @@
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
                   filter === 'all' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
                 }`}>
-                ทั้งหมด ({transactions.length})
+                α╕ùα╕▒α╣ëα╕çα╕½α╕íα╕ö ({transactions.length})
               </button>
               <button onClick={() => setFilter('dr')}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
                   filter === 'dr' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
                 }`}>
-                รับเข้า ({transactions.filter(r => r.drCr === 'DR').length})
+                α╕úα╕▒α╕Üα╣Çα╕éα╣ëα╕▓ ({transactions.filter(r => r.drCr === 'DR').length})
               </button>
               <button onClick={() => setFilter('cr')}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
                   filter === 'cr' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'
                 }`}>
-                จ่ายออก ({transactions.filter(r => r.drCr === 'CR').length})
+                α╕êα╣êα╕▓α╕óα╕¡α╕¡α╕ü ({transactions.filter(r => r.drCr === 'CR').length})
               </button>
             </div>
           </section>
@@ -1454,13 +1456,13 @@
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
               {loadingTransactions ? (
                 <div className="px-4 py-8 text-center text-slate-400">
-                  <div className="text-3xl mb-2">⏳</div>
-                  <div className="text-sm">กำลังโหลดรายการ...</div>
+                  <div className="text-3xl mb-2">ΓÅ│</div>
+                  <div className="text-sm">α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕öα╕úα╕▓α╕óα╕üα╕▓α╕ú...</div>
                 </div>
               ) : filteredLedger.length === 0 ? (
                 <div className="px-4 py-8 text-center text-slate-400">
-                  <div className="text-3xl mb-2">📋</div>
-                  <div className="text-sm">ไม่มีรายการ</div>
+                  <div className="text-3xl mb-2">≡ƒôï</div>
+                  <div className="text-sm">α╣äα╕íα╣êα╕íα╕╡α╕úα╕▓α╕óα╕üα╕▓α╕ú</div>
                 </div>
               ) : (
                 filteredLedger.map((row, idx) => (
@@ -1471,7 +1473,7 @@
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
                             row.drCr === 'DR' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
                           }`}>
-                            {row.drCr === 'DR' ? '↓' : '↑'}
+                            {row.drCr === 'DR' ? 'Γåô' : 'Γåæ'}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-slate-200 truncate">{row.category}</div>
@@ -1506,11 +1508,11 @@
           <section className="px-4 pb-4">
             <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3">
               <div className="flex items-start gap-2">
-                <div className="text-slate-400 mt-0.5">ℹ️</div>
+                <div className="text-slate-400 mt-0.5">Γä╣∩╕Å</div>
                 <div className="flex-1">
                   <div className="text-xs text-slate-400 leading-relaxed">
-                    <div className="mb-1"><span className="text-emerald-300">• รับเข้า (DR)</span> = ได้รับ Finpoint จากการขาย, โบนัส, คืนเงิน</div>
-                    <div><span className="text-rose-300">• จ่ายออก (CR)</span> = ใช้ Finpoint ซื้อสินค้า, บริการ</div>
+                    <div className="mb-1"><span className="text-emerald-300">ΓÇó α╕úα╕▒α╕Üα╣Çα╕éα╣ëα╕▓ (DR)</span> = α╣äα╕öα╣ëα╕úα╕▒α╕Ü Finpoint α╕êα╕▓α╕üα╕üα╕▓α╕úα╕éα╕▓α╕ó, α╣éα╕Üα╕Öα╕▒α╕¬, α╕äα╕╖α╕Öα╣Çα╕çα╕┤α╕Ö</div>
+                    <div><span className="text-rose-300">ΓÇó α╕êα╣êα╕▓α╕óα╕¡α╕¡α╕ü (CR)</span> = α╣âα╕èα╣ë Finpoint α╕ïα╕╖α╣ëα╕¡α╕¬α╕┤α╕Öα╕äα╣ëα╕▓, α╕Üα╕úα╕┤α╕üα╕▓α╕ú</div>
                   </div>
                 </div>
               </div>
@@ -1540,10 +1542,10 @@
               const unreadCount = list.filter(n => !readIds.includes(n.id)).length;
               setUnreadNotificationCount(unreadCount);
             } else {
-              setError('โหลดการแจ้งเตือนไม่สำเร็จ');
+              setError('α╣éα╕½α╕Ñα╕öα╕üα╕▓α╕úα╣üα╕êα╣ëα╕çα╣Çα╕òα╕╖α╕¡α╕Öα╣äα╕íα╣êα╕¬α╕│α╣Çα╕úα╣çα╕ê');
             }
           } catch (err) {
-            setError('โหลดการแจ้งเตือนไม่สำเร็จ');
+            setError('α╣éα╕½α╕Ñα╕öα╕üα╕▓α╕úα╣üα╕êα╣ëα╕çα╣Çα╕òα╕╖α╕¡α╕Öα╣äα╕íα╣êα╕¬α╕│α╣Çα╕úα╣çα╕ê');
           } finally {
             setIsLoading(false);
           }
@@ -1589,28 +1591,28 @@
           <div className="max-w-4xl mx-auto">
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="text-2xl">🔔</div>
+                <div className="text-2xl">≡ƒöö</div>
                 <div>
-                  <h2 className="text-lg font-semibold">การแจ้งเตือน</h2>
-                  <p className="text-slate-400 text-sm">อัปเดตเกี่ยวกับเครือข่ายของคุณ</p>
+                  <h2 className="text-lg font-semibold">α╕üα╕▓α╕úα╣üα╕êα╣ëα╕çα╣Çα╕òα╕╖α╕¡α╕Ö</h2>
+                  <p className="text-slate-400 text-sm">α╕¡α╕▒α╕¢α╣Çα╕öα╕òα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕üα╕▒α╕Üα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕óα╕éα╕¡α╕çα╕äα╕╕α╕ô</p>
                 </div>
               </div>
 
               <div className="flex items-center justify-between mb-3">
-                <div className="text-xs text-slate-400">ไม่ได้อ่าน: {unreadCount}</div>
+                <div className="text-xs text-slate-400">α╣äα╕íα╣êα╣äα╕öα╣ëα╕¡α╣êα╕▓α╕Ö: {unreadCount}</div>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
                     className="text-xs px-2 py-1 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
                   >
-                    ทำเครื่องหมายว่าอ่านแล้วทั้งหมด
+                    α╕ùα╕│α╣Çα╕äα╕úα╕╖α╣êα╕¡α╕çα╕½α╕íα╕▓α╕óα╕ºα╣êα╕▓α╕¡α╣êα╕▓α╕Öα╣üα╕Ñα╣ëα╕ºα╕ùα╕▒α╣ëα╕çα╕½α╕íα╕ö
                   </button>
                 )}
               </div>
 
               {isLoading ? (
                 <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center text-slate-400 text-sm">
-                  กำลังโหลดการแจ้งเตือน...
+                  α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕öα╕üα╕▓α╕úα╣üα╕êα╣ëα╕çα╣Çα╕òα╕╖α╕¡α╕Ö...
                 </div>
               ) : error ? (
                 <div className="bg-rose-900/20 border border-rose-500/50 rounded-xl p-4 text-center text-rose-300 text-sm">
@@ -1618,7 +1620,7 @@
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-4 text-center text-slate-400 text-sm">
-                  ยังไม่มีการแจ้งเตือนใหม่
+                  α╕óα╕▒α╕çα╣äα╕íα╣êα╕íα╕╡α╕üα╕▓α╕úα╣üα╕êα╣ëα╕çα╣Çα╕òα╕╖α╕¡α╕Öα╣âα╕½α╕íα╣ê
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -1754,7 +1756,7 @@
           <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
             <div className="px-4 py-3">
               <h1 className="text-base font-semibold">Network Tree</h1>
-              <p className="text-xs text-slate-400 mt-1">โครงสร้างเครือข่าย (ข้อมูลจริงจาก DB)</p>
+              <p className="text-xs text-slate-400 mt-1">α╣éα╕äα╕úα╕çα╕¬α╕úα╣ëα╕▓α╕çα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕ó (α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕úα╕┤α╕çα╕êα╕▓α╕ü DB)</p>
             </div>
           </header>
 
@@ -1766,12 +1768,12 @@
                   {viewingUser.avatarUrl ? (
                     <img src={viewingUser.avatarUrl} alt={viewingUser.username} className="w-full h-full object-cover" />
                   ) : (
-                    <span>👤</span>
+                    <span>≡ƒæñ</span>
                   )}
                 </div>
                 <div>
                   <div className="text-xs text-slate-400">View from:</div>
-                  <div className="text-sm font-semibold">{viewingUser.worldId} · {viewingUser.username}</div>
+                  <div className="text-sm font-semibold">{viewingUser.worldId} ┬╖ {viewingUser.username}</div>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -1779,9 +1781,9 @@
                   <button
                     onClick={() => setViewingUser({ id: parentInfo.id, worldId: parentInfo.worldId, username: parentInfo.username, avatarUrl: parentInfo.avatarUrl })}
                     className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs flex items-center gap-1"
-                    title={`ย้อนกลับไปดู ${parentInfo.username}`}
+                    title={`α╕óα╣ëα╕¡α╕Öα╕üα╕Ñα╕▒α╕Üα╣äα╕¢α╕öα╕╣ ${parentInfo.username}`}
                   >
-                    <span>←</span>
+                    <span>ΓåÉ</span>
                     <span>Back</span>
                   </button>
                 )}
@@ -1796,7 +1798,7 @@
               </div>
             </div>
             <p className="text-xs text-slate-400">
-              คลิกที่การ์ดของ user เพื่อดูเครือข่ายของเขา
+              α╕äα╕Ñα╕┤α╕üα╕ùα╕╡α╣êα╕üα╕▓α╕úα╣îα╕öα╕éα╕¡α╕ç user α╣Çα╕₧α╕╖α╣êα╕¡α╕öα╕╣α╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕óα╕éα╕¡α╕çα╣Çα╕éα╕▓
             </p>
           </section>
 
@@ -1804,13 +1806,13 @@
           <section className="p-4">
             {isLoading ? (
               <div className="text-center py-8">
-                <div className="text-2xl mb-2">⏳</div>
-                <div className="text-sm text-slate-400">กำลังโหลดข้อมูลเครือข่าย...</div>
+                <div className="text-2xl mb-2">ΓÅ│</div>
+                <div className="text-sm text-slate-400">α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕ó...</div>
               </div>
             ) : networkData.length === 0 || !networkData[0].children || networkData[0].children.length === 0 ? (
               <div className="text-center py-8">
-                <div className="text-2xl mb-2">📭</div>
-                <div className="text-sm text-slate-400">ยังไม่มีเครือข่ายในสายงาน</div>
+                <div className="text-2xl mb-2">≡ƒô¡</div>
+                <div className="text-sm text-slate-400">α╕óα╕▒α╕çα╣äα╕íα╣êα╕íα╕╡α╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕óα╣âα╕Öα╕¬α╕▓α╕óα╕çα╕▓α╕Ö</div>
               </div>
             ) : (
               <div className="space-y-6">
@@ -1833,7 +1835,7 @@
                             {child.avatarUrl ? (
                               <img src={child.avatarUrl} alt={child.username} className="w-full h-full object-cover" />
                             ) : (
-                              <span>👤</span>
+                              <span>≡ƒæñ</span>
                             )}
                           </div>
                           {child.childCount > 0 && (
@@ -1846,7 +1848,7 @@
                           {child.username}
                         </div>
                         <div className="text-[7px] text-emerald-200 font-semibold">
-                          ◈{child.childCount || 0}
+                          Γùê{child.childCount || 0}
                         </div>
                       </article>
 
@@ -1866,7 +1868,7 @@
                                   {grandchild.avatarUrl ? (
                                     <img src={grandchild.avatarUrl} alt={grandchild.username} className="w-full h-full object-cover" />
                                   ) : (
-                                    <span>👤</span>
+                                    <span>≡ƒæñ</span>
                                   )}
                                 </div>
                                 {grandchild.childCount > 0 && (
@@ -1879,7 +1881,7 @@
                                 {grandchild.username}
                               </div>
                               <div className="text-[7px] text-cyan-400">
-                                ◈{grandchild.childCount || 0}
+                                Γùê{grandchild.childCount || 0}
                               </div>
                             </div>
                           ))}
@@ -1905,11 +1907,11 @@
           <section className="px-4 pb-4">
             <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3">
               <div className="flex items-start gap-2">
-                <div className="text-slate-400 mt-0.5">ℹ️</div>
+                <div className="text-slate-400 mt-0.5">Γä╣∩╕Å</div>
                 <div className="flex-1">
                   <div className="text-xs text-slate-400 leading-relaxed">
-                    <div className="mb-1">• แสดงโครงสร้างเครือข่ายแบบ hierarchical (parent → children)</div>
-                    <div>• สูงสุด 5 ลูกต่อ 1 parent • คลิกที่โปรไฟล์เพื่อดูเครือข่ายย่อย</div>
+                    <div className="mb-1">ΓÇó α╣üα╕¬α╕öα╕çα╣éα╕äα╕úα╕çα╕¬α╕úα╣ëα╕▓α╕çα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕óα╣üα╕Üα╕Ü hierarchical (parent ΓåÆ children)</div>
+                    <div>ΓÇó α╕¬α╕╣α╕çα╕¬α╕╕α╕ö 5 α╕Ñα╕╣α╕üα╕òα╣êα╕¡ 1 parent ΓÇó α╕äα╕Ñα╕┤α╕üα╕ùα╕╡α╣êα╣éα╕¢α╕úα╣äα╕ƒα╕Ñα╣îα╣Çα╕₧α╕╖α╣êα╕¡α╕öα╕╣α╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕óα╕óα╣êα╕¡α╕ó</div>
                   </div>
                 </div>
               </div>
@@ -1924,9 +1926,9 @@
       return (
         <div className="min-h-screen flex items-center justify-center px-4">
           <div className="text-center">
-            <div className="text-5xl mb-4">🛒</div>
-            <h2 className="text-xl font-bold mb-2">ซื้อขายของมือสอง</h2>
-            <p className="text-slate-400 text-sm">กำลังพัฒนา...</p>
+            <div className="text-5xl mb-4">≡ƒ¢Æ</div>
+            <h2 className="text-xl font-bold mb-2">α╕ïα╕╖α╣ëα╕¡α╕éα╕▓α╕óα╕éα╕¡α╕çα╕íα╕╖α╕¡α╕¬α╕¡α╕ç</h2>
+            <p className="text-slate-400 text-sm">α╕üα╕│α╕Ñα╕▒α╕çα╕₧α╕▒α╕Æα╕Öα╕▓...</p>
           </div>
         </div>
       );
@@ -1950,9 +1952,9 @@
                 // Sort by level (ascending), then by createdAt (ascending)
                 const sortedNodes = data.nodes.sort((a, b) => {
                   if (a.level !== b.level) {
-                    return a.level - b.level; // Level น้อยอยู่บน
+                    return a.level - b.level; // Level α╕Öα╣ëα╕¡α╕óα╕¡α╕óα╕╣α╣êα╕Üα╕Ö
                   }
-                  return new Date(a.createdAt) - new Date(b.createdAt); // สมัครก่อนอยู่บน
+                  return new Date(a.createdAt) - new Date(b.createdAt); // α╕¬α╕íα╕▒α╕äα╕úα╕üα╣êα╕¡α╕Öα╕¡α╕óα╕╣α╣êα╕Üα╕Ö
                 });
 
                 setUserNetwork(sortedNodes.map(node => ({
@@ -2009,7 +2011,7 @@
           <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
             <div className="px-4 py-3">
               <h1 className="text-base font-semibold">ACF Network</h1>
-              <p className="text-xs text-slate-400 mt-1">ระบบเครือข่าย Auto Connection Fill (ข้อมูลจริง)</p>
+              <p className="text-xs text-slate-400 mt-1">α╕úα╕░α╕Üα╕Üα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕ó Auto Connection Fill (α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕úα╕┤α╕ç)</p>
             </div>
           </header>
 
@@ -2017,7 +2019,7 @@
           <section className="p-4 border-b border-slate-800 bg-slate-900/40">
             <div className="flex items-center justify-between">
               <div>
-                <label className="block text-sm font-medium mb-1">Root ที่ต้องการดู</label>
+                <label className="block text-sm font-medium mb-1">Root α╕ùα╕╡α╣êα╕òα╣ëα╕¡α╕çα╕üα╕▓α╕úα╕öα╕╣</label>
                 <div className="text-base font-semibold text-emerald-400">
                   {user.worldId} - {user.username}
                 </div>
@@ -2028,7 +2030,7 @@
               </div>
             </div>
             <p className="text-xs text-slate-400 mt-2">
-              * ข้อมูลจากฐานข้อมูลจริง - แสดงเครือข่ายภายใต้สายงานของคุณ
+              * α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕▓α╕üα╕Éα╕▓α╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕úα╕┤α╕ç - α╣üα╕¬α╕öα╕çα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕óα╕áα╕▓α╕óα╣âα╕òα╣ëα╕¬α╕▓α╕óα╕çα╕▓α╕Öα╕éα╕¡α╕çα╕äα╕╕α╕ô
             </p>
           </section>
 
@@ -2036,13 +2038,13 @@
           <section className="p-4">
             {isLoading ? (
               <div className="text-center py-8">
-                <div className="text-2xl mb-2">⏳</div>
-                <div className="text-sm text-slate-400">กำลังโหลดข้อมูล ACF...</div>
+                <div className="text-2xl mb-2">ΓÅ│</div>
+                <div className="text-sm text-slate-400">α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ ACF...</div>
               </div>
             ) : userNetwork.length === 0 ? (
               <div className="text-center py-8">
-                <div className="text-2xl mb-2">📭</div>
-                <div className="text-sm text-slate-400">ไม่พบข้อมูลเครือข่าย</div>
+                <div className="text-2xl mb-2">≡ƒô¡</div>
+                <div className="text-sm text-slate-400">α╣äα╕íα╣êα╕₧α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕ó</div>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -2070,8 +2072,8 @@
                           {node.username}
                         </button>
                       </td>
-                      <td className="px-3 py-3 text-slate-400">{node.inviterUsername || '—'}</td>
-                      <td className="px-3 py-3 text-slate-400">{node.parentUsername || '—'}</td>
+                      <td className="px-3 py-3 text-slate-400">{node.inviterUsername || 'ΓÇö'}</td>
+                      <td className="px-3 py-3 text-slate-400">{node.parentUsername || 'ΓÇö'}</td>
                       <td className="px-3 py-3">{node.level}</td>
                       <td className="px-3 py-3 font-mono">{node.networkSize}/19531</td>
                       <td className="px-3 py-3 text-slate-400">5</td>
@@ -2099,7 +2101,7 @@
                         ))
                       ) : null}
                       {Array(5 - (node.childrenLevel1?.length || 0)).fill(null).map((_, i) => (
-                        <td key={`empty-${i}`} className="px-3 py-3 text-slate-500">—</td>
+                        <td key={`empty-${i}`} className="px-3 py-3 text-slate-500">ΓÇö</td>
                       ))}
                     </tr>
                   ))}
@@ -2113,11 +2115,11 @@
           <section className="px-4 pb-4">
             <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3">
               <div className="flex items-start gap-2">
-                <div className="text-slate-400 mt-0.5">ℹ️</div>
+                <div className="text-slate-400 mt-0.5">Γä╣∩╕Å</div>
                 <div className="flex-1">
                   <div className="text-xs text-slate-400 leading-relaxed">
-                    <div className="mb-1">• คุณสามารถดูเครือข่ายภายใต้สายงานของคุณเท่านั้น</div>
-                    <div>• ตารางแสดงโครงสร้างเครือข่าย ACF และสถานะการเปิดรับสมาชิกใหม่</div>
+                    <div className="mb-1">ΓÇó α╕äα╕╕α╕ôα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕öα╕╣α╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕óα╕áα╕▓α╕óα╣âα╕òα╣ëα╕¬α╕▓α╕óα╕çα╕▓α╕Öα╕éα╕¡α╕çα╕äα╕╕α╕ôα╣Çα╕ùα╣êα╕▓α╕Öα╕▒α╣ëα╕Ö</div>
+                    <div>ΓÇó α╕òα╕▓α╕úα╕▓α╕çα╣üα╕¬α╕öα╕çα╣éα╕äα╕úα╕çα╕¬α╕úα╣ëα╕▓α╕çα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕ó ACF α╣üα╕Ñα╕░α╕¬α╕ûα╕▓α╕Öα╕░α╕üα╕▓α╕úα╣Çα╕¢α╕┤α╕öα╕úα╕▒α╕Üα╕¬α╕íα╕▓α╕èα╕┤α╕üα╣âα╕½α╕íα╣ê</div>
                   </div>
                 </div>
               </div>
@@ -2136,11 +2138,11 @@
       const handleSave = () => {
         setUser(form);
         setEditing(false);
-        alert('✅ บันทึกข้อมูลสำเร็จ!');
+        alert('Γ£à α╕Üα╕▒α╕Öα╕ùα╕╢α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕¬α╕│α╣Çα╕úα╣çα╕ê!');
       };
 
       const handleLogout = () => {
-        if (confirm('ต้องการออกจากระบบหรือไม่?')) {
+        if (confirm('α╕òα╣ëα╕¡α╕çα╕üα╕▓α╕úα╕¡α╕¡α╕üα╕êα╕▓α╕üα╕úα╕░α╕Üα╕Üα╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê?')) {
           onLogout();
         }
       };
@@ -2167,10 +2169,10 @@
           const data = await response.json();
           setUser(data.profile);
           setForm(data.profile);
-          alert('✅ อัปโหลดรูปโปรไฟล์สำเร็จ!');
+          alert('Γ£à α╕¡α╕▒α╕¢α╣éα╕½α╕Ñα╕öα╕úα╕╣α╕¢α╣éα╕¢α╕úα╣äα╕ƒα╕Ñα╣îα╕¬α╕│α╣Çα╕úα╣çα╕ê!');
         } catch (error) {
           console.error('Failed to upload avatar:', error);
-          alert('❌ ไม่สามารถอัปโหลดรูปภาพได้ กรุณาลองใหม่');
+          alert('Γ¥î α╣äα╕íα╣êα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕¡α╕▒α╕¢α╣éα╕½α╕Ñα╕öα╕úα╕╣α╕¢α╕áα╕▓α╕₧α╣äα╕öα╣ë α╕üα╕úα╕╕α╕ôα╕▓α╕Ñα╕¡α╕çα╣âα╕½α╕íα╣ê');
         } finally {
           setUploadingAvatar(false);
         }
@@ -2179,24 +2181,24 @@
       return (
         <div className="pb-4">
           <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-            <h1 className="text-base font-semibold">โปรไฟล์</h1>
+            <h1 className="text-base font-semibold">α╣éα╕¢α╕úα╣äα╕ƒα╕Ñα╣î</h1>
             <div className="flex gap-2">
               {!editing ? (
                 <>
                   <button onClick={() => setEditing(true)} className="px-3 py-1.5 bg-emerald-600 rounded-lg text-xs">
-                    แก้ไข
+                    α╣üα╕üα╣ëα╣äα╕é
                   </button>
                   <button onClick={handleLogout} className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 rounded-lg text-xs">
-                    ออกจากระบบ
+                    α╕¡α╕¡α╕üα╕êα╕▓α╕üα╕úα╕░α╕Üα╕Ü
                   </button>
                 </>
               ) : (
                 <>
                   <button onClick={() => { setEditing(false); setForm(user); }} className="px-3 py-1.5 bg-slate-700 rounded-lg text-xs">
-                    ยกเลิก
+                    α╕óα╕üα╣Çα╕Ñα╕┤α╕ü
                   </button>
                   <button onClick={handleSave} className="px-3 py-1.5 bg-emerald-600 rounded-lg text-xs">
-                    บันทึก
+                    α╕Üα╕▒α╕Öα╕ùα╕╢α╕ü
                   </button>
                 </>
               )}
@@ -2213,7 +2215,7 @@
                     {user.avatarUrl ? (
                       <img src={user.avatarUrl} alt={user.username} className="w-full h-full object-cover" />
                     ) : (
-                      <span>👤</span>
+                      <span>≡ƒæñ</span>
                     )}
                     {uploadingAvatar && (
                       <div className="absolute inset-0 bg-slate-900/80 flex items-center justify-center">
@@ -2223,7 +2225,7 @@
                   </div>
                   {user.isVerified && (
                     <div className="absolute bottom-0 right-0 w-8 h-8 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center text-sm">
-                      ✓
+                      Γ£ô
                     </div>
                   )}
                   {/* Upload button */}
@@ -2232,7 +2234,7 @@
                     disabled={uploadingAvatar}
                     className="absolute -bottom-1 right-0 w-9 h-9 bg-emerald-600 hover:bg-emerald-700 rounded-full border-4 border-slate-900 flex items-center justify-center text-base shadow-lg active:scale-95 transition-transform disabled:opacity-50"
                   >
-                    📷
+                    ≡ƒô╖
                   </button>
                   <input
                     id="avatar-upload-input"
@@ -2249,7 +2251,7 @@
                     {/* Level & Run removed from profile header per UI request */}
                   {user.inviterUsername && (
                     <span className="text-xs text-slate-400">
-                      ผู้แนะนำ: <span className="text-emerald-400">@{user.inviterUsername}</span>
+                      α╕£α╕╣α╣ëα╣üα╕Öα╕░α╕Öα╕│: <span className="text-emerald-400">@{user.inviterUsername}</span>
                     </span>
                   )}
                 </div>
@@ -2259,7 +2261,7 @@
               <div className="px-4 pb-4 space-y-3">
                 {/* Invite Code */}
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-3">
-                  <div className="text-xs text-slate-400 mb-2">รหัสเชิญเพื่อน 🎁</div>
+                  <div className="text-xs text-slate-400 mb-2">α╕úα╕½α╕▒α╕¬α╣Çα╕èα╕┤α╕ìα╣Çα╕₧α╕╖α╣êα╕¡α╕Ö ≡ƒÄü</div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2">
                       <div className="font-mono text-sm text-emerald-300 font-bold">
@@ -2269,18 +2271,18 @@
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(user.inviteCode || user.worldId);
-                        alert('📋 คัดลอกรหัสเชิญแล้ว!');
+                        alert('≡ƒôï α╕äα╕▒α╕öα╕Ñα╕¡α╕üα╕úα╕½α╕▒α╕¬α╣Çα╕èα╕┤α╕ìα╣üα╕Ñα╣ëα╕º!');
                       }}
                       className="px-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-medium transition-colors whitespace-nowrap"
                     >
-                      คัดลอก
+                      α╕äα╕▒α╕öα╕Ñα╕¡α╕ü
                     </button>
                   </div>
                 </div>
 
                 {/* Invite Link */}
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-3">
-                  <div className="text-xs text-slate-400 mb-2">ลิงก์เชิญเพื่อน 🔗</div>
+                  <div className="text-xs text-slate-400 mb-2">α╕Ñα╕┤α╕çα╕üα╣îα╣Çα╕èα╕┤α╕ìα╣Çα╕₧α╕╖α╣êα╕¡α╕Ö ≡ƒöù</div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2">
                       <div className="text-xs text-cyan-300 truncate">
@@ -2291,11 +2293,11 @@
                       onClick={() => {
                         const inviteLink = `${window.location.origin}/register?ref=${user.inviteCode || user.worldId}`;
                         navigator.clipboard.writeText(inviteLink);
-                        alert('📋 คัดลอกลิงก์เชิญแล้ว!');
+                        alert('≡ƒôï α╕äα╕▒α╕öα╕Ñα╕¡α╕üα╕Ñα╕┤α╕çα╕üα╣îα╣Çα╕èα╕┤α╕ìα╣üα╕Ñα╣ëα╕º!');
                       }}
                       className="px-2 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-[10px] font-medium transition-colors whitespace-nowrap"
                     >
-                      คัดลอก
+                      α╕äα╕▒α╕öα╕Ñα╕¡α╕ü
                     </button>
                   </div>
                 </div>
@@ -2304,23 +2306,23 @@
                 <button
                   onClick={() => {
                     const inviteLink = `${window.location.origin}/register?ref=${user.inviteCode || user.worldId}`;
-                    const shareText = `🎉 มาร่วมเป็นส่วนหนึ่งของ Fingrow กับผม!\n\n✨ ซื้อขายของมือสองได้ง่ายๆ\n💰 รับ Finpoint จากทุกการซื้อขาย\n🎁 สร้างรายได้จากเครือข่าย\n\n👉 ลงทะเบียนที่: ${inviteLink}`;
+                    const shareText = `≡ƒÄë α╕íα╕▓α╕úα╣êα╕ºα╕íα╣Çα╕¢α╣çα╕Öα╕¬α╣êα╕ºα╕Öα╕½α╕Öα╕╢α╣êα╕çα╕éα╕¡α╕ç Fingrow α╕üα╕▒α╕Üα╕£α╕í!\n\nΓ£¿ α╕ïα╕╖α╣ëα╕¡α╕éα╕▓α╕óα╕éα╕¡α╕çα╕íα╕╖α╕¡α╕¬α╕¡α╕çα╣äα╕öα╣ëα╕çα╣êα╕▓α╕óα╣å\n≡ƒÆ░ α╕úα╕▒α╕Ü Finpoint α╕êα╕▓α╕üα╕ùα╕╕α╕üα╕üα╕▓α╕úα╕ïα╕╖α╣ëα╕¡α╕éα╕▓α╕ó\n≡ƒÄü α╕¬α╕úα╣ëα╕▓α╕çα╕úα╕▓α╕óα╣äα╕öα╣ëα╕êα╕▓α╕üα╣Çα╕äα╕úα╕╖α╕¡α╕éα╣êα╕▓α╕ó\n\n≡ƒæë α╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Öα╕ùα╕╡α╣ê: ${inviteLink}`;
 
                     if (navigator.share) {
                       navigator.share({
-                        title: 'เชิญเพื่อนเข้า Fingrow',
+                        title: 'α╣Çα╕èα╕┤α╕ìα╣Çα╕₧α╕╖α╣êα╕¡α╕Öα╣Çα╕éα╣ëα╕▓ Fingrow',
                         text: shareText,
                         url: inviteLink
                       }).catch(() => {});
                     } else {
                       navigator.clipboard.writeText(shareText);
-                      alert('📋 คัดลอกข้อความเชิญแล้ว!');
+                      alert('≡ƒôï α╕äα╕▒α╕öα╕Ñα╕¡α╕üα╕éα╣ëα╕¡α╕äα╕ºα╕▓α╕íα╣Çα╕èα╕┤α╕ìα╣üα╕Ñα╣ëα╕º!');
                     }
                   }}
                   className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-3 rounded-xl transition-all flex items-center justify-center gap-2"
                 >
-                  <span>📤</span>
-                  <span>แชร์เชิญเพื่อน</span>
+                  <span>≡ƒôñ</span>
+                  <span>α╣üα╕èα╕úα╣îα╣Çα╕èα╕┤α╕ìα╣Çα╕₧α╕╖α╣êα╕¡α╕Ö</span>
                 </button>
               </div>
             </div>
@@ -2328,49 +2330,49 @@
 
           {/* Info Form */}
           <section className="px-4 pb-4 space-y-3">
-            {/* ข้อมูลส่วนตัว */}
+            {/* α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕¬α╣êα╕ºα╕Öα╕òα╕▒α╕º */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
-              <h3 className="text-sm font-semibold">ข้อมูลส่วนตัว</h3>
-              <InputField label="ชื่อจริง" value={form.firstName || ''}
+              <h3 className="text-sm font-semibold">α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕¬α╣êα╕ºα╕Öα╕òα╕▒α╕º</h3>
+              <InputField label="α╕èα╕╖α╣êα╕¡α╕êα╕úα╕┤α╕ç" value={form.firstName || ''}
                 onChange={(v) => setForm({...form, firstName: v})} editing={editing} />
-              <InputField label="นามสกุล" value={form.lastName || ''}
+              <InputField label="α╕Öα╕▓α╕íα╕¬α╕üα╕╕α╕Ñ" value={form.lastName || ''}
                 onChange={(v) => setForm({...form, lastName: v})} editing={editing} />
-              <InputField label="อีเมล" value={form.email || ''}
+              <InputField label="α╕¡α╕╡α╣Çα╕íα╕Ñ" value={form.email || ''}
                 onChange={(v) => setForm({...form, email: v})} editing={editing} type="email" />
-              <InputField label="โทรศัพท์" value={form.phone || ''}
+              <InputField label="α╣éα╕ùα╕úα╕¿α╕▒α╕₧α╕ùα╣î" value={form.phone || ''}
                 onChange={(v) => setForm({...form, phone: v})} editing={editing} type="tel" />
             </div>
 
-            {/* ที่อยู่ */}
+            {/* α╕ùα╕╡α╣êα╕¡α╕óα╕╣α╣ê */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
-              <h3 className="text-sm font-semibold">ที่อยู่</h3>
+              <h3 className="text-sm font-semibold">α╕ùα╕╡α╣êα╕¡α╕óα╕╣α╣ê</h3>
 
-              {/* บ้านเลขที่ และถนน */}
+              {/* α╕Üα╣ëα╕▓α╕Öα╣Çα╕Ñα╕éα╕ùα╕╡α╣ê α╣üα╕Ñα╕░α╕ûα╕Öα╕Ö */}
               <div className="grid grid-cols-2 gap-3">
-                <InputField label="บ้านเลขที่" value={form.addressNumber || ''}
+                <InputField label="α╕Üα╣ëα╕▓α╕Öα╣Çα╕Ñα╕éα╕ùα╕╡α╣ê" value={form.addressNumber || ''}
                   onChange={(v) => setForm({...form, addressNumber: v})} editing={editing}
                   placeholder="123/45" />
-                <InputField label="ถนน" value={form.addressStreet || ''}
+                <InputField label="α╕ûα╕Öα╕Ö" value={form.addressStreet || ''}
                   onChange={(v) => setForm({...form, addressStreet: v})} editing={editing}
-                  placeholder="สุขุมวิท" />
+                  placeholder="α╕¬α╕╕α╕éα╕╕α╕íα╕ºα╕┤α╕ù" />
               </div>
 
-              {/* แขวง/ตำบล และเขต/อำเภอ */}
+              {/* α╣üα╕éα╕ºα╕ç/α╕òα╕│α╕Üα╕Ñ α╣üα╕Ñα╕░α╣Çα╕éα╕ò/α╕¡α╕│α╣Çα╕áα╕¡ */}
               <div className="grid grid-cols-2 gap-3">
-                <InputField label="แขวง/ตำบล" value={form.addressSubDistrict || ''}
+                <InputField label="α╣üα╕éα╕ºα╕ç/α╕òα╕│α╕Üα╕Ñ" value={form.addressSubDistrict || ''}
                   onChange={(v) => setForm({...form, addressSubDistrict: v})} editing={editing}
-                  placeholder="คลองเตย" />
-                <InputField label="เขต/อำเภอ" value={form.addressDistrict || ''}
+                  placeholder="α╕äα╕Ñα╕¡α╕çα╣Çα╕òα╕ó" />
+                <InputField label="α╣Çα╕éα╕ò/α╕¡α╕│α╣Çα╕áα╕¡" value={form.addressDistrict || ''}
                   onChange={(v) => setForm({...form, addressDistrict: v})} editing={editing}
-                  placeholder="คลองเตย" />
+                  placeholder="α╕äα╕Ñα╕¡α╕çα╣Çα╕òα╕ó" />
               </div>
 
-              {/* จังหวัด และรหัสไปรษณีย์ */}
+              {/* α╕êα╕▒α╕çα╕½α╕ºα╕▒α╕ö α╣üα╕Ñα╕░α╕úα╕½α╕▒α╕¬α╣äα╕¢α╕úα╕⌐α╕ôα╕╡α╕óα╣î */}
               <div className="grid grid-cols-2 gap-3">
-                <InputField label="จังหวัด" value={form.addressProvince || ''}
+                <InputField label="α╕êα╕▒α╕çα╕½α╕ºα╕▒α╕ö" value={form.addressProvince || ''}
                   onChange={(v) => setForm({...form, addressProvince: v})} editing={editing}
-                  placeholder="กรุงเทพมหานคร" />
-                <InputField label="รหัสไปรษณีย์" value={form.addressPostalCode || ''}
+                  placeholder="α╕üα╕úα╕╕α╕çα╣Çα╕ùα╕₧α╕íα╕½α╕▓α╕Öα╕äα╕ú" />
+                <InputField label="α╕úα╕½α╕▒α╕¬α╣äα╕¢α╕úα╕⌐α╕ôα╕╡α╕óα╣î" value={form.addressPostalCode || ''}
                   onChange={(v) => setForm({...form, addressPostalCode: v})} editing={editing}
                   type="tel" maxLength={5} placeholder="10110" />
               </div>
@@ -2428,7 +2430,7 @@
 
           if (!productId) {
             console.error('No product ID found in selectedProduct:', selectedProduct);
-            alert('❌ ข้อมูลสินค้าไม่ครบถ้วน กรุณาลองใหม่อีกครั้ง');
+            alert('Γ¥î α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕¬α╕┤α╕Öα╕äα╣ëα╕▓α╣äα╕íα╣êα╕äα╕úα╕Üα╕ûα╣ëα╕ºα╕Ö α╕üα╕úα╕╕α╕ôα╕▓α╕Ñα╕¡α╕çα╣âα╕½α╕íα╣êα╕¡α╕╡α╕üα╕äα╕úα╕▒α╣ëα╕ç');
             setShowPurchaseModal(false);
             setSelectedProduct(null);
             return;
@@ -2453,10 +2455,10 @@
           }
 
           // Success - show success message
-          alert(`✅ ซื้อประกันสำเร็จ!\n\n` +
-                `รายการ: ${selectedProduct.title}\n` +
-                `ใช้ Finpoint: ${result.data.finpointSpent.toLocaleString('th-TH', {minimumFractionDigits: 2})} FP\n` +
-                `คงเหลือ: ${result.data.newBalance.toLocaleString('th-TH', {minimumFractionDigits: 2})} FP`);
+          alert(`Γ£à α╕ïα╕╖α╣ëα╕¡α╕¢α╕úα╕░α╕üα╕▒α╕Öα╕¬α╕│α╣Çα╕úα╣çα╕ê!\n\n` +
+                `α╕úα╕▓α╕óα╕üα╕▓α╕ú: ${selectedProduct.title}\n` +
+                `α╣âα╕èα╣ë Finpoint: ${result.data.finpointSpent.toLocaleString('th-TH', {minimumFractionDigits: 2})} FP\n` +
+                `α╕äα╕çα╣Çα╕½α╕Ñα╕╖α╕¡: ${result.data.newBalance.toLocaleString('th-TH', {minimumFractionDigits: 2})} FP`);
 
           // Close modal
           setShowPurchaseModal(false);
@@ -2468,7 +2470,7 @@
           }
         } catch (error) {
           console.error('Error purchasing insurance:', error);
-          alert('❌ เกิดข้อผิดพลาดในการซื้อประกัน: ' + error.message);
+          alert('Γ¥î α╣Çα╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕öα╣âα╕Öα╕üα╕▓α╕úα╕ïα╕╖α╣ëα╕¡α╕¢α╕úα╕░α╕üα╕▒α╕Ö: ' + error.message);
         }
       };
 
@@ -2483,16 +2485,16 @@
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
                 >
-                  {isExpanded ? '▼ ย่อ' : `ดูรายละเอียด (${selectedProducts.length})`}
+                  {isExpanded ? 'Γû╝ α╕óα╣êα╕¡' : `α╕öα╕╣α╕úα╕▓α╕óα╕Ñα╕░α╣Çα╕¡α╕╡α╕óα╕ö (${selectedProducts.length})`}
                 </button>
               )}
               <span className="text-xs text-slate-400">{percent}%</span>
               <button
                 onClick={() => onSettingsClick(exp)}
                 className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-xs transition-colors"
-                title="ตั้งค่าแผนประกัน"
+                title="α╕òα╕▒α╣ëα╕çα╕äα╣êα╕▓α╣üα╕£α╕Öα╕¢α╕úα╕░α╕üα╕▒α╕Ö"
               >
-                ⚙️
+                ΓÜÖ∩╕Å
               </button>
             </div>
           </div>
@@ -2504,11 +2506,11 @@
 
           {/* FP summary on the right side */}
           <div className="flex items-center justify-end mb-3 text-xs">
-            <span className="text-slate-400">คุณมี</span>
+            <span className="text-slate-400">α╕äα╕╕α╕ôα╕íα╕╡</span>
             <span className="font-semibold text-emerald-300 ml-1">{haveFP.toLocaleString()}</span>
-            <span className="text-slate-400 mx-1">FP | ต้องใช้</span>
+            <span className="text-slate-400 mx-1">FP | α╕òα╣ëα╕¡α╕çα╣âα╕èα╣ë</span>
             <span className="font-semibold text-amber-300">{needFP.toLocaleString()}</span>
-            <span className="text-slate-400 mx-1">FP ยังขาด</span>
+            <span className="text-slate-400 mx-1">FP α╕óα╕▒α╕çα╕éα╕▓α╕ö</span>
             <span className="font-semibold text-red-300">{missingFP.toLocaleString()}</span>
             <span className="text-slate-400 ml-1">FP</span>
           </div>
@@ -2530,7 +2532,7 @@
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-medium text-slate-200 truncate">{product.shortTitle}</div>
                       <div className="text-[10px] text-slate-400">{product.insurerCompanyName}</div>
-                      <div className="text-[10px] text-slate-300 mt-1">ราคา {premiumBaht.toLocaleString()} บาท</div>
+                      <div className="text-[10px] text-slate-300 mt-1">α╕úα╕▓α╕äα╕▓ {premiumBaht.toLocaleString()} α╕Üα╕▓α╕ù</div>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <div className="text-base font-bold text-amber-400">{finpointPrice.toLocaleString()} FP</div>
@@ -2539,7 +2541,7 @@
 
                   {/* Status message */}
                   <div className={`text-xs mb-2 ${hasEnough ? 'text-emerald-400' : 'text-orange-400'}`}>
-                    {hasEnough ? '✓ คุณมี Finpoint เพียงพอ' : `⚠ ยังขาด ${missingFP.toLocaleString()} FP`}
+                    {hasEnough ? 'Γ£ô α╕äα╕╕α╕ôα╕íα╕╡ Finpoint α╣Çα╕₧α╕╡α╕óα╕çα╕₧α╕¡' : `ΓÜá α╕óα╕▒α╕çα╕éα╕▓α╕ö ${missingFP.toLocaleString()} FP`}
                   </div>
 
                   {/* Progress bar */}
@@ -2559,7 +2561,7 @@
                           onClick={() => handlePurchaseInsurance(product, currentFpBalance)}
                           className={`text-xs ${isPurchased ? 'bg-slate-600 hover:bg-slate-500' : 'bg-emerald-600 hover:bg-emerald-700'} text-white px-3 py-1.5 rounded transition-colors`}
                         >
-                          {isPurchased ? 'ซื้อแล้ว (ซื้อซ้ำ?)' : 'ซื้อ (ระบบทดสอบ)'}
+                          {isPurchased ? 'α╕ïα╕╖α╣ëα╕¡α╣üα╕Ñα╣ëα╕º (α╕ïα╕╖α╣ëα╕¡α╕ïα╣ëα╕│?)' : 'α╕ïα╕╖α╣ëα╕¡ (α╕úα╕░α╕Üα╕Üα╕ùα╕öα╕¬α╕¡α╕Ü)'}
                         </button>
                       );
                     })()}
@@ -2575,7 +2577,7 @@
             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
               <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full">
                 <h3 className="text-lg font-semibold mb-4 text-center">
-                  {selectedProduct.missingFP > 0 ? 'Finpoint ไม่เพียงพอ' : 'ยืนยันการซื้อประกัน'}
+                  {selectedProduct.missingFP > 0 ? 'Finpoint α╣äα╕íα╣êα╣Çα╕₧α╕╡α╕óα╕çα╕₧α╕¡' : 'α╕óα╕╖α╕Öα╕óα╕▒α╕Öα╕üα╕▓α╕úα╕ïα╕╖α╣ëα╕¡α╕¢α╕úα╕░α╕üα╕▒α╕Ö'}
                 </h3>
 
                 <div className="bg-slate-800/50 rounded-lg p-4 mb-4">
@@ -2589,10 +2591,10 @@
                   <>
                     <div className="bg-red-900/20 border border-red-700/50 rounded-lg p-4 mb-6">
                       <div className="text-red-400 text-sm text-center mb-2">
-                        ⚠️ ยังขาดอีก <span className="font-bold text-lg">{selectedProduct.missingFP.toLocaleString()}</span> FP
+                        ΓÜá∩╕Å α╕óα╕▒α╕çα╕éα╕▓α╕öα╕¡α╕╡α╕ü <span className="font-bold text-lg">{selectedProduct.missingFP.toLocaleString()}</span> FP
                       </div>
                       <div className="text-slate-400 text-xs text-center">
-                        โปรดเติม Finpoint
+                        α╣éα╕¢α╕úα╕öα╣Çα╕òα╕┤α╕í Finpoint
                       </div>
                     </div>
 
@@ -2604,7 +2606,7 @@
                         }}
                         className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-lg transition-colors"
                       >
-                        ยกเลิก
+                        α╕óα╕üα╣Çα╕Ñα╕┤α╕ü
                       </button>
                       <button
                         onClick={() => {
@@ -2617,7 +2619,7 @@
                         }}
                         className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white py-2.5 rounded-lg transition-colors font-medium"
                       >
-                        💳 รับ Finpoint (Demo)
+                        ≡ƒÆ│ α╕úα╕▒α╕Ü Finpoint (Demo)
                       </button>
                     </div>
                   </>
@@ -2626,7 +2628,7 @@
                   <>
                     <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-3 mb-6">
                       <div className="text-amber-400 text-sm text-center">
-                        ⚠️ เป็นเพียงระบบการทดสอบการรันซื้อเท่านั้น
+                        ΓÜá∩╕Å α╣Çα╕¢α╣çα╕Öα╣Çα╕₧α╕╡α╕óα╕çα╕úα╕░α╕Üα╕Üα╕üα╕▓α╕úα╕ùα╕öα╕¬α╕¡α╕Üα╕üα╕▓α╕úα╕úα╕▒α╕Öα╕ïα╕╖α╣ëα╕¡α╣Çα╕ùα╣êα╕▓α╕Öα╕▒α╣ëα╕Ö
                       </div>
                     </div>
 
@@ -2638,13 +2640,13 @@
                         }}
                         className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-lg transition-colors"
                       >
-                        ยกเลิก
+                        α╕óα╕üα╣Çα╕Ñα╕┤α╕ü
                       </button>
                       <button
                         onClick={confirmPurchase}
                         className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg transition-colors font-medium"
                       >
-                        ยืนยัน
+                        α╕óα╕╖α╕Öα╕óα╕▒α╕Ö
                       </button>
                     </div>
                   </>
@@ -2659,17 +2661,17 @@
               <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-md overflow-hidden">
                 {/* Header */}
                 <div className="px-5 py-4 border-b border-slate-800">
-                  <h3 className="text-lg font-semibold text-amber-400">⚠️ คุณได้ซื้อประกันนี้แล้ว</h3>
+                  <h3 className="text-lg font-semibold text-amber-400">ΓÜá∩╕Å α╕äα╕╕α╕ôα╣äα╕öα╣ëα╕ïα╕╖α╣ëα╕¡α╕¢α╕úα╕░α╕üα╕▒α╕Öα╕Öα╕╡α╣ëα╣üα╕Ñα╣ëα╕º</h3>
                 </div>
 
                 {/* Content */}
                 <div className="p-5">
                   <div className="mb-4">
                     <p className="text-slate-300 mb-2">
-                      คุณได้ซื้อประกัน <span className="font-medium text-white">{selectedProduct.title}</span> ไปแล้ว
+                      α╕äα╕╕α╕ôα╣äα╕öα╣ëα╕ïα╕╖α╣ëα╕¡α╕¢α╕úα╕░α╕üα╕▒α╕Ö <span className="font-medium text-white">{selectedProduct.title}</span> α╣äα╕¢α╣üα╕Ñα╣ëα╕º
                     </p>
                     <p className="text-slate-400 text-sm">
-                      ต้องการซื้อซ้ำใช่หรือไม่? (กรณีมีรถหลายคัน หรือต้องการความคุ้มครองเพิ่มเติม)
+                      α╕òα╣ëα╕¡α╕çα╕üα╕▓α╕úα╕ïα╕╖α╣ëα╕¡α╕ïα╣ëα╕│α╣âα╕èα╣êα╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê? (α╕üα╕úα╕ôα╕╡α╕íα╕╡α╕úα╕ûα╕½α╕Ñα╕▓α╕óα╕äα╕▒α╕Ö α╕½α╕úα╕╖α╕¡α╕òα╣ëα╕¡α╕çα╕üα╕▓α╕úα╕äα╕ºα╕▓α╕íα╕äα╕╕α╣ëα╕íα╕äα╕úα╕¡α╕çα╣Çα╕₧α╕┤α╣êα╕íα╣Çα╕òα╕┤α╕í)
                     </p>
                   </div>
 
@@ -2681,7 +2683,7 @@
                       }}
                       className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-lg transition-colors"
                     >
-                      ยกเลิก
+                      α╕óα╕üα╣Çα╕Ñα╕┤α╕ü
                     </button>
                     <button
                       onClick={() => {
@@ -2690,7 +2692,7 @@
                       }}
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-lg transition-colors font-medium"
                     >
-                      ยืนยันซื้อซ้ำ
+                      α╕óα╕╖α╕Öα╕óα╕▒α╕Öα╕ïα╕╖α╣ëα╕¡α╕ïα╣ëα╕│
                     </button>
                   </div>
                 </div>
@@ -2780,18 +2782,18 @@
           {/* Header */}
           <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur-lg border-b border-slate-800">
             <div className="px-4 py-3">
-              <h1 className="text-base font-semibold">🗄️ Database Viewer</h1>
-              <p className="text-xs text-slate-400 mt-1">ดูข้อมูลตารางฐานข้อมูล PostgreSQL</p>
+              <h1 className="text-base font-semibold">≡ƒùä∩╕Å Database Viewer</h1>
+              <p className="text-xs text-slate-400 mt-1">α╕öα╕╣α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕òα╕▓α╕úα╕▓α╕çα╕Éα╕▓α╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ PostgreSQL</p>
             </div>
           </header>
 
           {/* Tables List */}
           <section className="p-4">
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">เลือกตาราง:</label>
+              <label className="block text-sm font-medium mb-2">α╣Çα╕Ñα╕╖α╕¡α╕üα╕òα╕▓α╕úα╕▓α╕ç:</label>
               {isLoadingTables ? (
                 <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
-                  <div className="text-sm text-slate-400">กำลังโหลดรายการตาราง...</div>
+                  <div className="text-sm text-slate-400">α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕öα╕úα╕▓α╕óα╕üα╕▓α╕úα╕òα╕▓α╕úα╕▓α╕ç...</div>
                 </div>
               ) : (
                 <select
@@ -2799,7 +2801,7 @@
                   onChange={(e) => setSelectedTable(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
-                  <option value="">-- เลือกตาราง --</option>
+                  <option value="">-- α╣Çα╕Ñα╕╖α╕¡α╕üα╕òα╕▓α╕úα╕▓α╕ç --</option>
                   {tables.map((table) => (
                     <option key={table.table_name} value={table.table_name}>
                       {table.table_name} ({table.column_count} columns)
@@ -2815,13 +2817,13 @@
                 onClick={() => window.open(`${API_BASE}/api/database/tables`, '_blank')}
                 className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition-colors"
               >
-                📋 API Tables List
+                ≡ƒôï API Tables List
               </button>
               <button
                 onClick={() => window.open(`${API_BASE}/api/database/users/all`, '_blank')}
                 className="px-3 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-xs font-medium transition-colors"
               >
-                👥 All Users
+                ≡ƒæÑ All Users
               </button>
             </div>
           </section>
@@ -2831,14 +2833,14 @@
             <section className="px-4">
               {isLoadingData ? (
                 <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
-                  <div className="text-sm text-slate-400">กำลังโหลดข้อมูลตาราง...</div>
+                  <div className="text-sm text-slate-400">α╕üα╕│α╕Ñα╕▒α╕çα╣éα╕½α╕Ñα╕öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕òα╕▓α╕úα╕▓α╕ç...</div>
                 </div>
               ) : tableData ? (
                 <div className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
                   {/* Table Info */}
                   <div className="px-4 py-3 bg-slate-900/60 border-b border-slate-700">
                     <h3 className="text-sm font-semibold flex items-center gap-2">
-                      📊 Table: {tableData.tableName}
+                      ≡ƒôè Table: {tableData.tableName}
                     </h3>
                     <div className="text-xs text-slate-400 mt-1">
                       Total rows: {tableData.total.toLocaleString()} |
@@ -2894,7 +2896,7 @@
                 </div>
               ) : (
                 <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
-                  <div className="text-sm text-slate-400">ไม่พบข้อมูลตาราง</div>
+                  <div className="text-sm text-slate-400">α╣äα╕íα╣êα╕₧α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕òα╕▓α╕úα╕▓α╕ç</div>
                 </div>
               )}
             </section>
@@ -2904,12 +2906,12 @@
           <section className="px-4 pb-4 mt-4">
             <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3">
               <div className="flex items-start gap-2">
-                <div className="text-slate-400 mt-0.5">ℹ️</div>
+                <div className="text-slate-400 mt-0.5">Γä╣∩╕Å</div>
                 <div className="flex-1">
                   <div className="text-xs text-slate-400 leading-relaxed">
-                    <div className="mb-1">• เลือกตารางเพื่อดูข้อมูลจากฐานข้อมูลจริง</div>
-                    <div className="mb-1">• ข้อมูลจะถูกดึงจาก PostgreSQL Server โดยตรง</div>
-                    <div>• จำกัดการแสดงผล 50 แถวต่อครั้ง</div>
+                    <div className="mb-1">ΓÇó α╣Çα╕Ñα╕╖α╕¡α╕üα╕òα╕▓α╕úα╕▓α╕çα╣Çα╕₧α╕╖α╣êα╕¡α╕öα╕╣α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕▓α╕üα╕Éα╕▓α╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕úα╕┤α╕ç</div>
+                    <div className="mb-1">ΓÇó α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕░α╕ûα╕╣α╕üα╕öα╕╢α╕çα╕êα╕▓α╕ü PostgreSQL Server α╣éα╕öα╕óα╕òα╕úα╕ç</div>
+                    <div>ΓÇó α╕êα╕│α╕üα╕▒α╕öα╕üα╕▓α╕úα╣üα╕¬α╕öα╕çα╕£α╕Ñ 50 α╣üα╕ûα╕ºα╕òα╣êα╕¡α╕äα╕úα╕▒α╣ëα╕ç</div>
                   </div>
                 </div>
               </div>
@@ -2922,12 +2924,12 @@
     // Bottom Navigation
     function BottomNav({ currentPage, setCurrentPage, unreadNotificationCount }) {
       const navItems = [
-        { id: 'home', icon: '🏠', label: 'Home' },
-        { id: 'transactions', icon: '📋', label: 'รายการ' },
-        { id: 'tree', icon: '🕸️', label: 'Tree' },
-        { id: 'acf', icon: '🔗', label: 'ACF' },
-        { id: 'notifications', icon: '🔔', label: 'แจ้งเตือน' },
-        { id: 'profile', icon: '👤', label: 'Profile' },
+        { id: 'home', icon: '≡ƒÅá', label: 'Home' },
+        { id: 'transactions', icon: '≡ƒôï', label: 'α╕úα╕▓α╕óα╕üα╕▓α╕ú' },
+        { id: 'tree', icon: '≡ƒò╕∩╕Å', label: 'Tree' },
+        { id: 'acf', icon: '≡ƒöù', label: 'ACF' },
+        { id: 'notifications', icon: '≡ƒöö', label: 'α╣üα╕êα╣ëα╕çα╣Çα╕òα╕╖α╕¡α╕Ö' },
+        { id: 'profile', icon: '≡ƒæñ', label: 'Profile' },
       ];
 
       return (
