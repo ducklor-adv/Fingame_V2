@@ -37,20 +37,20 @@ app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
 
-// Serve HTML file on root path for direct access
-app.get('/fingrow-app-mobile', (req, res) => {
+// Serve HTML file on root path
+app.get('/', (req, res) => {
   res.sendFile(__dirname + '/fingrow-app-mobile.html');
 });
 
-// Register page - redirect to mobile app with ref parameter
+// Register page - redirect to root with ref parameter
 app.get('/register', (req, res) => {
   const refCode = req.query.ref || '';
-  res.redirect(`/fingrow-app-mobile.html${refCode ? '?ref=' + refCode : ''}`);
+  res.redirect(`/${refCode ? '?ref=' + refCode : ''}`);
 });
 
 // ---------- Routes ----------
 
-app.get('/', (req, res) => {
+app.get('/routes', (req, res) => {
   res.json({
     name: 'Fingrow API',
     version: '2.0.0',
